@@ -1,0 +1,81 @@
+// requires lib/codemirror.js loaded
+define([
+  "dojo/_base/declare"
+  , "dojo/_base/lang"
+  , "dijit/_WidgetBase"
+  , "dojo/dom-geometry"
+], function(
+  declare
+  , lang
+  , WidgetBase
+  , domGeometry
+){
+
+  var cmOptions = {
+    lineNumbers: false
+    , mode: undefined
+  };
+  
+  return declare([
+    WidgetBase
+  ], {
+    
+    , constructor: function(){
+      var mix = {
+      };
+      var o;
+      for(o in cmOptions){
+        function f(oriName, setName){
+          mix["_set" + setName + "Attr"] = function(newValue){
+            this._set(oriName, newValue);
+            this.mirror.setOption(oriName, newValue);
+          };
+          mix["_get" + setName + "Attr"] = function(){
+            return this.mirror.getOption(oriName);
+          };
+        };
+        f(o, o[0].toUpperCase() + o.substr(1));
+      };
+      declare.safeMixin(this, mix);
+    }
+    
+    , buildRendering: function(){
+      this.inherited(arguments);
+      this.mirror = new CodeMirror(this.domNode);
+      this.mirror.setValue(this.value);
+      //this.mirror.setOption("mode", this.mode);
+    }
+    
+    , postMixInProperties: function(){
+      this.inherited(arguments);
+    }
+    
+    , startup: function(){
+      if (this._started) { return; };
+      this.inherited(arguments);
+    }
+    
+    , _setValueAttr: function(parValue){
+      this._set("value", parValue);
+      this.mirror.getDoc().setValue(parValue);
+    }
+    
+    , _getValueAttr: function(){
+      return this.mirror.getDoc().getValue();
+    }
+    
+    , resize: function(changeSize){
+      if (changeSize){
+        domGeometry.setMarginBox(this.domNode, changeSize);
+      };
+      var box = domGeometry.getMarginBox(this.domNode);
+      this.mirror.setSize(box.w, box.h)
+      
+    }
+    
+    , destroy: function(){
+      this.inherited(arguments);
+    }
+    
+  });
+});

@@ -1,0 +1,33 @@
+define([
+  "dojo/_base/declare"
+  , "dojo/Deferred"
+  , "main/config"
+  , "dojo/_base/array"
+  , "sol/fileName"
+  , "dojo/_base/lang"
+], function(
+  declare
+  , Deferred
+  , config
+  , array
+  , fileName
+  , lang
+){
+  var nameTranslator;
+  var dirnamelen = 0;
+  if (config.isServer){
+    dirnamelen = config.__dirname.length;
+  };
+  
+  var NameTranslator = declare("NameTranslator", [
+  ], {
+    reduceName: function(parName){
+      return parName.substr(dirnamelen);
+    }
+    , fileName: function(parName){
+      return config.__dirname + parName
+    }
+  });
+  nameTranslator = new NameTranslator();
+  return nameTranslator;
+});

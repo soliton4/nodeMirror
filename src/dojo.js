@@ -1,0 +1,1 @@
+define(["dojo/main"], function(main){return main;});

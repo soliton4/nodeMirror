@@ -1,0 +1,92 @@
+define([
+  "dojo/_base/declare"
+  , "main/_RemoteCall"
+  , "dojo/Deferred"
+  , "main/config"
+  , "dojo/_base/array"
+  , "sol/fileName"
+  , "sol/promise"
+  , "dojo/_base/lang"
+  , "main/nameTranslator"
+], function(
+  declare
+  , _RemoteCall
+  , Deferred
+  , config
+  , array
+  , fileName
+  , solPromise
+  , lang
+  , nameTranslator
+){
+  var contentIO;
+  var files;
+  if (config.isServer){
+    require(["server/files"], function(parFiles){
+      files = parFiles;
+    });
+  };
+  
+  var ContentIO = declare("ContentIO", [
+    _RemoteCall
+  ], {
+    remoteFunctions: {
+      getContentDef: true
+      saveTextDef: true
+    }
+    
+    /*, getContentTypesDef: function(parFileNameOrArray){
+      
+    }*/
+    
+    , getContentDef: function(parName){
+      var def = new Deferred();
+      var name = nameTranslator.fileName(parName);
+      var result = {
+      };
+      files.contentTypeDef(name).then(function(parType){
+        result.id = parName;
+        result.contentType = parType
+        if (parType == "inode/directory"){
+          files.childrenDef(name).then(function(ar){
+            console.log(ar);
+            result.children = [];
+            solPromise.allDone(array.map(ar, function(child){
+              var entry = {
+                id: nameTranslator.reduceName(child)
+              };
+              result.children.push(entry);
+              return files.contentTypeDef(child).then(function(contentType){
+                entry.contentType = contentType;
+              });
+            })).then(function(){
+              def.resolve(result);
+            });
+          });
+        }else{
+          var isText = false;
+          isText = isText || parType.substr(0, 5) == "text/";
+          isText = isText || parType == "application/javascript";
+          isText = isText || parType == "application/css";
+          console.log(parType);
+          if (isText){
+            console.log("yeah");
+            result.isText = true;
+            files.readTextDef(name).then(function(parText){
+              result.text = parText;
+              def.resolve(result);
+            });
+          };
+        };
+      });
+      return def;
+    }
+    , saveTextDef: function(parId, parText){
+      var name = nameTranslator.fileName(parId);
+      return files.writeTextDef(name, parText);
+    }
+    
+  });
+  contentIO = new ContentIO();
+  return contentIO;
+});

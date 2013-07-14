@@ -1,0 +1,50 @@
+<html>
+  <head>
+    <title>NodeMirror</title>
+    
+    <!-- socket.io -->
+    <script src="/socket.io/socket.io.js"></script>
+    
+    <script>
+      /*var socket = io.connect('http://localhost:3000');
+      socket.on('news', function (data) {
+        console.log(data);
+        socket.emit('my other event', { my: 'data' });
+      });*/
+    </script>
+    
+    
+    <title>terminal</title>
+    <link rel="stylesheet" href="/tty/style.css">
+    <!--<link rel="stylesheet" href="/tty/user.css">-->
+    
+  </head>
+  <body>
+
+<h1>tty.js</h1>
+
+<div id="help">
+  <p>Click the titlebar to drag.</p>
+  <p>Double-click titlebar to maximize.</p>
+  <p>Click the lower-right corner to resize.</p>
+  <p>Click the tilde to open a new tab.</p>
+      <p>Click the tilde with a modifier to close the window.</p>
+    </div>
+    
+    <button id="open">Open Terminal</button>
+    <button id="lights">Light Switch</button>
+    
+    <script src="/tty/term.js"></script>
+    <!--<script src="/tty/options.js"></script>-->
+    <script src="/tty/tty.js"></script>
+    <!--<script src="/tty/user.js"></script>-->
+    
+    
+    <!-- main styles -->
+	<link rel="stylesheet" type="text/css" href="/style.css">
+    
+    <script src="/tty/term.js"></script>
+    <script src="/tty/tty.js"></script>
+    
+  </body>
+</html>

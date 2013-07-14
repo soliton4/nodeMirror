@@ -1,0 +1,21 @@
+<html>
+  <head>
+    <title>NodeMirror</title>
+    
+    <!-- socket.io -->
+    <script src="/socket.io/socket.io.js"></script>
+    
+    <script>
+      var socket = io.connect('http://localhost:3000');
+      socket.on('news', function (data) {
+        console.log(data);
+        socket.emit('my other event', { my: 'data' });
+      });
+    </script>
+    
+    <!-- main styles -->
+	<link rel="stylesheet" type="text/css" href="/style.css">
+  </head>
+  <body>
+  </body>
+</html>

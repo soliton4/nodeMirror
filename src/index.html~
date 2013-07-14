@@ -1,0 +1,100 @@
+<html>
+  <head>
+    <title>NodeMirror</title>
+    
+    <!-- socket.io -->
+      <script src="/socket.io/socket.io.js"></script>
+      
+      <script>
+        var socket = io.connect('http://localhost:3000');
+        socket.on('news', function (data) {
+          console.log(data);
+          socket.emit('my other event', { my: 'data' });
+        });
+      </script>
+    
+    <!-- dojo -->
+      <!-- config -->
+        <script>
+          // The module to "bootstrap"
+          var loadModule = "client/client";
+          
+          
+          // Configuration Object for Dojo Loader:
+    	  dojoConfig = {
+            baseUrl: "/", // Where we will put our packages
+            async: 1, // We want to make sure we are using the "modern" loader
+            // While it is possible to use config-tlmSiblingOfDojo to tell the
+            // loader that your packages share the same root path as the loader,
+            // this really isn't always a good idea and it is better to be
+            // explicit about our package map.
+            packages: [{
+                name: "dojo",
+                location: "dojo"
+            },{
+                name: "dijit",
+                location: "dijit"
+            },{
+                name: "dojox",
+                location: "dojox"
+            },{
+                name: "main",
+                location: "main"
+            },{
+                name: "client",
+                location: "client"
+            },{
+                name: "sol",
+                location: "sol"
+            },{
+                name: "dgrid",
+                location: "dgrid"
+            }],
+            deps: [ loadModule ] // And array of modules to load on "boot"
+          };
+	    </script>
+      
+      <!-- loader -->
+	    <script src="/dojo/dojo.js"></script>
+      <!-- style -->
+        <!-- claro theme -->
+          <link rel="stylesheet" type="text/css" href="/dijit/themes/claro/claro.css">
+        <!-- save button -->
+          <link rel="stylesheet" type="text/css" href="/dojox/editor/plugins/resources/css/Save.css">
+        <!-- dgrid -->
+          <link rel="stylesheet" type="text/css" href="/dgrid/css/skins/claro.css">
+    
+    
+    <!-- codemirror -->
+      <script src="/codemirror/lib/codemirror.js"></script>
+      <link rel="stylesheet" type="text/css" href="/codemirror/lib/codemirror.css">
+      
+      <!-- modes -->
+        <script src="/codemirror/mode/xml/xml.js"></script>
+        <script src="/codemirror/mode/javascript/javascript.js"></script>
+        <script src="/codemirror/mode/css/css.js"></script>
+        <script src="/codemirror/mode/vbscript/vbscript.js"></script>        
+        <script src="/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+      
+      <!-- addons -->
+        <!-- dialog -->
+          <script src="/codemirror/addon/dialog/dialog.js"></script>
+          <link rel="stylesheet" href="/codemirror/addon/dialog/dialog.css">
+        <!-- search -->
+          <script src="/codemirror/addon/search/searchcursor.js"></script>
+          <script src="/codemirror/addon/search/search.js"></script>
+        <!-- themes -->
+          <link rel="stylesheet" type="text/css" href="/codemirror/theme/night.css">
+    
+    <!-- jshint -->
+      <script src="/jshint/jshint-2.1.4.js"></script>
+    
+    <!-- PEG.js -->
+      <script src="/peg/PEG.js"></script>
+    
+    <!-- main styles -->
+	  <link rel="stylesheet" type="text/css" href="/style.css">
+  </head>
+  <body>
+  </body>
+</html>

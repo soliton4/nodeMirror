@@ -12,7 +12,7 @@ console.log(consoleOutput);*/
 
 console.log("Starting ...");
 
-var cluster = require('cluster');
+/*var cluster = require('cluster');
 
 if (cluster.isMaster) {
   // Fork workers.
@@ -25,7 +25,9 @@ if (cluster.isMaster) {
   startClone();
   return;
   
-};
+};*/
+
+require("restartable")(function(parRestartableObj){
 
 
 var loadModule = "server/server";
@@ -64,3 +66,6 @@ dojoConfig = {
 require("./src/dojo/dojo.js");
 
 
+}, function(parRestartableObj){
+  console.log("server code!!!");
+});

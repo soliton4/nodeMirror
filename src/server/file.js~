@@ -1,0 +1,54 @@
+/*
+  low level dirRead / fileReadWrite implementation
+*/
+define([
+  "dojo/_base/declare"
+  , "dojo/Deferred"
+  , "dojo/_base/config"
+  , "dojo/node!fs"
+  , "dojo/_base/array"
+], function(
+  declare
+  , Deferred
+  , config
+  , fs
+  , array
+){
+  console.log(config.__dirname);
+  fs.readdir(config.__dirname, function(err, files){
+    console.log(files);
+    array.forEach(files, function(file){
+      fs.stat(config.__dirname + "/" + file, function(err, stat){
+        console.log(file + stat.isDirectory());
+      });
+    });
+  });
+  
+  var File = declare("File", [
+    
+  ], {
+    remoteFunctions: {
+	  getRootDef: true
+	  , getChildrenDef: true
+	}
+    , dirsDef: function(parFileName){
+      var def = new Deferred();
+      fs.stat(parFileName, function(err, stat){
+        if (err || !stat.isDirectory()){
+          def.resolve();
+          return;
+        };
+        fs.readdir(parFileName, function(err, files){
+          if (err){
+            def.resolve();
+            return;
+          };
+          def.resolve(files);
+        });
+      });
+      return def;
+    }
+  });
+  var treeItems = new TreeItems();
+  return treeItems;
+});

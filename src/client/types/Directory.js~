@@ -1,0 +1,57 @@
+define([
+  "dojo/_base/declare"
+  , "dgrid/Grid"
+  , "sol/fileName"
+  , "dgrid/extensions/DijitRegistry"
+  , "dojo/dom-construct"
+  , "dgrid/Selection"
+  , "dojo/_base/lang"
+  , "dojo/topic"
+], function(
+  declare
+  , Grid
+  , fileName
+  , DijitRegistry
+  , domConstruct
+  , Selection
+  , lang
+  , topic
+){
+  return declare([
+    Grid, DijitRegistry, Selection
+  ], {
+    content: {} // will be provided
+    , columns: {
+        id: {
+            label: "Name"
+            , get: function(object){
+                return fileName.single(object.id);
+            }
+        },
+        contentType: {
+            label: "Content Type"
+        }
+    }
+    , selectionMode: "single"
+    , startup: function(){
+      if (this._started){
+        return;
+      };
+      this.inherited(arguments);
+      this.renderArray(this.content.children);
+      this.on(".dgrid-row:click", lang.hitch(this, function(evt){
+        var row = this.row(evt);
+        topic.publish("client/openid", {
+          item: row
+          , insteadOf: this.contentObj
+        });
+        // row.element == the element with the dgrid-row class
+        // row.id == the identity of the item represented by the row
+        // row.data == the item represented by the row
+      }));
+    }
+    , placeAt: function(parNode, par2){
+      domConstruct.place(this.domNode, parNode, par2);
+    }
+  });
+});

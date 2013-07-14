@@ -1,0 +1,69 @@
+/*
+  low level dirRead / fileReadWrite implementation
+*/
+define([
+  "dojo/_base/declare"
+  , "dojo/Deferred"
+  , "dojo/_base/config"
+  , "dojo/node!fs"
+  , "dojo/_base/array"
+  , "dojo/promise/all"
+  , "dojo/_base/lang"
+  , "sol/promise"
+], function(
+  declare
+  , Deferred
+  , config
+  , fs
+  , array
+  , all
+  , lang
+  , solPromise
+){
+  var files;
+  var Files = declare("File", [
+    
+  ], {
+    remoteFunctions: {
+	  getRootDef: true
+	  , getChildrenDef: true
+	}
+    , dirsDef: function(parFileName){
+      var def = new Deferred();
+      fs.stat(parFileName, function(err, stat){
+        if (err || !stat.isDirectory()){
+          def.resolve();
+          return;
+        };
+        fs.readdir(parFileName, function(err, parFiles){
+          if (err){
+            def.resolve();
+            return;
+          };
+          var resultAr = [];
+          solPromise.allDone(array.map(parFiles, function(file){
+            filename = parFileName + "/" + file;
+            return files.isDirDef(filename).then(function(filename){
+              resultAr.push(filename);
+            }); //function(){ resultAr.push(filename); });
+          })).then(function(){
+            def.resolve(resultAr);
+          });
+        });
+      });
+      return def.promise;
+    }
+    , isDirDef: function(parFileName){
+      var def = new Deferred();
+      fs.stat(parFileName, function(err, stat){
+        if (stat.isDirectory()){
+          def.resolve(parFileName);
+        };
+        def.reject(parFileName);
+      });
+      return def.promise;
+    }
+  });
+  files = new Files();
+  return files;
+});

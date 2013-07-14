@@ -1,0 +1,1 @@
+define(["xstyle/./main"], function(main){return main;});
