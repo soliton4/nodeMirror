@@ -7,12 +7,13 @@ define([
 ){
   var ConfigCls = declare([
   ], {
-    __dirname: __dirname
+    __dirname: dojoConfig.__dirname
     
     , constructor: function(par){
-	  declare.safeMixin(this, par);
+      declare.safeMixin(this, par);
 	}
   });
-  var config = new ConfigCls();
+  console.log(dojoConfig.nodeMirrorConfig);
+  var config = new ConfigCls(dojoConfig.nodeMirrorConfig);
   return config;
 });

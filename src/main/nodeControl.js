@@ -18,9 +18,10 @@ define([
   var nodeControl;
   var cluster;
   if (config.isServer){
-    require(["dojo/node!cluster"], function(parCluster){
-      cluster = parCluster;
-    });
+    console.log("running on server");
+    if (config.restartableObj){
+      console.log("has restartable");
+    };
   };
   
   var NodeControl = declare("NodeControl", [
@@ -33,7 +34,9 @@ define([
     , restartDef: function(){
       var def = new Deferred();
       setTimeout(function(){
-        cluster.worker.kill();
+        if (config.restartableObj && config.restartableObj.isRestartable){
+          config.restartableObj.restart();
+        };
       }, 10);
       def.resolve({});
       return def.promise;

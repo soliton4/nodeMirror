@@ -70,7 +70,9 @@ define([
           isText = isText || parType == "application/javascript";
           isText = isText || parType == "application/peg.js";
           isText = isText || parType == "application/css";
+          isText = isText || parType == "application/json";
           isText = isText || parType == "inode/x-empty";
+          
           console.log(parType);
           if (isText){
             result.isText = true;

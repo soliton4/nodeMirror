@@ -1,1 +1,33 @@
-{}
+{
+  "name": "node-mirror",
+  "version": "0.0.1",
+  "author": {
+    "name": "Matthias Behrens",
+    "email": "matthias.behrens@gmail.com"
+  },
+  "description": "node.js + CodeMirror = Great WebDeveloper IDE",
+  "main": "./lib/nodemirror.js",
+  "bin": {
+    "node-mirror": "./bin/nodemirror.js"
+  }
+  , "dependencies" : {
+    "restartable"   :  "*",
+    "express" :  "3.x",
+    "mime": "*",
+    "mime-magic": "*",
+    "pty.js": "*",
+    "socket.io": "*",
+    "jshint": "*",
+    "tty.js": "*",
+    "uglify-js": "*"
+  },  
+  "keywords": [
+    "CodeMirror"
+    , "IDE"
+  ],
+  "license": "BSD",
+  "engines": {
+    "node": ">=0.8"
+  },
+  "readmeFilename": "README.md"
+}

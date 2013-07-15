@@ -1,3 +1,5 @@
+var dirName = __dirname;
+
 define([
   "dojo/node!express"
   , "main/config"
@@ -12,6 +14,7 @@ define([
   , pty
   , socketIo
   , http
+  , optimist
 ){
   config.isServer = true;
   
@@ -28,6 +31,7 @@ define([
     var mirror = express();
     
     var server = http.createServer(mirror);
+    //var server = mirror;
     
     mirror.use(express.bodyParser());
     
@@ -37,18 +41,18 @@ define([
       remoteCaller.serverCall(req.body).then(function(par){
 		console.log("response:");
 		console.log(par);
-	    res.send(par);
+        res.send(par);
       });
     });
     
     
-    mirror.use(express.static('./src'));
+    mirror.use(express.static(config.static));
   
     mirror.get('/', function(req, res){
       res.send('Hello World');
     });
     
-    server.listen(3000);
+    server.listen(config.port);
     
     
     var io = socketIo.listen(server);
@@ -67,30 +71,34 @@ define([
     io.sockets.on('connection', function (socket) {
       console.log("connecting");
       //socket.emit('news', { hello: 'world' });
-      socket.on('my other event', function (data) {
+      /*socket.on('my other event', function (data) {
         console.log(data);
       });
-      socket.on("create", function(par1, cols, rows, fn){
+      socket.on("create", function(cols, rows, fn){
         console.log("create");
-        fn(null, return {
+        fn(null, {
           id: 1
         });
+      });*/
+      socket.on("data", function(id, data){
+        console.log("data");
+        //term.write(data);
       });
-      term.on('data', function(data) {
+      /*term.on('data', function(data) {
         socket.emit('data', 1, data);
         console.log(data);
-      });
+      });*/
     });
     
     term.on('close', function() {
       // Make sure it closes
       // on the clientside.
-      console.log("term close")
+      console.log("term close");
     });
     
-    setInterval(function(){
+    /*setInterval(function(){
       term.write('ls\r');
-    }, 10000)    
+    }, 10000)    */
     
 //    term.on('data', function(data) {
       //console.log(data);

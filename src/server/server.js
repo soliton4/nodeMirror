@@ -12,6 +12,7 @@ define([
   , pty
   , socketIo
   , http
+  , optimist
 ){
   config.isServer = true;
   
@@ -43,13 +44,13 @@ define([
     });
     
     
-    mirror.use(express.static('./src'));
+    mirror.use(express.static(config.static));
   
     mirror.get('/', function(req, res){
       res.send('Hello World');
     });
     
-    server.listen(3000);
+    server.listen(config.port);
     
     
     var io = socketIo.listen(server);

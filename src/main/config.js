@@ -10,9 +10,11 @@ define([
     __dirname: dojoConfig.__dirname
     
     , constructor: function(par){
-	  declare.safeMixin(this, par);
+      declare.safeMixin(this, par);
 	}
   });
-  var config = new ConfigCls();
+  //console.log("config:");
+  //console.log(dojoConfig.nodeMirrorConfig);
+  var config = new ConfigCls(dojoConfig.nodeMirrorConfig);
   return config;
 });
