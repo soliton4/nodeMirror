@@ -12,4 +12,7 @@
 	url = https://github.com/dojo/util
 [submodule "src/CodeMirror"]
 	path = src/CodeMirror
-	url = https://github.com/marijnh/CodeMirror
+	url = https://github.com/marijnh/CodeMirror.git
+[submodule "src/CodeMirror2"]
+	path = src/CodeMirror2
+	url = https://github.com/marijnh/CodeMirror.git
