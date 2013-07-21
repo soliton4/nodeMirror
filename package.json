@@ -1,15 +1,12 @@
 {
   "name": "node-mirror",
-  "version": "0.0.1",
+  "version": "0.0.7",
   "author": {
     "name": "Matthias Behrens",
     "email": "matthias.behrens@gmail.com"
   },
   "description": "node.js + CodeMirror = Great WebDeveloper IDE",
-  "main": "./lib/nodemirror.js",
-  "bin": {
-    "node-mirror": "./bin/nodemirror.js"
-  }
+  "main": "./lib/nodemirror.js"
   , "dependencies" : {
     "restartable"   :  "*",
     "express" :  "3.x",
@@ -19,12 +16,18 @@
     "socket.io": "*",
     "jshint": "*",
     "tty.js": "*",
-    "uglify-js": "*"
+    "uglify-js": "*",
+    "optimist": "*"
   },  
   "keywords": [
     "CodeMirror"
     , "IDE"
+    , "nodemirror"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/soliton4/nodeMirror"
+  },
   "license": "BSD",
   "engines": {
     "node": ">=0.8"
