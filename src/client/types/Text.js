@@ -6,10 +6,18 @@ define([
   , "dojo/topic"
   , "dijit/layout/BorderContainer"
   , "sol/wgt/CodeMirror"
-  , "dijit/MenuBar"
+  , "dijit/Toolbar"
   , "dijit/form/Button"
   , "main/contentIO"
   , "dijit/MenuItem"
+  , "codemirror/mode/css"
+  , "codemirror/mode/htmlmixed"
+  , "codemirror/mode/javascript"
+  , "codemirror/mode/vbscript"
+  , "codemirror/mode/xml"
+  , "codemirror/addon/dialog"
+  , "codemirror/addon/search"
+  , "codemirror/addon/searchcursor"
 ], function(
   declare
   , fileName
@@ -18,7 +26,7 @@ define([
   , topic
   , BorderContainer
   , CodeMirror
-  , MenuBar
+  , Toolbar
   , Button
   , contentIO
   , MenuBarItem
@@ -31,12 +39,12 @@ define([
     , content: {} // will be provided
     , buildRendering: function(){
       var ret = this.inherited(arguments);
-      this.menu = this.ownObj(new MenuBar({
+      this.menu = this.ownObj(new Toolbar({
         region: "top"
       }));
       this.addChild(this.menu);
       
-      this.saveButton = this.ownObj(new MenuBarItem({
+      this.saveButton = this.ownObj(new Button({
         iconClass: "dijitAdditionalEditorIconSave"
         //, showLabel: false
         , onClick: lang.hitch(this, "save")
@@ -44,15 +52,34 @@ define([
       }));
       this.menu.addChild(this.saveButton);
       
+      this.reloadButton = this.ownObj(new Button({
+        //iconClass: "dijitAdditionalEditorIconSave"
+        onClick: lang.hitch(this, "reload")
+        , label: "reload"
+      }));
+      this.menu.addChild(this.reloadButton);
+      
       this.mirror = this.ownObj(new CodeMirror({
         region: "center"
         , value: this.content.text
         , mode: this.content.contentType
         , lineNumbers: true
-        , theme: "night"
+        , theme: "twilight"
       }));
       this.addChild(this.mirror);
       return ret;
+    }
+    
+    , _setContentAttr: function(parContent){
+      this._set("content", parContent);
+      if (this.mirror){
+        this.mirror.set("value", this.content.text);
+        this.mirror.set("mode", this.content.contentType);
+      };
+    }
+    
+    , reload: function(){
+      this.contentObj.reload();
     }
     
     , save: function(){

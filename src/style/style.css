@@ -1,0 +1,71 @@
+@import url('../dijit/themes/claro/claro.css');
+/* save button */
+@import url('../dojox/editor/plugins/resources/css/Save.css');
+/* dgrid */
+@import url('../dgrid/css/skins/claro.css');
+    
+    
+/* CodeMirror */
+@import url('../CodeMirror/lib/codemirror.css');
+@import url('../CodeMirror/addon/dialog/dialog.css');
+          
+/* themes */
+@import url('../CodeMirror/theme/night.css');
+@import url('../CodeMirror/theme/twilight.css');
+
+
+* { 
+  outline: none; 
+}
+
+.zeroBorder {
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+.mainBc {
+  width: 100%;
+  height: 100%;
+}
+
+.dijitTabPane.mainContentPane {
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+.dijitBorderContainer.content{
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+.contentMenu {
+  height: 33px;
+}
+
+
+.nodeMirror .sideBar {
+  width: 200px;
+  margin: 0px;
+  padding: 0px;
+  border: 0px;
+}
+
+.nodeMirror .treeCP {
+  width: 200px;
+  margin: 0px;
+  padding: 0px;
+  border: 0px;
+}
+
+body {
+  margin: 0px;
+  padding: 0px;
+  border: 0px;
+}
+
+.lint-error {font-family: arial; font-size: 70%; background: #ffa; color: #a00; padding: 2px 5px 3px; }
+.lint-error-icon {color: white; background-color: red; font-weight: bold; border-radius: 50%; padding: 0 3px; margin-right: 7px;}
+

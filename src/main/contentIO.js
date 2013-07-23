@@ -8,6 +8,7 @@ define([
   , "sol/promise"
   , "dojo/_base/lang"
   , "main/nameTranslator"
+  , "main/modules"
 ], function(
   declare
   , _RemoteCall
@@ -18,6 +19,7 @@ define([
   , solPromise
   , lang
   , nameTranslator
+  , modules
 ){
   var contentIO;
   var files;
@@ -43,54 +45,17 @@ define([
     , getContentDef: function(parName){
       var def = new Deferred();
       var name = nameTranslator.fileName(parName);
-      var result = {
-      };
       files.contentTypeDef(name).then(function(parType){
-        result.id = parName;
-        result.contentType = parType;
-        if (parType == "inode/directory"){
-          files.childrenDef(name).then(function(ar){
-            console.log(ar);
-            result.children = [];
-            solPromise.allDone(array.map(ar, function(child){
-              var entry = {
-                id: nameTranslator.reduceName(child)
-              };
-              result.children.push(entry);
-              return files.contentTypeDef(child).then(function(contentType){
-                entry.contentType = contentType;
-              });
-            })).then(function(){
-              def.resolve(result);
-            });
-          });
-        }else{
-          var isText = false;
-          isText = isText || parType.substr(0, 5) == "text/";
-          isText = isText || parType == "application/javascript";
-          isText = isText || parType == "application/peg.js";
-          isText = isText || parType == "application/css";
-          isText = isText || parType == "application/json";
-          isText = isText || parType == "inode/x-empty";
-          
-          console.log(parType);
-          if (isText){
-            result.isText = true;
-            files.readTextDef(name).then(function(parText){
-              result.text = parText;
-              def.resolve(result);
-            });
-            return;
-          };
-          if (parType == "application/promiseLand"){
-            result.isText = true;
-            files.readTextDef(name).then(function(parText){
-              result.text = parText;
-              def.resolve(result);
-            });
-            return;
-          };
-        };
+        modules.getContent({
+          id: parName
+          , fileName: name
+          , contentType: parType
+        }).then(function(result){
+          def.resolve(lang.mixin({
+            id: parName
+            , contentType: parType
+          }, result));
+        });
       });
       return def;
     }

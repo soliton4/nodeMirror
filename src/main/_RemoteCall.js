@@ -16,22 +16,22 @@ define([
   var _Base = declare(classNameStr, [
   ], {
     constructor: function(par){
-	  remoteCaller.add(this);
-	  if (config.isServer){
-	    // nothing to do
+      remoteCaller.add(this);
+      if (config.isServer){
+        // nothing to do
 		return;
-	  };
-	  var fNameStr;
-	  for(fNameStr in this.remoteFunctions){
-	    if (this.remoteFunctions[fNameStr] && typeof this[fNameStr] == "function"){
-		  var m = {};
-		  m[fNameStr] = lang.hitch(remoteCaller, "call", this.declaredClass, fNameStr);
-		  declare.safeMixin(this, m);
+      };
+      var fNameStr;
+      for(fNameStr in this.remoteFunctions){
+        if (this.remoteFunctions[fNameStr] && typeof this[fNameStr] == "function"){
+          var m = {};
+          m[fNameStr] = lang.hitch(remoteCaller, "call", this.declaredClass, fNameStr);
+          declare.safeMixin(this, m);
 		};
-	  };
+      };
 	}
 	, remoteFunctions: {
-	  // exampleFunctionName: true
+      // exampleFunctionName: true
 	}
 	
   });

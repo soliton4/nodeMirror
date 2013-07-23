@@ -24,6 +24,9 @@ var profile = (function(){
         },{
             name: "sol",
             location: "sol"
+        },{
+            name: "module",
+            location: "module"
         }],
         staticHasFeatures: {
           "host-node": 1 // Ensure we "force" the loader into Node.js mode

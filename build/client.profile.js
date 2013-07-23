@@ -36,6 +36,24 @@ var profile = (function(){
         },{
             name: "sol",
             location: "sol"
+        },{
+            name: "jshint",
+            location: "jshint"
+        },{
+            name: "peg",
+            location: "peg"
+        },{
+          name: "codemirror",
+          location: "codemirror"
+        },{
+          name: "CodeMirror",
+          location: "CodeMirror"
+        }, {
+          name: "modules"
+        , location: "modules"
+        }, {
+          name: "style"
+        , location: "style"
         }],
         staticHasFeatures: {
           "dom": 1

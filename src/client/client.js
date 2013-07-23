@@ -121,12 +121,5 @@ define([
   // rendering bug;
   setTimeout(lang.hitch(mainBc, "resize"), 100);
   setTimeout(lang.hitch(mainBc, "resize"), 500);
-  /*var x = declare("class1", [_RemoteCall], {
-    remoteFunctions: {
-	  test1: true
-	}
-  });
-  var xi = new x();*/
-
   
 });

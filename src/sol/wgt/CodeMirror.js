@@ -5,12 +5,16 @@ define([
   , "dijit/_WidgetBase"
   , "dojo/dom-geometry"
   , "sol/convenient/Delayed"
+  , "codemirror/CodeMirror"
+  , "jshint/jshint"
 ], function(
   declare
   , lang
   , WidgetBase
   , domGeometry
   , Delayed
+  , CodeMirror
+  , JSHINT
 ){
 
   var cmOptions = {

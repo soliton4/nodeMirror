@@ -49,6 +49,15 @@
             },{
                 name: "dgrid",
                 location: "dgrid"
+            },{
+                name: "jshint",
+                location: "jshint"
+            },{
+                name: "peg",
+                location: "peg"
+            },{
+                name: "codemirror",
+                location: "codemirror"
             }],
             deps: [ loadModule ] // And array of modules to load on "boot"
           };
@@ -56,44 +65,9 @@
       
       <!-- loader -->
 	    <script src="/dojo/dojo.js"></script>
-      <!-- style -->
-        <!-- claro theme -->
-          <link rel="stylesheet" type="text/css" href="/dijit/themes/claro/claro.css">
-        <!-- save button -->
-          <link rel="stylesheet" type="text/css" href="/dojox/editor/plugins/resources/css/Save.css">
-        <!-- dgrid -->
-          <link rel="stylesheet" type="text/css" href="/dgrid/css/skins/claro.css">
     
-    
-    <!-- CodeMirror -->
-      <script src="/CodeMirror/lib/codemirror.js"></script>
-      <link rel="stylesheet" type="text/css" href="/CodeMirror/lib/codemirror.css">
-      
-      <!-- modes -->
-        <script src="/CodeMirror/mode/xml/xml.js"></script>
-        <script src="/CodeMirror/mode/javascript/javascript.js"></script>
-        <script src="/CodeMirror/mode/css/css.js"></script>
-        <script src="/CodeMirror/mode/vbscript/vbscript.js"></script>        
-        <script src="/CodeMirror/mode/htmlmixed/htmlmixed.js"></script>
-      
-      <!-- addons -->
-        <!-- dialog -->
-          <script src="/CodeMirror/addon/dialog/dialog.js"></script>
-          <link rel="stylesheet" href="/CodeMirror/addon/dialog/dialog.css">
-        <!-- search -->
-          <script src="/CodeMirror/addon/search/searchcursor.js"></script>
-          <script src="/CodeMirror/addon/search/search.js"></script>
-        <!-- themes -->
-          <link rel="stylesheet" type="text/css" href="/CodeMirror/theme/night.css">
-    
-    <!-- jshint -->
-      <script src="/jshint/jshint-2.1.4.js"></script>
-    
-    <!-- PEG.js -->
-      <script src="/peg/PEG.js"></script>
-    
-    <!-- main styles -->
-	  <link rel="stylesheet" type="text/css" href="/style.css">
+    <!-- all styles -->
+	  <link rel="stylesheet" type="text/css" href="style/style.css">
   </head>
   <body>
   </body>
