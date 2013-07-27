@@ -46,9 +46,6 @@ var profile = (function(){
           name: "codemirror",
           location: "codemirror"
         },{
-          name: "CodeMirror",
-          location: "CodeMirror"
-        }, {
           name: "modules"
         , location: "modules"
         }, {
@@ -59,21 +56,35 @@ var profile = (function(){
           "dom": 1
           , "host-browser": 1
           , "dojo-firebug": 0
+          , "server-modules": false
         },
         defaultConfig: {
           hasCache:{
             "dom": 1
             , "host-browser": 1
             , "dojo-firebug": 0
+            , "server-modules": false
           },
           async: 1,
           deps: [ "client/client" ]
         },
         layers: {
             "dojo/dojo": {
-                include: [ "dojo/dojo", "client/client", "dgrid/Grid", "xstyle/load-css", "dojo/selector/lite" ]
-                , boot: true
-                , customBase: true
+                include: [ 
+                  "dojo/dojo"
+                , "client/client"
+                , "dgrid/Grid"
+                , "xstyle/load-css"
+                , "dojo/selector/lite"
+                , "main/serverOnly"
+                , "sol/string"
+                , "modules/Text"
+                , "modules/Default"
+                , "modules/Directory"
+                , "main/codemirror/fake"
+                ]
+              , boot: true
+              , customBase: true
             }
         }
     };

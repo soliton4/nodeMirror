@@ -10,14 +10,11 @@ define([
   , "dijit/form/Button"
   , "main/contentIO"
   , "dijit/MenuItem"
-  , "codemirror/mode/css"
-  , "codemirror/mode/htmlmixed"
-  , "codemirror/mode/javascript"
-  , "codemirror/mode/vbscript"
-  , "codemirror/mode/xml"
-  , "codemirror/addon/dialog"
-  , "codemirror/addon/search"
-  , "codemirror/addon/searchcursor"
+  , "codemirror/mode/allModes"
+  , "codemirror/addon/dialog/dialog"
+  , "codemirror/addon/search/search"
+  , "codemirror/addon/search/searchcursor"
+  , "codemirror/addon/edit/matchbrackets"
 ], function(
   declare
   , fileName
@@ -65,6 +62,7 @@ define([
         , mode: this.content.contentType
         , lineNumbers: true
         , theme: "twilight"
+        , matchBrackets: true
       }));
       this.addChild(this.mirror);
       return ret;

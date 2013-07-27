@@ -5,7 +5,9 @@ define([
   , "dojo/has"
   , "sol/promise"
   , "dojo/_base/array"
-  , "main/config"
+  , "main/serverOnly!server/files"
+  , "main/codemirror/subtypes"
+  , "sol/string"
 ], function(
   declare
   , Base
@@ -13,37 +15,41 @@ define([
   , has
   , solPromise
   , array
-  , config
+  , files
+  , subtypes
+  , solString
 ){
-  var files;
-  if (config.isServer){
-    require(["server/files"], function(parFiles){
-      files = parFiles;
-    });
-  };
   
-  var possibleContentTypes = [
-    "application/javascript"
-  , "application/peg.js"
-  , "application/css"
-  , "application/json"
-  , "inode/x-empty"
-  ];
+  var additionalSubtypes = {
+    "peg.js": true
+    , "x-empty": true
+  };
+    
+  var additionalTypes = {
+    "inode/x-empty": true
+  };
   
   return declare([Base], {
     getContent: function(par){
       var isText = false;
-      console.log(par.contentType);
-      if (par.contentType.substr(0, 5) == "text/"){
+      //console.log(par.contentType);
+      if (solString.startsWith(par.contentType, "text/")){
         isText = true;
       };
       
-      var i = 0;
-      while (!isText && i < possibleContentTypes.length){
-        if (par.contentType == possibleContentTypes[i]){
+      if (!isText){
+        if (solString.startsWith(par.contentType, "application/")){
+          var subtype = par.contentType.split("/")[1];
+          if (subtypes[subtype] || additionalSubtypes[subtype]){
+            isText = true;
+          };
+        };
+      };
+      
+      if (!isText){
+        if (additionalTypes[par.contentType]){
           isText = true;
         };
-        ++i;
       };
       
       if (!isText){

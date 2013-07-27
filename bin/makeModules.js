@@ -1,4 +1,5 @@
 modulizer = require("modulize-generic-js");
+fs = require("fs");
 
 // codemirror
 
@@ -15,6 +16,7 @@ modulizer.convertFile(srcPath + "lib/codemirror.js", {
   "return": "CodeMirror"
 }, destPath + "CodeMirror.js", errFun);
 
+
 var standardConfig = {
   require: [{
     module: "codemirror/CodeMirror"
@@ -22,6 +24,10 @@ var standardConfig = {
   }]
   , "return": "CodeMirror"
 };
+
+fs.readdir(srcPath + "mode", function(err, data){
+  console.log(data);
+});
 
 modulizer.convertFile(srcPath + "mode/xml/xml.js", standardConfig, destPath + "mode/xml.js", errFun);
 modulizer.convertFile(srcPath + "mode/javascript/javascript.js", standardConfig, destPath + "mode/javascript.js", errFun);

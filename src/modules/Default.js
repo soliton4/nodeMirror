@@ -10,7 +10,9 @@ define([
   return declare([Base], {
     getContent: function(par){
       var def = new Deferred();
-      def.resolve({});
+      def.resolve({
+        download: true
+      });
       return def;
     }
     

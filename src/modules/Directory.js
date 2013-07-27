@@ -6,7 +6,7 @@ define([
   , "sol/promise"
   , "dojo/_base/array"
   , "main/nameTranslator"
-  , "main/config"
+  , "main/serverOnly!server/files"
 ], function(
   declare
   , Base
@@ -15,14 +15,8 @@ define([
   , solPromise
   , array
   , nameTranslator
-  , config
+  , files
 ){
-  var files;
-  if (config.isServer){
-    require(["server/files"], function(parFiles){
-      files = parFiles;
-    });
-  };
   
   return declare([Base], {
     getContent: function(par){

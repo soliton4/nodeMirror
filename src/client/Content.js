@@ -8,6 +8,7 @@ define([
   , "sol/fileName"
   , "./types/PromiseLand"
   , "./types/Pegjs"
+  , "./types/Download"
 ], function(
   declare
   , ContentPane
@@ -18,6 +19,7 @@ define([
   , fileName
   , PromiseLand
   , Pegjs
+  , Download
 ){
   return declare([
     ContentPane
@@ -67,6 +69,13 @@ define([
             Class = Pegjs;
           };
           this.wgt = this.ownObj(new Class({
+            content: res
+            , contentObj: this
+          }));
+          this.wgt.placeAt(this.domNode);
+          this.wgt.startup();
+        }else if(res.download){
+          this.wgt = this.ownObj(new Download({
             content: res
             , contentObj: this
           }));

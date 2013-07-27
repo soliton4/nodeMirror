@@ -6,12 +6,11 @@
     
     
 /* CodeMirror */
-@import url('../CodeMirror/lib/codemirror.css');
-@import url('../CodeMirror/addon/dialog/dialog.css');
+@import url('../codemirror/codemirror.css');
+@import url('../codemirror/addon/all.css');
           
 /* themes */
-@import url('../CodeMirror/theme/night.css');
-@import url('../CodeMirror/theme/twilight.css');
+@import url('../codemirror/theme/all.css');
 
 
 * { 

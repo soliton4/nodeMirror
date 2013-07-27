@@ -10,7 +10,11 @@ So all you need is:
 
 and you have answered the Question about which Editor to choose.  
 You will be able to edit your code from anywhere you want. if you dont like the colors you just change em. if support for a mimetype is missing you can just add it.  
-You will never again have to be frustrated about a missing feature within your IDE because you can just add it. At least if you know JavaScript.
+You will never again have to be frustrated about a missing feature within your IDE because you can just add it. At least if you know JavaScript.  
+  
+For every Content Type where a CodeMirror Mode exists, a CodeMirror instance will be opened. Also every content Type starting with text/* will be opened using CodeMirror.  
+For all other files there is a download button.
+
 
 ## Security
 
@@ -25,7 +29,7 @@ node node_modules/node-mirror/bin/nodeMirror.js --port 3000 --dir /home/sol/proj
 `
 
 `
-http://127.0.0.1:3000/index.html
+http://127.0.0.1:3000/
 `
 
 this is still early alpha. but i am using this for development so you can expect more.  

@@ -28,8 +28,8 @@ define([
   };
   
   var standardModules = [
-  //  "modules/Default"
-   "modules/Directory"
+    "modules/Default"
+  , "modules/Directory"
   , "modules/Text"
   ];
   

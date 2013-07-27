@@ -21,6 +21,7 @@ define([
     lineNumbers: false
     , mode: undefined
     , theme: "default"
+    , matchBrackets: true
   };
   
   return declare([

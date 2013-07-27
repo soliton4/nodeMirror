@@ -17,7 +17,7 @@ define([
       return parName.substr(dirnamelen);
     }
     , fileName: function(parName){
-      return config.__dirname + parName
+      return config.__dirname + parName;
     }
   });
   nameTranslator = new NameTranslator();

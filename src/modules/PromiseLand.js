@@ -5,6 +5,7 @@ define([
   , "dojo/has"
   , "sol/promise"
   , "dojo/_base/array"
+  , "main/serverOnly!server/files"
 ], function(
   declare
   , Base
@@ -12,13 +13,8 @@ define([
   , has
   , solPromise
   , array
+  , files
 ){
-  var files;
-  if (has("serverModules")){
-    require(["server/files"], function(parFiles){
-      files = parFiles;
-    });
-  };
   
   var possibleContentTypes = [
     "application/promiseLand"
