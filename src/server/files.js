@@ -101,7 +101,10 @@ define([
               def.reject(err);
               return;
             };
-          var isEmpty = stats.size === 0;
+          var isEmpty = false;
+		  if (!stats.isDirectory() && stats.size === 0){
+		    isEmpty = true;
+		  };
           if (type == "inode/x-empty"){
             isEmpty = true;
           };
@@ -130,8 +133,6 @@ define([
     , readTextDef: function(parFileName){
       var def = new Deferred();
       fs.readFile(parFileName, {encoding: "utf8"}, function(err, data){
-        console.log(parFileName);
-        console.log(data);
         def.resolve(data);
       });
       return def.promise;
