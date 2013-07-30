@@ -2,10 +2,11 @@ define([
   "dojo/_base/declare"
   , "main/_RemoteCall"
   , "dojo/Deferred"
-  , "main/config"
+  , "main/config!node-mirror"
   , "dojo/_base/array"
   , "sol/promise"
   , "dojo/_base/lang"
+  , "dojo/has"
 ], function(
   declare
   , _RemoteCall
@@ -14,10 +15,11 @@ define([
   , array
   , solPromise
   , lang
+  , has
 ){
   var nodeControl;
   var cluster;
-  if (config.isServer){
+  if (has("server-modules")){
     console.log("running on server");
     if (config.restartableObj){
       console.log("has restartable");

@@ -217,6 +217,8 @@ var standardConfig = {
   });
   
   var allThemesStr = "";
+  var allThemesJsStr = "define([], function(){ return [";
+  var allThemesJsStarted = false;
   
   var srcThemeDir = srcPath + "theme/";
   var destThemeDir = destPath + "theme/";
@@ -235,16 +237,23 @@ var standardConfig = {
       array.forEach(data, function(parFile){
         if (solString.endsWith(parFile, ".css")){
           allThemesStr += "@import url(\"" + parFile + "\");\n";
-              fs.readFile(srcThemeDir + parFile, function(err, data){
-                if (err){
-                  console.log(err);
-                  return;
-                };
-                fs.writeFile(destThemeDir + parFile, data);
-              });
+          if (allThemesJsStarted){
+            allThemesJsStr += ", ";
+          };
+          allThemesJsStr += "\"" + solString.cutEnd(parFile, 4) + "\"";
+          allThemesJsStarted = true;
+          fs.readFile(srcThemeDir + parFile, function(err, data){
+            if (err){
+              console.log(err);
+              return;
+            };
+            fs.writeFile(destThemeDir + parFile, data);
+          });
         };
       });
       fs.writeFile(destThemeDir + "all.css", allThemesStr);
+      allThemesJsStr += "]; });";
+      fs.writeFile(destThemeDir + "all.js", allThemesJsStr);
     });
   });
     

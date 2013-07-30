@@ -4,12 +4,15 @@ define([
   , "dojo/dom-construct"
   , "dojo/_base/lang"
   , "dojo/topic"
-  , "dijit/layout/BorderContainer"
   , "sol/wgt/CodeMirror"
   , "dijit/Toolbar"
   , "dijit/form/Button"
   , "main/contentIO"
-  , "dijit/MenuItem"
+  , "./Base"
+  , "codemirror/theme/all"
+  , "dijit/form/Select"
+  , "dojo/_base/array"
+  , "main/config"
   , "codemirror/mode/allModes"
   , "codemirror/addon/dialog/dialog"
   , "codemirror/addon/search/search"
@@ -21,40 +24,37 @@ define([
   , domConstruct
   , lang
   , topic
-  , BorderContainer
   , CodeMirror
   , Toolbar
   , Button
   , contentIO
-  , MenuBarItem
+  , Base
+  , allThemes
+  , Select
+  , array
+  , config
 ){
   return declare([
-    BorderContainer
+    Base
   ], {
     "class": "content text"
-    , gutters: false
-    , content: {} // will be provided
+    , savebutton: true
+    , reloadbutton: true
+    , downloadbutton: true
+    
     , buildRendering: function(){
       var ret = this.inherited(arguments);
-      this.menu = this.ownObj(new Toolbar({
-        region: "top"
-      }));
-      this.addChild(this.menu);
       
-      this.saveButton = this.ownObj(new Button({
-        iconClass: "dijitAdditionalEditorIconSave"
-        //, showLabel: false
-        , onClick: lang.hitch(this, "save")
-        , label: "save"
+      this.themeSelect = this.ownObj(new Select({
+        options: array.map(allThemes, function(theme){
+          return {
+            label: theme
+            , value: theme
+          };
+        })
+        , onChange: lang.hitch(this, "changeTheme")
       }));
-      this.menu.addChild(this.saveButton);
-      
-      this.reloadButton = this.ownObj(new Button({
-        //iconClass: "dijitAdditionalEditorIconSave"
-        onClick: lang.hitch(this, "reload")
-        , label: "reload"
-      }));
-      this.menu.addChild(this.reloadButton);
+      this.menu.addChild(this.themeSelect);
       
       this.mirror = this.ownObj(new CodeMirror({
         region: "center"
@@ -65,7 +65,16 @@ define([
         , matchBrackets: true
       }));
       this.addChild(this.mirror);
+      config.get("theme").then(lang.hitch(this, function(theme){
+        this.mirror.set("theme", theme);
+        this.themeSelect.set("value", theme);
+      }));
       return ret;
+    }
+    
+    , changeTheme: function(){
+      this.mirror.set("theme", this.themeSelect.get("value"));
+      config.set("theme", this.themeSelect.get("value"));
     }
     
     , _setContentAttr: function(parContent){
@@ -76,9 +85,6 @@ define([
       };
     }
     
-    , reload: function(){
-      this.contentObj.reload();
-    }
     
     , save: function(){
       contentIO.saveTextDef(this.content.id, this.mirror.get("value"));
@@ -89,7 +95,6 @@ define([
         return;
       };
       this.inherited(arguments);
-      
     }
   });
 });

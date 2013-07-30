@@ -3,12 +3,10 @@
 */
 define([
   "dojo/_base/declare"
-  , "main/config"
   , "dojo/Deferred"
   , "dojo/json"
 ], function(
   declare
-  , config
   , Deferred
   , json
 ){

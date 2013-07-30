@@ -4,7 +4,6 @@
 define([
   "dojo/_base/declare"
   , "dojo/Deferred"
-  , "dojo/_base/config"
   , "dojo/node!fs"
   , "dojo/_base/array"
   , "dojo/promise/all"
@@ -15,7 +14,6 @@ define([
 ], function(
   declare
   , Deferred
-  , config
   , fs
   , array
   , all
@@ -63,9 +61,7 @@ define([
     }
     , childrenDef: function(parFileName){
       var def = new Deferred();
-      console.log(parFileName);
       files.isDirDef(parFileName).then(function(){
-        console.log(parFileName);
         fs.readdir(parFileName, function(err, parFiles){
           if (err){
             def.resolve();

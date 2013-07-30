@@ -2,12 +2,13 @@ define([
   "dojo/_base/declare"
   , "main/_RemoteCall"
   , "dojo/Deferred"
-  , "main/config"
+  , "main/config!node-mirror"
   , "dojo/_base/array"
   , "sol/fileName"
   , "sol/promise"
   , "dojo/_base/lang"
   , "main/nameTranslator"
+  , "main/serverOnly!server/files"
 ], function(
   declare
   , _RemoteCall
@@ -18,13 +19,8 @@ define([
   , solPromise
   , lang
   , nameTranslator
+  , files
 ){
-  var files;
-  if (config.isServer){
-    require(["server/files"], function(parFiles){
-      files = parFiles;
-    });
-  };
   
   var treeItems;
   
@@ -32,9 +28,9 @@ define([
     _RemoteCall
   ], {
     remoteFunctions: {
-	  getRootDef: true
-	  , getChildrenDef: true
-          , getItemDef: true
+      getRootDef: true
+    , getChildrenDef: true
+    , getItemDef: true
 	}
     
     , getRootDef: function(){
@@ -42,22 +38,22 @@ define([
     }
     , getItemDef: function(parId){
       console.log(parId);
-	  var def = new Deferred();
-          var item = {
-	    id: parId
-	    , name: parId === "" ? fileName.single(config.__dirname) : fileName.single(parId)
-          };
-          files.dirsDef(nameTranslator.fileName(parId)).then(function(ar){
-            item.hasChildren = !!ar;
-            console.log("resolve:" + parId);
-            def.resolve(item);
-          });
-	  return def;
+      var def = new Deferred();
+      var item = {
+        id: parId
+      , name: parId === "" ? fileName.single(config.dir) : fileName.single(parId)
+      };
+      files.dirsDef(nameTranslator.fileName(parId)).then(function(ar){
+        item.hasChildren = !!ar;
+        console.log("resolve:" + parId);
+        def.resolve(item);
+      });
+      return def;
     }
     
     , getChildrenDef: function(parId){
       var def = new Deferred();
-      files.dirsDef(config.__dirname + parId).then(function(ar){
+      files.dirsDef(config.dir + parId).then(function(ar){
         if (!ar){
           def.resolve();
           console.log("???");
@@ -68,7 +64,6 @@ define([
         solPromise.allDone(array.map(ar, function(parFileName){
           console.log(parFileName);
           return treeItems.getItemDef(nameTranslator.reduceName(parFileName)).then(lang.hitch(resultAr, "push"));
-          return new Deferred();
         })).then(function(){
           def.resolve(resultAr);
         }, function(){ console.log("error");});

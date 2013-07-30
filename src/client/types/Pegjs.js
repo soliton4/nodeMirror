@@ -6,12 +6,10 @@ define([
   , "dojo/topic"
   , "dijit/layout/BorderContainer"
   , "sol/wgt/CodeMirror"
-  , "dijit/MenuBar"
   , "dijit/form/Button"
   , "main/contentIO"
   , "./Text"
-  , "./promiseLand/Analyzer"
-  , "dijit/MenuItem"
+  , "./pegjs/Parser"
 ], function(
   declare
   , fileName
@@ -20,12 +18,10 @@ define([
   , topic
   , BorderContainer
   , CodeMirror
-  , MenuBar
   , Button
   , contentIO
   , TypeText
-  , Analyzer
-  , MenuItem
+  , Parser
 ){
   return declare([
     TypeText
@@ -33,9 +29,7 @@ define([
     "class": "content text pegjs"
     , buildRendering: function(){
       var ret = this.inherited(arguments);
-      this.parseBtn = this.ownObj(new MenuItem({
-        //iconClass: "dijitAdditionalEditorIconSave"
-        //, showLabel: false
+      this.parseBtn = this.ownObj(new Button({
         onClick: lang.hitch(this, "parse")
         , label: "parse"
       })); 
@@ -46,10 +40,10 @@ define([
     , parse: function(){
       if (!this.parser){
         this.parser = this.ownObj(new Parser({
-          
+          parent: this
         }));
         this.addChild(this.parser);
-      }
+      };
     }
     
     , startup: function(){

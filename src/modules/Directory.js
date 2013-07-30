@@ -23,11 +23,8 @@ define([
       if (par.contentType != "inode/directory"){
         return;
       };
-      console.log(has("serverModules"));
-      console.log("serverModules");
       var def = new Deferred();
       files.childrenDef(par.fileName).then(function(ar){
-        console.log("there");
         var result = {
           children: []
         };

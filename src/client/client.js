@@ -12,7 +12,7 @@ define([
   , "client/Content"
   , "dojo/on"
   , "dojo/topic"
-  , "dijit/MenuBar"
+  , "dijit/Toolbar"
   , "dijit/form/Button"
   , "main/nodeControl"
 ], function(
@@ -29,7 +29,7 @@ define([
   , Content
   , on
   , topic
-  , MenuBar
+  , ToolBar
   , Button
   , nodeControl
 ){
@@ -81,7 +81,7 @@ define([
   mainBc.addChild(sideBar);
   
   
-  var treeMenu = new MenuBar({
+  var treeMenu = new ToolBar({
     "class": "treeMenu"
     , "region": "top"
   });

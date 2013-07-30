@@ -8,13 +8,11 @@ define([
   , "dojo/_base/lang"
   , "dojo/topic"
   , "dijit/layout/BorderContainer"
-  , "dijit/MenuBar"
   , "dijit/form/Button"
   , "dijit/Dialog"
   , "dijit/form/TextBox"
   , "main/contentIO"
-  , "dijit/MenuItem"
-  , "dijit/MenuBarItem"
+  , "./Base"
 ], function(
   declare
   , Grid
@@ -25,13 +23,11 @@ define([
   , lang
   , topic
   , BorderContainer
-  , MenuBar
   , Button
   , Dialog
   , TextBox
   , contentIO
-  , MenuItem
-  , MenuBarItem
+  , Base
 ){
   var DirGrid = declare([
         Grid, DijitRegistry, Selection
@@ -107,22 +103,18 @@ define([
   });
   
   return declare([
-    BorderContainer
+    Base
   ], {
     "class": "content dir"
     , gutters: false
     , content: {} // will be provided
+    , downloadbutton: true
+    , reloadbutton: true
     
     , buildRendering: function(){
       var ret = this.inherited(arguments);
-      this.menu = this.ownObj(new MenuBar({
-        "class": "contentMenu zeroBorder"
-        , gutters: false
-        , region: "top"
-      }));
-      this.addChild(this.menu);
       
-      this.newDirButton = this.ownObj(new MenuBarItem({
+      this.newDirButton = this.ownObj(new Button({
         label: "new Directory"
         , showLabel: true
         , onClick: lang.hitch(this, "createNew", true)
@@ -130,7 +122,7 @@ define([
       }));
       this.menu.addChild(this.newDirButton);
       
-      this.newButton = this.ownObj(new MenuBarItem({
+      this.newButton = this.ownObj(new Button({
         label: "new File"
         , showLabel: true
         , onClick: lang.hitch(this, "createNew", false)
@@ -145,6 +137,7 @@ define([
       this.addChild(this.grid);
       return ret;
     }
+    
     , createNew: function(parDir){
       var dlg = new NewDlg({
         newDir: parDir

@@ -12,5 +12,11 @@ define([], function(){
       };
       return false;
     }
+    , cutEnd: function(parStr, parLen){
+      return parStr.substr(0, parStr.length - parLen);
+    }
+    , cutStart: function(parStr, parLen){
+      return parStr.substr(parLen);
+    }
   };
 });

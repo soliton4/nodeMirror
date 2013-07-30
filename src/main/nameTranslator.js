@@ -1,14 +1,16 @@
 define([
   "dojo/_base/declare"
   , "main/config"
+  , "dojo/has"
 ], function(
   declare
   , config
+  , has
 ){
   var nameTranslator;
   var dirnamelen = 0;
-  if (config.isServer){
-    dirnamelen = config.__dirname.length;
+  if (has("server-modules")){
+    dirnamelen = config.dir.length;
   };
   
   var NameTranslator = declare("NameTranslator", [
@@ -17,7 +19,7 @@ define([
       return parName.substr(dirnamelen);
     }
     , fileName: function(parName){
-      return config.__dirname + parName;
+      return config.dir + parName;
     }
   });
   nameTranslator = new NameTranslator();

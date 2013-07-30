@@ -53,8 +53,9 @@ define([
     , buildRendering: function(){
       this.inherited(arguments);
       this.mirror = new CodeMirror(this.domNode);
-      this.mirror.setValue(this.value);
-      //this.mirror.setOption("mode", this.mode);
+      if (this.value){
+        this.mirror.setValue(this.value);
+      };
       this.widgets = [];
     }
     

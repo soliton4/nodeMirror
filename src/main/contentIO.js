@@ -2,32 +2,26 @@ define([
   "dojo/_base/declare"
   , "main/_RemoteCall"
   , "dojo/Deferred"
-  , "main/config"
   , "dojo/_base/array"
   , "sol/fileName"
   , "sol/promise"
   , "dojo/_base/lang"
   , "main/nameTranslator"
   , "main/modules"
+  , "main/serverOnly!server/files"
 ], function(
   declare
   , _RemoteCall
   , Deferred
-  , config
   , array
   , fileName
   , solPromise
   , lang
   , nameTranslator
   , modules
+  , files
 ){
   var contentIO;
-  var files;
-  if (config.isServer){
-    require(["server/files"], function(parFiles){
-      files = parFiles;
-    });
-  };
   
   var ContentIO = declare("ContentIO", [
     _RemoteCall

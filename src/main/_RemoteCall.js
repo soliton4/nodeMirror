@@ -3,12 +3,12 @@
 */
 define([
   "dojo/_base/declare"
-  , "main/config"
+  , "dojo/has"
   , "main/remoteCaller"
   , "dojo/_base/lang"
 ], function(
   declare
-  , config
+  , has
   , remoteCaller
   , lang
 ){
@@ -17,7 +17,7 @@ define([
   ], {
     constructor: function(par){
       remoteCaller.add(this);
-      if (config.isServer){
+      if (has("server-modules")){
         // nothing to do
 		return;
       };

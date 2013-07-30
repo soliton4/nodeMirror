@@ -11,10 +11,7 @@ define([
     Tree
   ], {
     constructor: function(){
-	  this.model = new Model();
-	}
-    , postMixinProperties: function(){
-	  alert("hi");
+      this.model = new Model();
 	}
   });
 });
