@@ -40,6 +40,8 @@ define([
       var def = new Deferred();
       var name = nameTranslator.fileName(parName);
       files.contentTypeDef(name).then(function(parType){
+      console.log("contenttype:" + name);
+	    console.log(parType);
         modules.getContent({
           id: parName
           , fileName: name
