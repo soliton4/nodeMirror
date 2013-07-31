@@ -16,6 +16,7 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
 CodeMirror.defineMode("xml", function(config, parserConfig) {
   var indentUnit = config.indentUnit;
   var multilineTagIndentFactor = parserConfig.multilineTagIndentFactor || 1;
+  var multilineTagIndentPastTag = parserConfig.multilineTagIndentPastTag || true;
 
   var Kludges = parserConfig.htmlMode ? {
     autoSelfClosers: {'area': true, 'base': true, 'br': true, 'col': true, 'command': true,
@@ -126,6 +127,7 @@ CodeMirror.defineMode("xml", function(config, parserConfig) {
       return "error";
     } else if (/[\'\"]/.test(ch)) {
       state.tokenize = inAttribute(ch);
+      state.stringStartCol = stream.column();
       return state.tokenize(stream, state);
     } else {
       stream.eatWhile(/[^\s\u00a0=<>\"\']/);
@@ -134,7 +136,7 @@ CodeMirror.defineMode("xml", function(config, parserConfig) {
   }
 
   function inAttribute(quote) {
-    return function(stream, state) {
+    var closure = function(stream, state) {
       while (!stream.eol()) {
         if (stream.next() == quote) {
           state.tokenize = inTag;
@@ -143,6 +145,8 @@ CodeMirror.defineMode("xml", function(config, parserConfig) {
       }
       return "string";
     };
+    closure.isInAttribute = true;
+    return closure;
   }
 
   function inBlock(style, terminator) {
@@ -314,10 +318,20 @@ CodeMirror.defineMode("xml", function(config, parserConfig) {
 
     indent: function(state, textAfter, fullLine) {
       var context = state.context;
+      // Indent multi-line strings (e.g. css).
+      if (state.tokenize.isInAttribute) {
+        return state.stringStartCol + 1;
+      }
       if ((state.tokenize != inTag && state.tokenize != inText) ||
           context && context.noIndent)
         return fullLine ? fullLine.match(/^(\s*)/)[0].length : 0;
-      if (state.tagName) return state.tagStart + indentUnit * multilineTagIndentFactor;
+      // Indent the starts of attribute names.
+      if (state.tagName) {
+        if (multilineTagIndentPastTag)
+          return state.tagStart + state.tagName.length + 2;
+        else
+          return state.tagStart + indentUnit * multilineTagIndentFactor;
+      }
       if (alignCDATA && /<!\[CDATA\[/.test(textAfter)) return 0;
       if (context && /^<\//.test(textAfter))
         context = context.prev;

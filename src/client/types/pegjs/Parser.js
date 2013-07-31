@@ -3,11 +3,15 @@ define([
   , "dijit/layout/BorderContainer"
   , "sol/wgt/CodeMirror"
   , "sol/wgt/ObjectInspector"
+  , "peg/Peg"
+  , "dojo/_base/lang"
 ], function(
   declare
   , BorderContainer
   , CodeMirror
   , ObjectInspector
+  , Peg
+  , lang
 ){
   return declare([BorderContainer], {
     "class": "pegjs parser"
@@ -22,18 +26,36 @@ define([
         , splitter: true
       }));
       this.addChild(this.mirror);
+      this.mirror.on("change", lang.hitch(this, function(){
+        if (this._started){
+          this.parse();
+        };
+      }));
       
       this.inspector = this.ownObj(new ObjectInspector({
         "class": "pegjs output"
         , region: "center"
-        , value: {
-          bla1: 1
-          , bla2: "s"
-        }
+        , value: undefined
       }));
       this.inspector.region = "center";
-      debugger;
       this.addChild(this.inspector);
+    }
+    , parse: function(){
+      if (!this.parserCode){
+        this.parserCode = this.parent.mirror.get("value");
+        this.parser = Peg.buildParser(this.parserCode);
+      };
+      
+      try{
+        var parsed = this.parser.parse(this.mirror.get("value"));
+        this.inspector.set("value", parsed);
+      }catch(e){
+        this.inspector.set("value", e);
+      }
+    }
+    , parserCodeChanged: function(){
+      this.parserCode = this.parent.mirror.get("value");
+      this.parser = Peg.buildParser(this.parserCode);
     }
   });
 });

@@ -1,11 +1,11 @@
 {
   "name": "node-mirror",
-  "version": "0.0.13",
+  "version": "0.0.17",
   "author": {
     "name": "Matthias Behrens",
     "email": "matthias.behrens@gmail.com"
   },
-  "description": "node.js + CodeMirror = Great WebDeveloper IDE",
+  "description": "node.js + CodeMirror = Great Developer IDE",
   "main": "./lib/nodemirror.js"
   , "dependencies" : {
     "restartable"   :  "*",
@@ -15,8 +15,8 @@
     "socket.io": "*",
     "jshint": "*",
     "uglify-js": "*",
-    "optimist": "*",
     "easy-zip": "*",
+    "optimist": "*",
     "runtime-configuration": "*"
   },  
   "keywords": [

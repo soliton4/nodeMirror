@@ -30,15 +30,33 @@ define([
     , postMixInProperties: function(){
       this.inherited(arguments);
       this.title = fileName.single(this.item.name || this.item.id);
+      this.originalTitle = this.title;
     }
     , startup: function(){
       if (this._started) { return; };
       this.inherited(arguments);
       this.load();
+      this.on("close", lang.hitch(this, "_onClose"));
     }
     
     , reload: function(){
       this.load();
+    }
+    
+    , _setDirtyAttr: function(parDirty){
+      this._set("dirty", parDirty);
+      if (this.dirty){
+        this.set("title", this.originalTitle + " *");
+      }else{
+        this.set("title", this.originalTitle);
+      };
+    }
+    
+    , _onClose: function(){
+      if (this.wgt && this.wgt.onClose){
+        return this.wgt.onClose();
+      };
+      return true;
     }
     
     , load: function(){
@@ -47,11 +65,13 @@ define([
           if (this.wgt){
             this.wgt.set("content", res);
           };
+          this.set("dirty", false);
           return;
         };
         if (this.wgt){
           this.wgt.destroy();
         };
+        this.set("dirty", false);
         this.contentType = res.contentType;
         if (res.contentType == "inode/directory"){
           this.wgt = this.ownObj(new Directory({

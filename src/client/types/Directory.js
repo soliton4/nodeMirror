@@ -10,7 +10,7 @@ define([
   , "dijit/layout/BorderContainer"
   , "dijit/form/Button"
   , "dijit/Dialog"
-  , "dijit/form/TextBox"
+  , "sol/wgt/TextBox"
   , "main/contentIO"
   , "./Base"
 ], function(
@@ -77,20 +77,24 @@ define([
     }
     , buildRendering: function(){
       this.inherited(arguments);
+      
+      var okFun = lang.hitch(this, function(){
+        contentIO.createFileDef(this.contentDirObj.content.id, this.nameBox.get("value"), this.newDir).then(lang.hitch(this, function(parItem){
+          topic.publish("client/openid", {
+            item: parItem
+            , insteadOf: this.contentObj
+          });
+        }));
+        this.destroy();
+      });
+      
       this.nameBox = this.ownObj(new TextBox({
+        onEnterPressed: okFun
       }));
       this.nameBox.placeAt(this.containerNode);
       this.okBtn = this.ownObj(new Button({
         label: "ok"
-        , onClick: lang.hitch(this, function(){
-          contentIO.createFileDef(this.contentDirObj.content.id, this.nameBox.get("value"), this.newDir).then(lang.hitch(this, function(parItem){
-            topic.publish("client/openid", {
-              item: parItem
-              , insteadOf: this.contentObj
-            });
-          }));
-          this.destroy();
-        })
+        , onClick: okFun
       }));
       this.okBtn.placeAt(this.containerNode);
     }

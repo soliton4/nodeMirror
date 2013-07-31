@@ -8,6 +8,7 @@ define([
   , "dijit/form/Button"
   , "main/contentIO"
   , "dojo/io/iframe"
+  , "sol/dlg/YesNoCancel"
 ], function(
   declare
   , fileName
@@ -18,6 +19,7 @@ define([
   , Button
   , contentIO
   , iframe
+  , YesNoCancel
 ){
   return declare([
     BorderContainer
@@ -67,6 +69,37 @@ define([
     }
     
     , save: function(){
+    }
+    
+    , onClose: function(){
+      if (!this.savebutton
+        || !this.contentObj.get("dirty")
+        || this._closeAnyway){
+        return true;
+      };
+      var dlg = new YesNoCancel({
+        title: "Save Changes?"
+        , content: "Save Changes to " + this.contentObj.originalTitle + "?"
+      });
+      dlg.show();
+      dlg.then(lang.hitch(this, function(parRes){
+        if (parRes == 1){
+          var saveDef = this.save();
+          if (saveDef && saveDef.then){
+            saveDef.then(lang.hitch(this, function(){
+              this._closeAnyway = true;
+              this.contentObj.close();
+            }));
+          }else{
+            this._closeAnyway = true;
+            this.contentObj.close();
+          };
+        }else if(parRes === 0){
+          this._closeAnyway = true;
+          this.contentObj.close();
+        };
+      }));
+      return false;
     }
     
     , download: function(){

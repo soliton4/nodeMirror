@@ -13,6 +13,8 @@ var helperDefine = function(parRequire, parFactory){
   };
 };
 helperDefine([], function(){
+// CodeMirror version 3.15
+//
 // CodeMirror is the only global var we claim
 window.CodeMirror = (function() {
   "use strict";
@@ -43,6 +45,7 @@ window.CodeMirror = (function() {
 
   var opera_version = opera && navigator.userAgent.match(/Version\/(\d*\.\d*)/);
   if (opera_version) opera_version = Number(opera_version[1]);
+  if (opera_version && opera_version >= 15) { opera = false; webkit = true; }
   // Some browsers use the wrong event properties to signal cmd/ctrl on OS X
   var flipCtrlCmd = mac && (qtwebkit || opera && (opera_version == null || opera_version < 12.11));
   var captureMiddleClick = gecko || (ie && !ie_lt9);
@@ -416,11 +419,12 @@ window.CodeMirror = (function() {
 
   // DISPLAY DRAWING
 
-  function updateDisplay(cm, changes, viewPort) {
+  function updateDisplay(cm, changes, viewPort, forced) {
     var oldFrom = cm.display.showingFrom, oldTo = cm.display.showingTo, updated;
     var visible = visibleLines(cm.display, cm.doc, viewPort);
     for (;;) {
-      if (!updateDisplayInner(cm, changes, visible)) break;
+      if (!updateDisplayInner(cm, changes, visible, forced)) break;
+      forced = false;
       updated = true;
       updateSelection(cm);
       updateScrollbars(cm);
@@ -446,7 +450,7 @@ window.CodeMirror = (function() {
   // Uses a set of changes plus the current scroll position to
   // determine which DOM updates have to be made, and makes the
   // updates.
-  function updateDisplayInner(cm, changes, visible) {
+  function updateDisplayInner(cm, changes, visible, forced) {
     var display = cm.display, doc = cm.doc;
     if (!display.wrapper.clientWidth) {
       display.showingFrom = display.showingTo = doc.first;
@@ -455,7 +459,7 @@ window.CodeMirror = (function() {
     }
 
     // Bail out if the visible area is already rendered and nothing changed.
-    if (changes.length == 0 &&
+    if (!forced && changes.length == 0 &&
         visible.from > display.showingFrom && visible.to < display.showingTo)
       return;
 
@@ -508,7 +512,7 @@ window.CodeMirror = (function() {
       if (range.from >= range.to) intact.splice(i--, 1);
       else intactLines += range.to - range.from;
     }
-    if (intactLines == to - from && from == display.showingFrom && to == display.showingTo) {
+    if (!forced && intactLines == to - from && from == display.showingFrom && to == display.showingTo) {
       updateViewOffset(cm);
       return;
     }
@@ -533,6 +537,14 @@ window.CodeMirror = (function() {
     }
     display.showingFrom = from; display.showingTo = to;
 
+    updateHeightsInViewport(cm);
+    updateViewOffset(cm);
+
+    return true;
+  }
+
+  function updateHeightsInViewport(cm) {
+    var display = cm.display;
     var prevBottom = display.lineDiv.offsetTop;
     for (var node = display.lineDiv.firstChild, height; node; node = node.nextSibling) if (node.lineObj) {
       if (ie_lt8) {
@@ -552,9 +564,6 @@ window.CodeMirror = (function() {
           widgets[i].height = widgets[i].node.offsetHeight;
       }
     }
-    updateViewOffset(cm);
-
-    return true;
   }
 
   function updateViewOffset(cm) {
@@ -1022,7 +1031,7 @@ window.CodeMirror = (function() {
 
   function measureLineInner(cm, line) {
     var display = cm.display, measure = emptyArray(line.text.length);
-    var pre = lineContent(cm, line, measure);
+    var pre = lineContent(cm, line, measure, true);
 
     // IE does not cache element positions of inline elements between
     // calls to getBoundingClientRect. This makes the loop below,
@@ -1115,7 +1124,7 @@ window.CodeMirror = (function() {
     var cached = !hasBadSpan && findCachedMeasurement(cm, line);
     if (cached) return measureChar(cm, line, line.text.length, cached.measure, "right").right;
 
-    var pre = lineContent(cm, line);
+    var pre = lineContent(cm, line, null, true);
     var end = pre.appendChild(zeroWidthElement(cm.display.measure));
     removeChildrenAndAdd(cm.display.measure, pre);
     return getRect(end).right - getRect(cm.display.lineDiv).left;
@@ -1319,6 +1328,7 @@ window.CodeMirror = (function() {
       // An array of ranges of lines that have to be updated. See
       // updateDisplay.
       changes: [],
+      forceUpdate: false,
       updateInput: null,
       userSelChange: null,
       textChanged: null,
@@ -1351,8 +1361,8 @@ window.CodeMirror = (function() {
       var coords = cursorCoords(cm, doc.sel.head);
       newScrollPos = calculateScrollPos(cm, coords.left, coords.top, coords.left, coords.bottom);
     }
-    if (op.changes.length || newScrollPos && newScrollPos.scrollTop != null) {
-      updated = updateDisplay(cm, op.changes, newScrollPos && newScrollPos.scrollTop);
+    if (op.changes.length || op.forceUpdate || newScrollPos && newScrollPos.scrollTop != null) {
+      updated = updateDisplay(cm, op.changes, newScrollPos && newScrollPos.scrollTop, op.forceUpdate);
       if (cm.display.scroller.offsetHeight) cm.doc.scrollTop = cm.display.scroller.scrollTop;
     }
     if (!updated && op.selectionChanged) updateSelection(cm);
@@ -3130,14 +3140,16 @@ window.CodeMirror = (function() {
       updateScrollPos(this, sPos.scrollLeft, sPos.scrollTop);
     }),
 
-    setSize: function(width, height) {
+    setSize: operation(null, function(width, height) {
       function interpret(val) {
         return typeof val == "number" || /^\d+$/.test(String(val)) ? val + "px" : val;
       }
       if (width != null) this.display.wrapper.style.width = interpret(width);
       if (height != null) this.display.wrapper.style.height = interpret(height);
-      this.refresh();
-    },
+      if (this.options.lineWrapping)
+        this.display.measureLineCache.length = this.display.measureLineCachePos = 0;
+      this.curOp.forceUpdate = true;
+    }),
 
     operation: function(f){return runInOp(this, f);},
 
@@ -3363,6 +3375,7 @@ window.CodeMirror = (function() {
   CodeMirror.innerMode = function(mode, state) {
     while (mode.innerMode) {
       var info = mode.innerMode(state);
+      if (!info || info.mode == mode) break;
       state = info.state;
       mode = info.mode;
     }
@@ -3681,6 +3694,10 @@ window.CodeMirror = (function() {
     if (this.explicitlyCleared) return;
     var cm = this.doc.cm, withOp = cm && !cm.curOp;
     if (withOp) startOperation(cm);
+    if (hasHandler(this, "clear")) {
+      var found = this.find();
+      if (found) signalLater(this, "clear", found.from, found.to);
+    }
     var min = null, max = null;
     for (var i = 0; i < this.lines.length; ++i) {
       var line = this.lines[i];
@@ -3709,7 +3726,6 @@ window.CodeMirror = (function() {
       if (cm) reCheckSelection(cm);
     }
     if (withOp) endOperation(cm);
-    signalLater(this, "clear");
   };
 
   TextMarker.prototype.find = function() {
@@ -3737,7 +3753,9 @@ window.CodeMirror = (function() {
         if (node.offsetHeight != line.height) updateLineHeight(line, node.offsetHeight);
         break;
       }
-      runInOp(cm, function() { cm.curOp.selectionChanged = true; });
+      runInOp(cm, function() {
+        cm.curOp.selectionChanged = cm.curOp.forceUpdate = cm.curOp.updateMaxLine = true;
+      });
     }
   };
 
@@ -4256,13 +4274,14 @@ window.CodeMirror = (function() {
       (styleToClassCache[style] = "cm-" + style.replace(/ +/g, " cm-"));
   }
 
-  function lineContent(cm, realLine, measure) {
+  function lineContent(cm, realLine, measure, copyWidgets) {
     var merged, line = realLine, empty = true;
     while (merged = collapsedSpanAtStart(line))
       line = getLine(cm.doc, merged.find().from.line);
 
-    var builder = {pre: elt("pre"), col: 0, pos: 0, display: !measure,
-                   measure: null, measuredSomething: false, cm: cm};
+    var builder = {pre: elt("pre"), col: 0, pos: 0,
+                   measure: null, measuredSomething: false, cm: cm,
+                   copyWidgets: copyWidgets};
     if (line.textClass) builder.pre.className = line.textClass;
 
     do {
@@ -4386,7 +4405,7 @@ window.CodeMirror = (function() {
   function buildCollapsedSpan(builder, size, marker, ignoreWidget) {
     var widget = !ignoreWidget && marker.replacedWith;
     if (widget) {
-      if (!builder.display) widget = widget.cloneNode(true);
+      if (builder.copyWidgets) widget = widget.cloneNode(true);
       builder.pre.appendChild(widget);
       if (builder.measure) {
         if (size) {
@@ -5254,7 +5273,7 @@ window.CodeMirror = (function() {
 
   function signalDOMEvent(cm, e, override) {
     signal(cm, override || e.type, cm, e);
-    return e_defaultPrevented(e);
+    return e_defaultPrevented(e) || e.codemirrorIgnore;
   }
 
   function fireDelayed() {
@@ -5789,7 +5808,7 @@ window.CodeMirror = (function() {
 
   // THE END
 
-  CodeMirror.version = "3.14.1";
+  CodeMirror.version = "3.15.0";
 
   return CodeMirror;
 })();

@@ -339,7 +339,7 @@ CodeMirror.defineMode("python", function(conf, parserConf) {
 
             state.lastToken = style;
 
-            if (stream.eol() && stream.lambda) {
+            if (stream.eol() && state.lambda) {
                 state.lambda = false;
             }
 

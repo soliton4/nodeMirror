@@ -1,5 +1,9 @@
+@import url("3024-day.css");
+@import url("3024-night.css");
 @import url("ambiance-mobile.css");
 @import url("ambiance.css");
+@import url("base16-dark.css");
+@import url("base16-light.css");
 @import url("blackboard.css");
 @import url("cobalt.css");
 @import url("eclipse.css");
@@ -12,6 +16,7 @@
 @import url("night.css");
 @import url("rubyblue.css");
 @import url("solarized.css");
+@import url("tomorrow-night-eighties.css");
 @import url("twilight.css");
 @import url("vibrant-ink.css");
 @import url("xq-dark.css");

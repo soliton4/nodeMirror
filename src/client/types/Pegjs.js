@@ -43,7 +43,11 @@ define([
           parent: this
         }));
         this.addChild(this.parser);
+        this.mirror.on("change", lang.hitch(this, function(){
+          this.parser.parserCodeChanged();
+        }));
       };
+      this.parser.parse();
     }
     
     , startup: function(){

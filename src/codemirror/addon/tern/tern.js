@@ -137,15 +137,15 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
   }
 
   function findDoc(ts, doc, name) {
-    for (var name in ts.docs) {
-      var cur = ts.docs[name];
+    for (var n in ts.docs) {
+      var cur = ts.docs[n];
       if (cur.doc == doc) return cur;
     }
     if (!name) for (var i = 0;; ++i) {
-      var n = "[doc" + (i || "") + "]";
+      n = "[doc" + (i || "") + "]";
       if (!ts.docs[n]) { name = n; break; }
     }
-    return ts.addDoc(n, doc);
+    return ts.addDoc(name, doc);
   }
 
   function trackChange(ts, doc, change) {
@@ -178,7 +178,7 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
   // Completion
 
   function hint(ts, cm, c) {
-    ts.request(cm, {type: "completions", types: true, docs: true}, function(error, data) {
+    ts.request(cm, {type: "completions", types: true, docs: true, urls: true}, function(error, data) {
       if (error) return showError(ts, cm, error);
       var completions = [], after = "";
       var from = data.start, to = data.end;
@@ -198,6 +198,7 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
       var obj = {from: from, to: to, list: completions};
       var tooltip = null;
       CodeMirror.on(obj, "close", function() { remove(tooltip); });
+      CodeMirror.on(obj, "update", function() { remove(tooltip); });
       CodeMirror.on(obj, "select", function(cur, node) {
         remove(tooltip);
         var content = ts.options.completionTip ? ts.options.completionTip(cur.data) : cur.data.doc;

@@ -42,10 +42,10 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
   Completion.prototype = {
     close: function() {
       if (!this.active()) return;
+      this.cm.state.completionActive = null;
 
       if (this.widget) this.widget.close();
       if (this.onClose) this.onClose();
-      this.cm.state.completionActive = null;
       CodeMirror.signal(this.cm, "endCompletion", this.cm);
     },
 
@@ -91,12 +91,14 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
 
       function update() {
         if (isDone()) return;
+        CodeMirror.signal(data, "update");
         if (completion.options.async)
           completion.getHints(completion.cm, finishUpdate, completion.options);
         else
           finishUpdate(completion.getHints(completion.cm, completion.options));
       }
-      function finishUpdate(data) {
+      function finishUpdate(data_) {
+        data = data_;
         if (isDone()) return;
         if (!data || !data.list.length) return done();
         completion.widget.close();

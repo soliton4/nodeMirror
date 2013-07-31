@@ -65,6 +65,11 @@ define([
         , matchBrackets: true
       }));
       this.addChild(this.mirror);
+      this.mirror.on("change", lang.hitch(this, function(){
+        if (this._started){
+          this.contentObj.set("dirty", true);
+        };
+      }));
       config.get("theme").then(lang.hitch(this, function(theme){
         this.mirror.set("theme", theme);
         this.themeSelect.set("value", theme);
@@ -87,7 +92,11 @@ define([
     
     
     , save: function(){
-      contentIO.saveTextDef(this.content.id, this.mirror.get("value"));
+      var def = contentIO.saveTextDef(this.content.id, this.mirror.get("value"));
+      def.then(lang.hitch(this, function(){
+          this.contentObj.set("dirty", false);
+      }));
+      return def;
     }
     
     , startup: function(){

@@ -54,6 +54,10 @@ define([
       , removeMe: function(){
         delete openIds[parItem.id];
       }
+      , close: function(){
+        tabs.removeChild(this);
+        delete openIds[parItem.id];
+      }
     });
     tabs.addChild(openIds[parItem.id]);
     tabs.selectChild(openIds[parItem.id]);

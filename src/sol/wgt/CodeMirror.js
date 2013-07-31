@@ -59,6 +59,10 @@ define([
       this.widgets = [];
     }
     
+    , on: function(parWhat, parFun){
+      this.mirror.on(parWhat, parFun);
+    }
+    
     , updateHints: function() {
       if (!JSHINT){
         return;
