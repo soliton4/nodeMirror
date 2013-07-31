@@ -9,6 +9,7 @@ define([
   , "./types/PromiseLand"
   , "./types/Pegjs"
   , "./types/Download"
+  , "./types/Html"
 ], function(
   declare
   , ContentPane
@@ -20,6 +21,7 @@ define([
   , PromiseLand
   , Pegjs
   , Download
+  , Html
 ){
   return declare([
     ContentPane
@@ -87,6 +89,9 @@ define([
           };
           if (res.contentType == "application/peg.js"){
             Class = Pegjs;
+          };
+          if (res.contentType == "text/html"){
+            Class = Html;
           };
           this.wgt = this.ownObj(new Class({
             content: res

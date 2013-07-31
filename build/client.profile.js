@@ -1,7 +1,7 @@
 var profile = (function(){
     return {
         basePath: "../src",
-        releaseDir: "./release",
+        releaseDir: "../release",
         releaseName: "client",
         action: "release",
         layerOptimize: "closure",

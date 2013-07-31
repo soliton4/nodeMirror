@@ -16,6 +16,9 @@ For every Content Type where a CodeMirror Mode exists, a CodeMirror instance wil
 For all other files there is a download button.
 
 features:  
+ - view / edit all content/types supported by CodeMirror.net
+ - view / edit all text files
+ - html tester / analyzeer  
  - integrated pegjs parser debugger  
  
 
@@ -27,12 +30,12 @@ make sure the port you are running node-mirror on is not open for public access.
 ## Usage
 
 `
-npm install node-mirror
-node node_modules/node-mirror/bin/nodeMirror.js --port 3000 --dir /home/sol/projects
+npm install node-mirror  
+node node_modules/node-mirror/bin/nodeMirror.js --port 3000 --dir /home/sol/projects  
 `
 
 `
-http://127.0.0.1:3000/
+http://127.0.0.1:3000/  
 `
 
 this is still beta. but i am using this for development so you can expect more.  
@@ -40,6 +43,7 @@ this is still beta. but i am using this for development so you can expect more.
 the npm distribution is a release build  
 
 check out my git page to get the development version which you can use to customize node-mirror  
+there is a build script that lets you build your own node-mirror  
 
 ## License
 

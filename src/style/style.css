@@ -14,6 +14,9 @@
 
 @import url('pegjs.css');
 
+@import url('../client/types/html/style.css');
+
+
 * { 
   outline: none; 
 }
