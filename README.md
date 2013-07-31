@@ -31,6 +31,8 @@ make sure the port you are running node-mirror on is not open for public access.
 
 `
 npm install node-mirror  
+`
+`
 node node_modules/node-mirror/bin/nodeMirror.js --port 3000 --dir /home/sol/projects  
 `
 
