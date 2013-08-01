@@ -1,0 +1,186 @@
+#!/usr/bin/env node
+
+var util = require("util");
+var fs   = require("fs");
+var PEG  = require("../lib/peg");
+
+[
+  "benchmarks.js",
+  "runner.js",
+].forEach(function(file) {
+  eval(fs.readFileSync(__dirname + "/" + file, "utf8"));
+});
+
+/* Results Table Manipulation */
+
+function dup(text, count) {
+  var result = "";
+  for (var i = 1; i <= count; i++) {
+    result += text;
+  }
+  return result;
+}
+
+function padLeft(text, length) {
+  return dup(" ", length - text.length) + text;
+}
+
+function padRight(text, length) {
+  return text + dup(" ", length - text.length);
+}
+
+function center(text, length) {
+  var padLength = (length - text.length) / 2;
+  return dup(" ", Math.floor(padLength))
+    + text
+    + dup(" ", Math.ceil(padLength));
+}
+
+function writeTableHeader() {
+  util.puts("┌─────────────────────────────────────┬───────────┬────────────┬──────────────┐");
+  util.puts("│                Test                 │ Inp. size │ Avg. time  │  Avg. speed  │");
+}
+
+function writeHeading(heading) {
+  util.puts("├─────────────────────────────────────┴───────────┴────────────┴──────────────┤");
+  util.puts("│ " + center(heading, 75) + " │");
+  util.puts("├─────────────────────────────────────┬───────────┬────────────┬──────────────┤");
+}
+
+function writeResult(title, inputSize, parseTime) {
+  var KB      = 1024;
+  var MS_IN_S = 1000;
+
+  util.puts("│ "
+    + padRight(title, 35)
+    + " │ "
+    + padLeft((inputSize / KB).toFixed(2), 6)
+    + " kB │ "
+    + padLeft(parseTime.toFixed(2), 7)
+    + " ms │ "
+    + padLeft(((inputSize / KB) / (parseTime / MS_IN_S)).toFixed(2), 7)
+    + " kB/s │"
+  );
+}
+
+function writeSeparator() {
+  util.puts("├─────────────────────────────────────┼───────────┼────────────┼──────────────┤");
+}
+
+function writeTableFooter() {
+  util.puts("└─────────────────────────────────────┴───────────┴────────────┴──────────────┘");
+}
+
+/* Helpers */
+
+function printHelp() {
+  util.puts("Usage: run [options]");
+  util.puts("");
+  util.puts("Runs PEG.js benchmark suite.");
+  util.puts("");
+  util.puts("Options:");
+  util.puts("  -n, --run-count <n>          number of runs (default: 10)");
+  util.puts("      --cache                  make tested parsers cache results");
+  util.puts("      --track-line-and-column  make tested parsers track line and column");
+}
+
+function exitSuccess() {
+  process.exit(0);
+}
+
+function exitFailure() {
+  process.exit(1);
+}
+
+function abort(message) {
+  util.error(message);
+  exitFailure();
+}
+
+/* Arguments */
+
+var args = process.argv.slice(2); // Trim "node" and the script path.
+
+function isOption(arg) {
+  return /^-/.test(arg);
+}
+
+function nextArg() {
+  args.shift();
+}
+
+/* Main */
+
+var runCount = 10;
+var options = { trackLineAndColumn: false };
+
+while (args.length > 0 && isOption(args[0])) {
+  switch (args[0]) {
+    case "-n":
+    case "--run-count":
+      nextArg();
+      if (args.length === 0) {
+        abort("Missing parameter of the -n/--run-count option.");
+      }
+      var runCount = parseInt(args[0]);
+      if (isNaN(runCount) || runCount <= 0) {
+        abort("Number of runs must be a positive integer.");
+      }
+      break;
+
+    case "--cache":
+      options.cache = true;
+      break;
+
+    case "--track-line-and-column":
+      options.trackLineAndColumn = true;
+      break;
+
+    case "-h":
+    case "--help":
+      printHelp();
+      exitSuccess();
+      break;
+
+    default:
+      abort("Unknown option: " + args[0] + ".");
+  }
+  nextArg();
+}
+
+if (args.length > 0) {
+  abort("No arguments are allowed.");
+}
+
+Runner.run(benchmarks, runCount, options, {
+  readFile: function(file) {
+    return fs.readFileSync(__dirname + "/" + file, "utf8");
+  },
+
+  testStart: function(benchmark, test) {
+    /* Nothing to do. */
+  },
+
+  testFinish: function(benchmark, test, inputSize, parseTime) {
+    writeResult(test.title, inputSize, parseTime);
+  },
+
+  benchmarkStart: function(benchmark) {
+    writeHeading(benchmark.title);
+  },
+
+  benchmarkFinish: function(benchmark, inputSize, parseTime) {
+    writeSeparator();
+    writeResult(benchmark.title + " total", inputSize, parseTime);
+  },
+
+  start: function() {
+    writeTableHeader();
+  },
+
+  finish: function(inputSize, parseTime) {
+    writeSeparator();
+    writeResult("Total", inputSize, parseTime);
+    writeTableFooter();
+  },
+});
