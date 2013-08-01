@@ -62,8 +62,10 @@ define([
     }
     
     , load: function(){
-      contentIO.getContentDef(this.item.id).then(lang.hitch(this, function(res){
-        if (this.contentType == res.contentType){
+      contentIO.getContentDef(this.item.id, {
+        forceText: this.forceText
+      }).then(lang.hitch(this, function(res){
+        if (this.contentType == res.contentType && !this.forceText){
           if (this.wgt){
             this.wgt.set("content", res);
           };
@@ -82,7 +84,7 @@ define([
           }));
           this.wgt.placeAt(this.domNode);
           this.wgt.startup();
-        }else if(res.isText){
+        }else if(res.isText || this.forceText){
           var Class = Text;
           if (res.contentType == "application/promiseLand"){
             Class = PromiseLand;

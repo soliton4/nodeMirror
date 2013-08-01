@@ -36,16 +36,17 @@ define([
       
     }*/
     
-    , getContentDef: function(parName){
+    , getContentDef: function(parName, par){
       var def = new Deferred();
       var name = nameTranslator.fileName(parName);
       files.contentTypeDef(name).then(function(parType){
       console.log("contenttype:" + name);
-	    console.log(parType);
+      console.log(parType);
         modules.getContent({
           id: parName
           , fileName: name
           , contentType: parType
+          , extra: par
         }).then(function(result){
           def.resolve(lang.mixin({
             id: parName

@@ -61,10 +61,23 @@ define([
         this.menu.addChild(this._buttons.downLoadButton);
       };
       
+      if (this.textmodebutton){
+        this._buttons.textmodebutton = this.ownObj(new Button({
+          onClick: lang.hitch(this, "textmode")
+          , label: "Text-Editor"
+        }));
+        this.menu.addChild(this._buttons.textmodebutton);
+      };
+      
       return ret;
     }
     
     , reload: function(){
+      this.contentObj.reload();
+    }
+    
+    , textmode: function(){
+      this.contentObj.forceText = true;
       this.contentObj.reload();
     }
     

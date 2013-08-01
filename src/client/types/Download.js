@@ -9,7 +9,7 @@ define([
   , "dijit/Toolbar"
   , "dijit/form/Button"
   , "main/contentIO"
-  , "dojo/io/iframe"
+  , "./Base"
 ], function(
   declare
   , fileName
@@ -21,51 +21,15 @@ define([
   , Toolbar
   , Button
   , contentIO
-  , iframe
+  , Base
 ){
   return declare([
-    BorderContainer
+    Base
   ], {
-    "class": "content text"
-    , gutters: false
-    , content: {} // will be provided
-    , buildRendering: function(){
-      var ret = this.inherited(arguments);
-      this.menu = this.ownObj(new Toolbar({
-        region: "top"
-      }));
-      this.addChild(this.menu);
-      
-      this.downLoadButton = this.ownObj(new Button({
-        onClick: lang.hitch(this, "download")
-        , label: "download"
-      }));
-      this.menu.addChild(this.downLoadButton);
-      
-      return ret;
-    }
+    "class": "content download"
     
-    , _setContentAttr: function(parContent){
-      this._set("content", parContent);
-    }
+    , downloadbutton: true
+    , textmodebutton: true
     
-    , download: function(){
-      //var iframeInstance = new iframe();
-      iframe.send({
-        url: "/download",
-        handleAs: "html",
-        content: {
-          id: this.content.id
-        }
-      });
-    }
-    
-    , startup: function(){
-      if (this._started){
-        return;
-      };
-      this.inherited(arguments);
-      
-    }
   });
 });

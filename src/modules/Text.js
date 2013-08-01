@@ -52,6 +52,10 @@ define([
         };
       };
       
+      if (par.extra && par.extra.forceText){
+        isText = true;
+      };
+      
       if (!isText){
         return;
       };
