@@ -10,3 +10,6 @@
 [submodule "src/util"]
 	path = src/util
 	url = https://github.com/dojo/util.git
+[submodule "generic-js/CodeMirror"]
+	path = generic-js/CodeMirror
+	url = https://github.com/marijnh/CodeMirror
