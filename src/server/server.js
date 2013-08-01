@@ -13,6 +13,7 @@ define([
   , has
   , fs
 ){
+  // first add our server-modules flag so we can use same source files for server and client
   has.add("server-modules", function(){
     return true; 
   }, true);
@@ -38,13 +39,19 @@ define([
     , easyZip
     , nodeMirrorConfig
   ){
-    console.log(nodeMirrorConfig);
+    //console.log(nodeMirrorConfig);
+    
     
     EasyZip = easyZip.EasyZip;
     
     var mirror = express();
     
     var server = http.createServer(mirror);
+    
+    if (nodeMirrorConfig.username){
+      mirror.use(express.basicAuth(nodeMirrorConfig.username, nodeMirrorConfig.password));
+    };
+    
     
     mirror.use(express.bodyParser());
     

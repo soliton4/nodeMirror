@@ -203,17 +203,24 @@ NumericLiteral "number"
     }
 
 DecimalLiteral
-  = parts:$(DecimalIntegerLiteral "." DecimalDigits? ExponentPart?) {
-      return parseFloat(parts);
+  = before:DecimalIntegerLiteral
+    "."
+    after:DecimalDigits?
+    exponent:ExponentPart? {
+      return parseFloat(before + "." + after + exponent);
     }
-  / parts:$("." DecimalDigits ExponentPart?)     { return parseFloat(parts); }
-  / parts:$(DecimalIntegerLiteral ExponentPart?) { return parseFloat(parts); }
+  / "." after:DecimalDigits exponent:ExponentPart? {
+      return parseFloat("." + after + exponent);
+    }
+  / before:DecimalIntegerLiteral exponent:ExponentPart? {
+      return parseFloat(before + exponent);
+    }
 
 DecimalIntegerLiteral
-  = "0" / NonZeroDigit DecimalDigits?
+  = "0" / digit:NonZeroDigit digits:DecimalDigits? { return digit + digits; }
 
 DecimalDigits
-  = DecimalDigit+
+  = digits:DecimalDigit+ { return digits.join(""); }
 
 DecimalDigit
   = [0-9]
@@ -222,16 +229,18 @@ NonZeroDigit
   = [1-9]
 
 ExponentPart
-  = ExponentIndicator SignedInteger
+  = indicator:ExponentIndicator integer:SignedInteger {
+      return indicator + integer;
+    }
 
 ExponentIndicator
   = [eE]
 
 SignedInteger
-  = [-+]? DecimalDigits
+  = sign:[-+]? digits:DecimalDigits { return sign + digits; }
 
 HexIntegerLiteral
-  = "0" [xX] digits:$HexDigit+ { return parseInt("0x" + digits); }
+  = "0" [xX] digits:HexDigit+ { return parseInt("0x" + digits.join("")); }
 
 HexDigit
   = [0-9a-fA-F]
@@ -291,13 +300,13 @@ EscapeCharacter
   / "u"
 
 HexEscapeSequence
-  = "x" digits:$(HexDigit HexDigit) {
-      return String.fromCharCode(parseInt("0x" + digits));
+  = "x" h1:HexDigit h2:HexDigit {
+      return String.fromCharCode(parseInt("0x" + h1 + h2));
     }
 
 UnicodeEscapeSequence
-  = "u" digits:$(HexDigit HexDigit HexDigit HexDigit) {
-      return String.fromCharCode(parseInt("0x" + digits));
+  = "u" h1:HexDigit h2:HexDigit h3:HexDigit h4:HexDigit {
+      return String.fromCharCode(parseInt("0x" + h1 + h2 + h3 + h4));
     }
 
 RegularExpressionLiteral "regular expression"
@@ -553,11 +562,11 @@ MemberExpression
   = base:(
         PrimaryExpression
       / FunctionExpression
-      / NewToken __ constructor:MemberExpression __ args:Arguments {
+      / NewToken __ constructor:MemberExpression __ arguments:Arguments {
           return {
             type:        "NewOperator",
             constructor: constructor,
-            arguments:   args
+            arguments:   arguments
           };
         }
     )
@@ -588,19 +597,19 @@ NewExpression
 
 CallExpression
   = base:(
-      name:MemberExpression __ args:Arguments {
+      name:MemberExpression __ arguments:Arguments {
         return {
           type:      "FunctionCall",
           name:      name,
-          arguments: args
+          arguments: arguments
         };
       }
     )
     argumentsOrAccessors:(
-        __ args:Arguments {
+        __ arguments:Arguments {
           return {
             type:      "FunctionCallArguments",
-            arguments: args
+            arguments: arguments
           };
         }
       / __ "[" __ name:Expression __ "]" {
@@ -643,8 +652,8 @@ CallExpression
     }
 
 Arguments
-  = "(" __ args:ArgumentList? __ ")" {
-    return args !== "" ? args : [];
+  = "(" __ arguments:ArgumentList? __ ")" {
+    return arguments !== "" ? arguments : [];
   }
 
 ArgumentList
@@ -1164,20 +1173,20 @@ VariableDeclarationListNoIn
     }
 
 VariableDeclaration
-  = name:Identifier value:(__ Initialiser)? {
+  = name:Identifier __ value:Initialiser? {
       return {
         type:  "VariableDeclaration",
         name:  name,
-        value: value !== "" ? value[1] : null
+        value: value !== "" ? value : null
       };
     }
 
 VariableDeclarationNoIn
-  = name:Identifier value:(__ InitialiserNoIn)? {
+  = name:Identifier __ value:InitialiserNoIn? {
       return {
         type:  "VariableDeclaration",
         name:  name,
-        value: value !== "" ? value[1] : null
+        value: value !== "" ? value : null
       };
     }
 
