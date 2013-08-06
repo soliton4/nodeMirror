@@ -9,6 +9,7 @@ define([
   , "main/nameTranslator"
   , "main/modules"
   , "main/serverOnly!server/files"
+  , "main/moduleLoader!server"
 ], function(
   declare
   , _RemoteCall
@@ -20,6 +21,7 @@ define([
   , nameTranslator
   , modules
   , files
+  , moduleLoader
 ){
   var contentIO;
   
@@ -28,71 +30,32 @@ define([
   ], {
     remoteFunctions: {
       getContentDef: true
-      , saveTextDef: true
-      , createFileDef: true
     }
     
-    /*, getContentTypesDef: function(parFileNameOrArray){
-      
-    }*/
-    
-    , getContentDef: function(parName, par){
+    , getContentDef: function(par){
       var def = new Deferred();
-      var name = nameTranslator.fileName(parName);
+      var rejectFun = lang.hitch(def, "reject");
+      var name = nameTranslator.fileName(par.id);
       files.contentTypeDef(name).then(function(parType){
-      console.log("contenttype:" + name);
-      console.log(parType);
-        modules.getContent({
-          id: parName
-          , fileName: name
-          , contentType: parType
-          , extra: par
-        }).then(function(result){
-          def.resolve(lang.mixin({
-            id: parName
-            , contentType: parType
-          }, result));
-        });
+        console.log(parType);
+        par.contentType = parType;
+        moduleLoader.findModulePs(par).then(function(module){
+          try{
+            module.getContentPs(par).then(function(content){
+              console.log("have content");
+              def.resolve({
+                content: content
+                , par: par
+                , moduleId: module.getModuleId()
+              });
+            }, rejectFun);
+          }catch(e){
+            console.log(e);
+            rejectFun();
+          };
+        }, rejectFun);
       });
       return def;
-    }
-    , saveTextDef: function(parId, parText){
-      var name = nameTranslator.fileName(parId);
-      return files.writeTextDef(name, parText);
-    }
-    
-    , createFileDef: function(parentIdStr, nameStr, newDir){
-      var def = new Deferred();
-      var newFileNameStr = parentIdStr + "/" + nameStr;
-      console.log(newFileNameStr);
-      if (!nameStr || !nameStr.length){
-        def.reject();
-        return;
-      };
-      
-      var name = nameTranslator.fileName(newFileNameStr);
-      
-      if (newDir){
-        files.createDirDef(name).then(lang.hitch(this, function(){
-          this.getContentDef(newFileNameStr).then(function(parContent){
-            def.resolve(parContent);
-          });
-        }), function(){
-          def.reject();
-        });
-      }else{
-        files.createFileDef(name).then(lang.hitch(this, function(){
-          console.log("created");
-          this.getContentDef(newFileNameStr).then(function(parContent){
-            def.resolve(parContent);
-          });
-        }), function(){
-          console.log("rej");
-          def.reject();
-        });
-      };
-      
-      return def.promise;
     }
     
   });

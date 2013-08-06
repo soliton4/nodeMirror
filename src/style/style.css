@@ -12,9 +12,7 @@
 /* themes */
 @import url('../codemirror/theme/all.css');
 
-@import url('pegjs.css');
-
-@import url('../client/types/html/style.css');
+@import url('../modules/style.css');
 
 
 * { 

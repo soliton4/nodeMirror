@@ -1,6 +1,6 @@
 {
   "name": "node-mirror",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "author": {
     "name": "Matthias Behrens",
     "email": "matthias.behrens@gmail.com"
@@ -17,12 +17,20 @@
     "uglify-js": "*",
     "easy-zip": "*",
     "optimist": "*",
-    "runtime-configuration": "*"
+    "runtime-configuration": "*",
+    "less": "*"
   },  
   "keywords": [
-    "CodeMirror"
+    "editor"
+    , "development"
+    , "CodeMirror"
     , "IDE"
     , "nodemirror"
+    , "html editor"
+    , "javascript editor"
+    , "hexeditor"
+    , "less"
+    , "peg.js"
   ],
   "repository": {
     "type": "git",

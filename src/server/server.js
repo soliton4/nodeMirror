@@ -56,12 +56,8 @@ define([
     mirror.use(express.bodyParser());
     
     mirror.put('/apicall', function(req, res){
-      console.log("call:");
-      console.log(req.body);
       remoteCaller.serverCall(req.body).then(function(par){
-		console.log("response:");
-		console.log(par);
-        res.send(par);
+        res.send({ result: par });
       });
     });
     

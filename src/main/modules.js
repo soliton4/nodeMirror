@@ -1,47 +1,12 @@
-define([
-], function(){
-  var modules = {
-    modules: []
-    
-    , register: function(parModule){
-      this.modules.push(parModule);
-    }
-    
-    , getContent: function(par){
-      var i = 0;
-      for(i = this.modules.length - 1; i >= 0; --i){
-        if (typeof this.modules[i].getContent == "function"){
-          var result;
-          try{
-            result = this.modules[i].getContent(par);
-          }catch(e){
-            console.log(e);
-          }
-          if (result){
-            console.log(result);
-            return result;
-          };
-        };
-      };
-    }
-    
-  };
+define([], function(){
   
-  var standardModules = [
-    "modules/Default"
+  return [
+  //  "modules/Default"
+   "modules/Binary"
   , "modules/Directory"
   , "modules/Text"
+  , "modules/Html"
+  , "modules/Less"
   ];
-  
-  var registerFun = function(parModule){
-    modules.register(new parModule());
-  };
-  
-  var i = 0;
-  for(i = 0; i < standardModules.length; ++i){
-    require([standardModules[i]], registerFun);
-  };
-  
-  return modules;
   
 });

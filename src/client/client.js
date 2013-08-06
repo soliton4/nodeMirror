@@ -9,12 +9,15 @@ define([
   , "dijit/layout/TabContainer"
   , "dojo/_base/lang"
   , "dijit/layout/ContentPane"
-  , "client/Content"
   , "dojo/on"
   , "dojo/topic"
   , "dijit/Toolbar"
   , "dijit/form/Button"
   , "main/nodeControl"
+  , "main/moduleLoader!client"
+  , "main/contentIO"
+  , "client/globals"
+  , "dojo/Deferred"
 ], function(
   domReady
   , extendDestroyable
@@ -26,12 +29,15 @@ define([
   , TabContainer
   , lang
   , ContentPane
-  , Content
   , on
   , topic
   , ToolBar
   , Button
   , nodeControl
+  , moduleLoader
+  , contentIO
+  , globals
+  , Deferred
 ){
   
   
@@ -39,32 +45,83 @@ define([
   var tabs;
   var openIds = {};
   
-  function openItem(parItem, insteadOf){
+  globals.openItem = function(parItem, insteadOf){
     if (openIds[parItem.id]){
       tabs.selectChild(openIds[parItem.id]);
       return;
     };
-    if (insteadOf){
-      tabs.removeChild(insteadOf);
-      delete openIds[insteadOf.item.id];
-      insteadOf.destroy();
-    };
-    openIds[parItem.id] = new Content({
-      item: parItem
-      , removeMe: function(){
-        delete openIds[parItem.id];
-      }
-      , close: function(){
-        tabs.removeChild(this);
-        delete openIds[parItem.id];
-      }
+    globals.loadContent(parItem.id, insteadOf);
+  };
+  
+  globals.loadContent = function(parId, parStub){
+    return globals.openContent({
+      par: {
+        type: "file"
+        , id: parId
+      },
+      instead: parStub
     });
-    tabs.addChild(openIds[parItem.id]);
-    tabs.selectChild(openIds[parItem.id]);
+  };
+  
+  globals.openContent = function(par){
+    var def = new Deferred();
+    var contentPs;
+    if (par.content){
+      contentPs = new Deferred();
+      contentPs.resolve(par.content);
+    }else{
+      contentPs = contentIO.getContentDef(par.par);
+    };
+    contentPs.then(lang.hitch(this, function(res){
+      var module = moduleLoader.getModule(res.moduleId);
+      if (!module){
+        console.log("missing module " + res.moduleId);
+        return;
+      };
+      module.createWidgetPs({
+        content: res.content
+        , par: res.par
+        , removeMe: function(){
+          delete openIds[this.par.id];
+        }
+        , close: function(){
+          tabs.removeChild(this);
+          delete openIds[this.par.id];
+        }
+      }).then(function(wgt){
+        var existing = openIds[res.par.id];
+        if (existing){
+          if (!existing._destroyed){
+            existing.close();
+            existing.destroy();
+          };
+          delete openIds[res.par.id];
+        };
+        if (par.instead){
+          if (par.instead.par && par.instead.id !== undefined){
+            delete openIds[par.instead.id];
+          };
+          if (!par.instead._destroyed){
+            par.instead.close();
+            par.instead.destroy();
+          };
+        };
+        openIds[res.par.id] = wgt;
+        tabs.addChild(wgt);
+        tabs.selectChild(wgt);
+        def.resolve(wgt);
+      }, function(){
+        console.log("widget creation error");
+        def.reject();
+      });
+    }), function(){
+      console.log("module load error");
+      def.reject();
+    });
   };
   
   topic.subscribe("client/openid", function(par){
-    openItem(par.item, par.insteadOf);
+    globals.openItem(par.item, par.insteadOf);
   });
   
   domClass.add(document.body, "nodeMirror");
@@ -110,7 +167,7 @@ define([
     "region": "left"
     , splitter: true
     , onClick: function(item, node, evt){
-      openItem(item);
+      globals.openItem(item);
     }
   });
   tree.placeAt(treeCP);

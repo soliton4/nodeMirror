@@ -11,6 +11,7 @@ define([
   , "sol/promise"
   , "dojo/node!mime-magic"
   , "dojo/node!mime"
+  , "sol/string"
 ], function(
   declare
   , Deferred
@@ -21,11 +22,19 @@ define([
   , solPromise
   , mimeMagic
   , mime
+  , solString
 ){
   
   var customExtensions = {
     ".pl": "application/promiseLand" 
     , ".pegjs": "application/peg.js" 
+    , ".less": "text/x-less"
+  };
+
+  var forceTextExtensions = {
+    ".pl": "application/promiseLand" 
+    , ".pegjs": "application/peg.js" 
+    , ".less": "text/x-less"
   };
   
   var files;
@@ -102,23 +111,30 @@ define([
               return;
             };
           var isEmpty = false;
-		  if (!stats.isDirectory() && stats.size === 0){
-		    isEmpty = true;
-		  };
+          if (!stats.isDirectory() && stats.size === 0){
+            isEmpty = true;
+          };
           if (type == "inode/x-empty"){
             isEmpty = true;
           };
+            var extension;
           if (type == "text/plain" || isEmpty){
-            var foundBoo = false;
-            for (var extension in customExtensions){
+            for (extension in customExtensions){
               if (parFileName.substr(parFileName.length - extension.length) == extension){
-                foundBoo = true;
                 type = customExtensions[extension];
                 def.resolve(type);
                 return;
               };
             };
             type = mime.lookup(parFileName);
+          }else if(solString.startsWith(type, "text/")){
+            for (extension in forceTextExtensions){
+              if (solString.endsWith(parFileName, extension)){
+                type = customExtensions[extension];
+                def.resolve(type);
+                return;
+              };
+            };
           };
             def.resolve(type);
           }catch(e){

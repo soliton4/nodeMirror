@@ -41,7 +41,11 @@ define([
               //, "Content-Encoding": "ISO-8859-1"
               //, "X-Method-Override": "FANCY-GET"
             }			
-        }).then(function(p){ def.resolve(p); }, function(p){ def.reject(p); });
+        }).then(function(p){ 
+          def.resolve(p.result); 
+        }, function(p){ 
+          def.reject(p); 
+        });
       });
       
       return def;

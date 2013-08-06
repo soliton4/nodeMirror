@@ -22,6 +22,7 @@ define([
     , mode: undefined
     , theme: "default"
     , matchBrackets: true
+    , readOnly: false
   };
   
   return declare([

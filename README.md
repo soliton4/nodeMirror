@@ -18,9 +18,11 @@ For all other files there is a download button.
 features:  
  - view / edit all content/types supported by CodeMirror.net  
  - view / edit all files in text mode or download them  
- - download directories as zip files (buggy)   
  - html tester / analyzer  
+ - .less tester / .less online help / save your .less file immediately as .css file
+ - hexeditor
  - integrated pegjs parser debugger  
+ - download directories as zip files (buggy)   
  
 
 ## Security  

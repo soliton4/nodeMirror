@@ -48,7 +48,18 @@ var profile = (function(){
         },
         layers: {
             "server/server": {
-                include: [ "server/server", "sol/string", "main/serverOnly", "main/codemirror/subtypes", "modules/Text", "modules/Directory", "modules/Default", "main/codemirror/fake" ]
+                include: [ 
+                  "server/server"
+                  , "sol/string"
+                  , "main/serverOnly"
+                  , "main/codemirror/subtypes"
+                  , "modules/Text"
+                  , "modules/Directory"
+                  , "modules/Binary"
+                  , "modules/Less"
+                  , "modules/Html"
+                  , "main/codemirror/fake"
+                ]
             }
         }
     };

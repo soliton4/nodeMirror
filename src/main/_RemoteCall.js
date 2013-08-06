@@ -12,7 +12,7 @@ define([
   , remoteCaller
   , lang
 ){
-  var classNameStr = "_RemoteCall";
+  var classNameStr = "_RemoteCall"; // you have to provide a singleton with a unique class identifier in order to use removeCall
   var _Base = declare(classNameStr, [
   ], {
     constructor: function(par){

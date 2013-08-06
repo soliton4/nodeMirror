@@ -47,8 +47,13 @@ define([
       );
     }
     , startup: function(){
+      if (this._started){
+        return;
+      };
       this.inherited(arguments);
-      this.set("innerHTML", this.innerHTML);
+      if (this.innerHTML){
+        this.set("innerHTML", this.innerHTML);
+      };
     }
   });
 });
