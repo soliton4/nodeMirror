@@ -1,0 +1,88 @@
+
+.bytesfun(@nr) {
+  .hexgrid.activeByte@{nr} {
+    .dgrid-focus{
+      .hexLine {
+        .byte@{nr} {
+          background-color: gray;
+        }
+      }
+    }
+  }
+  .hexgrid.activeByte@{nr}.activeLetter0 {
+    .dgrid-focus{
+      .hexLine {
+        .byte@{nr} {
+          .letter0 {
+            background-color: red;
+          }
+        }
+      }
+    }
+  }
+  .hexgrid.activeByte@{nr}.activeLetter1 {
+    .dgrid-focus{
+      .hexLine {
+        .byte@{nr} {
+          .letter1 {
+            background-color: red;
+          }
+        }
+      }
+    }
+  }
+}
+
+.content.binary  {
+  .bytesfun(0);
+  .bytesfun(1);
+  .bytesfun(2);
+  .bytesfun(3);
+  .bytesfun(4);
+  .bytesfun(5);
+  .bytesfun(6);
+  .bytesfun(7);
+  .bytesfun(8);
+  .bytesfun(9);
+  .bytesfun(10);
+  .bytesfun(11);
+  .bytesfun(12);
+  .bytesfun(13);
+  .bytesfun(14);
+  .bytesfun(15);
+}
+  
+
+
+.hexgrid {
+  .bytesfun(1);
+}
+
+
+.hexgrid .field-lineNr {
+  width: 100px;
+  font-family: monospace;
+}
+
+.hexgrid .hexLine {
+  font-family: monospace;
+  white-space: pre;
+}
+
+.hexgrid .dgrid-focus .hexLine {
+  background-color: yellow;
+}
+
+
+
+
+.hexgrid .hexLine .byte {
+  display: inline-block;
+  width: 20px;
+  height: 16px;
+  margin-left: 6px;
+}
+
+.hexgrid .hexLine .byte8 {
+  margin-left: 16px;
+}
