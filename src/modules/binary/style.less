@@ -1,31 +1,55 @@
+@edited: #FFFF90;
 
 .bytesfun(@nr) {
   .hexgrid.activeByte@{nr} {
     .dgrid-focus{
       .hexLine {
         .byte@{nr} {
-          background-color: gray;
+          background-color: #B0B0FF;
+          border-color: black;
+        }
+        .byte.edited{
+          background-color: @edited;
+        }
+        .char@{nr} {
+          background-color: #B0B0FF;
+        }
+        .char.edited{
+          background-color: @edited;
         }
       }
     }
   }
-  .hexgrid.activeByte@{nr}.activeLetter0 {
+  .hexgrid.activeByte@{nr}.charEditMode {
+    .dgrid-focus{
+      .hexLine {
+        .char@{nr} {
+          background-color: #000090;
+          color: white;
+        }
+      }
+    }
+  }
+  
+  .hexgrid.activeByte@{nr}.activeLetter0.hexEditMode {
     .dgrid-focus{
       .hexLine {
         .byte@{nr} {
           .letter0 {
-            background-color: red;
+            background-color: #000090;
+            color: white;
           }
         }
       }
     }
   }
-  .hexgrid.activeByte@{nr}.activeLetter1 {
+  .hexgrid.activeByte@{nr}.activeLetter1.hexEditMode {
     .dgrid-focus{
       .hexLine {
         .byte@{nr} {
           .letter1 {
-            background-color: red;
+            background-color: #000090;
+            color: white;
           }
         }
       }
@@ -62,6 +86,7 @@
 .hexgrid .field-lineNr {
   width: 100px;
   font-family: monospace;
+  text-align: right;
 }
 
 .hexgrid .hexLine {
@@ -69,20 +94,70 @@
   white-space: pre;
 }
 
-.hexgrid .dgrid-focus .hexLine {
-  background-color: yellow;
-}
-
-
-
 
 .hexgrid .hexLine .byte {
   display: inline-block;
-  width: 20px;
+  width: 16px;
   height: 16px;
   margin-left: 6px;
+  border: 1px;
+  //border-style: solid;
+  //border-color: #C0C0C0;
+  background-color: #FFFFFF;
+  padding: 1px;
+}
+
+.hexgrid .hexLine .byte.edited {
+  background-color: @edited;
+}
+.hexgrid .hexLine .char.edited {
+  background-color: @edited;
 }
 
 .hexgrid .hexLine .byte8 {
   margin-left: 16px;
+}
+
+.hexgrid .hexLine .byte15 {
+  margin-right: 16px;
+}
+
+
+.hexgrid .hexLine .byte .letter {
+  display: inline-block;
+  width: 8px;
+  height: 16px;
+}
+
+
+.hexgrid .hexLine .char {
+  display: inline-block;
+  width: 8px;
+  height: 16px;
+}
+
+
+.hexgrid .dgrid-row .dgrid-row-table{
+  border: 0;
+}
+
+.hexgrid .dgrid-row .dgrid-cell{
+  border: 0;
+}
+
+.hexgrid .dgrid-row {
+  background-color: #D0D0D0;
+}
+
+.hexgrid .dgrid-row.dgrid-row-odd {
+  background-color: #C0C0C0;
+}
+
+//.hexgrid .dgrid-row .dgrid-row-even
+
+.hexgrid .dgrid-focus.dgrid-row {
+  background-color: #E0E0FF;
+}
+.hexgrid .dgrid-focus.dgrid-row.dgrid-row-odd {
+  background-color: #E0E0FF;
 }

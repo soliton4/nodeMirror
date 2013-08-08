@@ -1,173 +1,483 @@
 .content.binary .hexgrid.activeByte0 .dgrid-focus .hexLine .byte0 {
-  background-color: gray;
+  background-color: #B0B0FF;
+  border-color: black;
 }
-.content.binary .hexgrid.activeByte0.activeLetter0 .dgrid-focus .hexLine .byte0 .letter0 {
-  background-color: red;
+.content.binary .hexgrid.activeByte0 .dgrid-focus .hexLine .byte.edited {
+  background-color: #ffff90;
 }
-.content.binary .hexgrid.activeByte0.activeLetter1 .dgrid-focus .hexLine .byte0 .letter1 {
-  background-color: red;
+.content.binary .hexgrid.activeByte0 .dgrid-focus .hexLine .char0 {
+  background-color: #B0B0FF;
+}
+.content.binary .hexgrid.activeByte0 .dgrid-focus .hexLine .char.edited {
+  background-color: #ffff90;
+}
+.content.binary .hexgrid.activeByte0.charEditMode .dgrid-focus .hexLine .char0 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte0.activeLetter0.hexEditMode .dgrid-focus .hexLine .byte0 .letter0 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte0.activeLetter1.hexEditMode .dgrid-focus .hexLine .byte0 .letter1 {
+  background-color: #000090;
+  color: white;
 }
 .content.binary .hexgrid.activeByte1 .dgrid-focus .hexLine .byte1 {
-  background-color: gray;
+  background-color: #B0B0FF;
+  border-color: black;
 }
-.content.binary .hexgrid.activeByte1.activeLetter0 .dgrid-focus .hexLine .byte1 .letter0 {
-  background-color: red;
+.content.binary .hexgrid.activeByte1 .dgrid-focus .hexLine .byte.edited {
+  background-color: #ffff90;
 }
-.content.binary .hexgrid.activeByte1.activeLetter1 .dgrid-focus .hexLine .byte1 .letter1 {
-  background-color: red;
+.content.binary .hexgrid.activeByte1 .dgrid-focus .hexLine .char1 {
+  background-color: #B0B0FF;
+}
+.content.binary .hexgrid.activeByte1 .dgrid-focus .hexLine .char.edited {
+  background-color: #ffff90;
+}
+.content.binary .hexgrid.activeByte1.charEditMode .dgrid-focus .hexLine .char1 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte1.activeLetter0.hexEditMode .dgrid-focus .hexLine .byte1 .letter0 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte1.activeLetter1.hexEditMode .dgrid-focus .hexLine .byte1 .letter1 {
+  background-color: #000090;
+  color: white;
 }
 .content.binary .hexgrid.activeByte2 .dgrid-focus .hexLine .byte2 {
-  background-color: gray;
+  background-color: #B0B0FF;
+  border-color: black;
 }
-.content.binary .hexgrid.activeByte2.activeLetter0 .dgrid-focus .hexLine .byte2 .letter0 {
-  background-color: red;
+.content.binary .hexgrid.activeByte2 .dgrid-focus .hexLine .byte.edited {
+  background-color: #ffff90;
 }
-.content.binary .hexgrid.activeByte2.activeLetter1 .dgrid-focus .hexLine .byte2 .letter1 {
-  background-color: red;
+.content.binary .hexgrid.activeByte2 .dgrid-focus .hexLine .char2 {
+  background-color: #B0B0FF;
+}
+.content.binary .hexgrid.activeByte2 .dgrid-focus .hexLine .char.edited {
+  background-color: #ffff90;
+}
+.content.binary .hexgrid.activeByte2.charEditMode .dgrid-focus .hexLine .char2 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte2.activeLetter0.hexEditMode .dgrid-focus .hexLine .byte2 .letter0 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte2.activeLetter1.hexEditMode .dgrid-focus .hexLine .byte2 .letter1 {
+  background-color: #000090;
+  color: white;
 }
 .content.binary .hexgrid.activeByte3 .dgrid-focus .hexLine .byte3 {
-  background-color: gray;
+  background-color: #B0B0FF;
+  border-color: black;
 }
-.content.binary .hexgrid.activeByte3.activeLetter0 .dgrid-focus .hexLine .byte3 .letter0 {
-  background-color: red;
+.content.binary .hexgrid.activeByte3 .dgrid-focus .hexLine .byte.edited {
+  background-color: #ffff90;
 }
-.content.binary .hexgrid.activeByte3.activeLetter1 .dgrid-focus .hexLine .byte3 .letter1 {
-  background-color: red;
+.content.binary .hexgrid.activeByte3 .dgrid-focus .hexLine .char3 {
+  background-color: #B0B0FF;
+}
+.content.binary .hexgrid.activeByte3 .dgrid-focus .hexLine .char.edited {
+  background-color: #ffff90;
+}
+.content.binary .hexgrid.activeByte3.charEditMode .dgrid-focus .hexLine .char3 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte3.activeLetter0.hexEditMode .dgrid-focus .hexLine .byte3 .letter0 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte3.activeLetter1.hexEditMode .dgrid-focus .hexLine .byte3 .letter1 {
+  background-color: #000090;
+  color: white;
 }
 .content.binary .hexgrid.activeByte4 .dgrid-focus .hexLine .byte4 {
-  background-color: gray;
+  background-color: #B0B0FF;
+  border-color: black;
 }
-.content.binary .hexgrid.activeByte4.activeLetter0 .dgrid-focus .hexLine .byte4 .letter0 {
-  background-color: red;
+.content.binary .hexgrid.activeByte4 .dgrid-focus .hexLine .byte.edited {
+  background-color: #ffff90;
 }
-.content.binary .hexgrid.activeByte4.activeLetter1 .dgrid-focus .hexLine .byte4 .letter1 {
-  background-color: red;
+.content.binary .hexgrid.activeByte4 .dgrid-focus .hexLine .char4 {
+  background-color: #B0B0FF;
+}
+.content.binary .hexgrid.activeByte4 .dgrid-focus .hexLine .char.edited {
+  background-color: #ffff90;
+}
+.content.binary .hexgrid.activeByte4.charEditMode .dgrid-focus .hexLine .char4 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte4.activeLetter0.hexEditMode .dgrid-focus .hexLine .byte4 .letter0 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte4.activeLetter1.hexEditMode .dgrid-focus .hexLine .byte4 .letter1 {
+  background-color: #000090;
+  color: white;
 }
 .content.binary .hexgrid.activeByte5 .dgrid-focus .hexLine .byte5 {
-  background-color: gray;
+  background-color: #B0B0FF;
+  border-color: black;
 }
-.content.binary .hexgrid.activeByte5.activeLetter0 .dgrid-focus .hexLine .byte5 .letter0 {
-  background-color: red;
+.content.binary .hexgrid.activeByte5 .dgrid-focus .hexLine .byte.edited {
+  background-color: #ffff90;
 }
-.content.binary .hexgrid.activeByte5.activeLetter1 .dgrid-focus .hexLine .byte5 .letter1 {
-  background-color: red;
+.content.binary .hexgrid.activeByte5 .dgrid-focus .hexLine .char5 {
+  background-color: #B0B0FF;
+}
+.content.binary .hexgrid.activeByte5 .dgrid-focus .hexLine .char.edited {
+  background-color: #ffff90;
+}
+.content.binary .hexgrid.activeByte5.charEditMode .dgrid-focus .hexLine .char5 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte5.activeLetter0.hexEditMode .dgrid-focus .hexLine .byte5 .letter0 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte5.activeLetter1.hexEditMode .dgrid-focus .hexLine .byte5 .letter1 {
+  background-color: #000090;
+  color: white;
 }
 .content.binary .hexgrid.activeByte6 .dgrid-focus .hexLine .byte6 {
-  background-color: gray;
+  background-color: #B0B0FF;
+  border-color: black;
 }
-.content.binary .hexgrid.activeByte6.activeLetter0 .dgrid-focus .hexLine .byte6 .letter0 {
-  background-color: red;
+.content.binary .hexgrid.activeByte6 .dgrid-focus .hexLine .byte.edited {
+  background-color: #ffff90;
 }
-.content.binary .hexgrid.activeByte6.activeLetter1 .dgrid-focus .hexLine .byte6 .letter1 {
-  background-color: red;
+.content.binary .hexgrid.activeByte6 .dgrid-focus .hexLine .char6 {
+  background-color: #B0B0FF;
+}
+.content.binary .hexgrid.activeByte6 .dgrid-focus .hexLine .char.edited {
+  background-color: #ffff90;
+}
+.content.binary .hexgrid.activeByte6.charEditMode .dgrid-focus .hexLine .char6 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte6.activeLetter0.hexEditMode .dgrid-focus .hexLine .byte6 .letter0 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte6.activeLetter1.hexEditMode .dgrid-focus .hexLine .byte6 .letter1 {
+  background-color: #000090;
+  color: white;
 }
 .content.binary .hexgrid.activeByte7 .dgrid-focus .hexLine .byte7 {
-  background-color: gray;
+  background-color: #B0B0FF;
+  border-color: black;
 }
-.content.binary .hexgrid.activeByte7.activeLetter0 .dgrid-focus .hexLine .byte7 .letter0 {
-  background-color: red;
+.content.binary .hexgrid.activeByte7 .dgrid-focus .hexLine .byte.edited {
+  background-color: #ffff90;
 }
-.content.binary .hexgrid.activeByte7.activeLetter1 .dgrid-focus .hexLine .byte7 .letter1 {
-  background-color: red;
+.content.binary .hexgrid.activeByte7 .dgrid-focus .hexLine .char7 {
+  background-color: #B0B0FF;
+}
+.content.binary .hexgrid.activeByte7 .dgrid-focus .hexLine .char.edited {
+  background-color: #ffff90;
+}
+.content.binary .hexgrid.activeByte7.charEditMode .dgrid-focus .hexLine .char7 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte7.activeLetter0.hexEditMode .dgrid-focus .hexLine .byte7 .letter0 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte7.activeLetter1.hexEditMode .dgrid-focus .hexLine .byte7 .letter1 {
+  background-color: #000090;
+  color: white;
 }
 .content.binary .hexgrid.activeByte8 .dgrid-focus .hexLine .byte8 {
-  background-color: gray;
+  background-color: #B0B0FF;
+  border-color: black;
 }
-.content.binary .hexgrid.activeByte8.activeLetter0 .dgrid-focus .hexLine .byte8 .letter0 {
-  background-color: red;
+.content.binary .hexgrid.activeByte8 .dgrid-focus .hexLine .byte.edited {
+  background-color: #ffff90;
 }
-.content.binary .hexgrid.activeByte8.activeLetter1 .dgrid-focus .hexLine .byte8 .letter1 {
-  background-color: red;
+.content.binary .hexgrid.activeByte8 .dgrid-focus .hexLine .char8 {
+  background-color: #B0B0FF;
+}
+.content.binary .hexgrid.activeByte8 .dgrid-focus .hexLine .char.edited {
+  background-color: #ffff90;
+}
+.content.binary .hexgrid.activeByte8.charEditMode .dgrid-focus .hexLine .char8 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte8.activeLetter0.hexEditMode .dgrid-focus .hexLine .byte8 .letter0 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte8.activeLetter1.hexEditMode .dgrid-focus .hexLine .byte8 .letter1 {
+  background-color: #000090;
+  color: white;
 }
 .content.binary .hexgrid.activeByte9 .dgrid-focus .hexLine .byte9 {
-  background-color: gray;
+  background-color: #B0B0FF;
+  border-color: black;
 }
-.content.binary .hexgrid.activeByte9.activeLetter0 .dgrid-focus .hexLine .byte9 .letter0 {
-  background-color: red;
+.content.binary .hexgrid.activeByte9 .dgrid-focus .hexLine .byte.edited {
+  background-color: #ffff90;
 }
-.content.binary .hexgrid.activeByte9.activeLetter1 .dgrid-focus .hexLine .byte9 .letter1 {
-  background-color: red;
+.content.binary .hexgrid.activeByte9 .dgrid-focus .hexLine .char9 {
+  background-color: #B0B0FF;
+}
+.content.binary .hexgrid.activeByte9 .dgrid-focus .hexLine .char.edited {
+  background-color: #ffff90;
+}
+.content.binary .hexgrid.activeByte9.charEditMode .dgrid-focus .hexLine .char9 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte9.activeLetter0.hexEditMode .dgrid-focus .hexLine .byte9 .letter0 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte9.activeLetter1.hexEditMode .dgrid-focus .hexLine .byte9 .letter1 {
+  background-color: #000090;
+  color: white;
 }
 .content.binary .hexgrid.activeByte10 .dgrid-focus .hexLine .byte10 {
-  background-color: gray;
+  background-color: #B0B0FF;
+  border-color: black;
 }
-.content.binary .hexgrid.activeByte10.activeLetter0 .dgrid-focus .hexLine .byte10 .letter0 {
-  background-color: red;
+.content.binary .hexgrid.activeByte10 .dgrid-focus .hexLine .byte.edited {
+  background-color: #ffff90;
 }
-.content.binary .hexgrid.activeByte10.activeLetter1 .dgrid-focus .hexLine .byte10 .letter1 {
-  background-color: red;
+.content.binary .hexgrid.activeByte10 .dgrid-focus .hexLine .char10 {
+  background-color: #B0B0FF;
+}
+.content.binary .hexgrid.activeByte10 .dgrid-focus .hexLine .char.edited {
+  background-color: #ffff90;
+}
+.content.binary .hexgrid.activeByte10.charEditMode .dgrid-focus .hexLine .char10 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte10.activeLetter0.hexEditMode .dgrid-focus .hexLine .byte10 .letter0 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte10.activeLetter1.hexEditMode .dgrid-focus .hexLine .byte10 .letter1 {
+  background-color: #000090;
+  color: white;
 }
 .content.binary .hexgrid.activeByte11 .dgrid-focus .hexLine .byte11 {
-  background-color: gray;
+  background-color: #B0B0FF;
+  border-color: black;
 }
-.content.binary .hexgrid.activeByte11.activeLetter0 .dgrid-focus .hexLine .byte11 .letter0 {
-  background-color: red;
+.content.binary .hexgrid.activeByte11 .dgrid-focus .hexLine .byte.edited {
+  background-color: #ffff90;
 }
-.content.binary .hexgrid.activeByte11.activeLetter1 .dgrid-focus .hexLine .byte11 .letter1 {
-  background-color: red;
+.content.binary .hexgrid.activeByte11 .dgrid-focus .hexLine .char11 {
+  background-color: #B0B0FF;
+}
+.content.binary .hexgrid.activeByte11 .dgrid-focus .hexLine .char.edited {
+  background-color: #ffff90;
+}
+.content.binary .hexgrid.activeByte11.charEditMode .dgrid-focus .hexLine .char11 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte11.activeLetter0.hexEditMode .dgrid-focus .hexLine .byte11 .letter0 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte11.activeLetter1.hexEditMode .dgrid-focus .hexLine .byte11 .letter1 {
+  background-color: #000090;
+  color: white;
 }
 .content.binary .hexgrid.activeByte12 .dgrid-focus .hexLine .byte12 {
-  background-color: gray;
+  background-color: #B0B0FF;
+  border-color: black;
 }
-.content.binary .hexgrid.activeByte12.activeLetter0 .dgrid-focus .hexLine .byte12 .letter0 {
-  background-color: red;
+.content.binary .hexgrid.activeByte12 .dgrid-focus .hexLine .byte.edited {
+  background-color: #ffff90;
 }
-.content.binary .hexgrid.activeByte12.activeLetter1 .dgrid-focus .hexLine .byte12 .letter1 {
-  background-color: red;
+.content.binary .hexgrid.activeByte12 .dgrid-focus .hexLine .char12 {
+  background-color: #B0B0FF;
+}
+.content.binary .hexgrid.activeByte12 .dgrid-focus .hexLine .char.edited {
+  background-color: #ffff90;
+}
+.content.binary .hexgrid.activeByte12.charEditMode .dgrid-focus .hexLine .char12 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte12.activeLetter0.hexEditMode .dgrid-focus .hexLine .byte12 .letter0 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte12.activeLetter1.hexEditMode .dgrid-focus .hexLine .byte12 .letter1 {
+  background-color: #000090;
+  color: white;
 }
 .content.binary .hexgrid.activeByte13 .dgrid-focus .hexLine .byte13 {
-  background-color: gray;
+  background-color: #B0B0FF;
+  border-color: black;
 }
-.content.binary .hexgrid.activeByte13.activeLetter0 .dgrid-focus .hexLine .byte13 .letter0 {
-  background-color: red;
+.content.binary .hexgrid.activeByte13 .dgrid-focus .hexLine .byte.edited {
+  background-color: #ffff90;
 }
-.content.binary .hexgrid.activeByte13.activeLetter1 .dgrid-focus .hexLine .byte13 .letter1 {
-  background-color: red;
+.content.binary .hexgrid.activeByte13 .dgrid-focus .hexLine .char13 {
+  background-color: #B0B0FF;
+}
+.content.binary .hexgrid.activeByte13 .dgrid-focus .hexLine .char.edited {
+  background-color: #ffff90;
+}
+.content.binary .hexgrid.activeByte13.charEditMode .dgrid-focus .hexLine .char13 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte13.activeLetter0.hexEditMode .dgrid-focus .hexLine .byte13 .letter0 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte13.activeLetter1.hexEditMode .dgrid-focus .hexLine .byte13 .letter1 {
+  background-color: #000090;
+  color: white;
 }
 .content.binary .hexgrid.activeByte14 .dgrid-focus .hexLine .byte14 {
-  background-color: gray;
+  background-color: #B0B0FF;
+  border-color: black;
 }
-.content.binary .hexgrid.activeByte14.activeLetter0 .dgrid-focus .hexLine .byte14 .letter0 {
-  background-color: red;
+.content.binary .hexgrid.activeByte14 .dgrid-focus .hexLine .byte.edited {
+  background-color: #ffff90;
 }
-.content.binary .hexgrid.activeByte14.activeLetter1 .dgrid-focus .hexLine .byte14 .letter1 {
-  background-color: red;
+.content.binary .hexgrid.activeByte14 .dgrid-focus .hexLine .char14 {
+  background-color: #B0B0FF;
+}
+.content.binary .hexgrid.activeByte14 .dgrid-focus .hexLine .char.edited {
+  background-color: #ffff90;
+}
+.content.binary .hexgrid.activeByte14.charEditMode .dgrid-focus .hexLine .char14 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte14.activeLetter0.hexEditMode .dgrid-focus .hexLine .byte14 .letter0 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte14.activeLetter1.hexEditMode .dgrid-focus .hexLine .byte14 .letter1 {
+  background-color: #000090;
+  color: white;
 }
 .content.binary .hexgrid.activeByte15 .dgrid-focus .hexLine .byte15 {
-  background-color: gray;
+  background-color: #B0B0FF;
+  border-color: black;
 }
-.content.binary .hexgrid.activeByte15.activeLetter0 .dgrid-focus .hexLine .byte15 .letter0 {
-  background-color: red;
+.content.binary .hexgrid.activeByte15 .dgrid-focus .hexLine .byte.edited {
+  background-color: #ffff90;
 }
-.content.binary .hexgrid.activeByte15.activeLetter1 .dgrid-focus .hexLine .byte15 .letter1 {
-  background-color: red;
+.content.binary .hexgrid.activeByte15 .dgrid-focus .hexLine .char15 {
+  background-color: #B0B0FF;
+}
+.content.binary .hexgrid.activeByte15 .dgrid-focus .hexLine .char.edited {
+  background-color: #ffff90;
+}
+.content.binary .hexgrid.activeByte15.charEditMode .dgrid-focus .hexLine .char15 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte15.activeLetter0.hexEditMode .dgrid-focus .hexLine .byte15 .letter0 {
+  background-color: #000090;
+  color: white;
+}
+.content.binary .hexgrid.activeByte15.activeLetter1.hexEditMode .dgrid-focus .hexLine .byte15 .letter1 {
+  background-color: #000090;
+  color: white;
 }
 .hexgrid .hexgrid.activeByte1 .dgrid-focus .hexLine .byte1 {
-  background-color: gray;
+  background-color: #B0B0FF;
+  border-color: black;
 }
-.hexgrid .hexgrid.activeByte1.activeLetter0 .dgrid-focus .hexLine .byte1 .letter0 {
-  background-color: red;
+.hexgrid .hexgrid.activeByte1 .dgrid-focus .hexLine .byte.edited {
+  background-color: #ffff90;
 }
-.hexgrid .hexgrid.activeByte1.activeLetter1 .dgrid-focus .hexLine .byte1 .letter1 {
-  background-color: red;
+.hexgrid .hexgrid.activeByte1 .dgrid-focus .hexLine .char1 {
+  background-color: #B0B0FF;
+}
+.hexgrid .hexgrid.activeByte1 .dgrid-focus .hexLine .char.edited {
+  background-color: #ffff90;
+}
+.hexgrid .hexgrid.activeByte1.charEditMode .dgrid-focus .hexLine .char1 {
+  background-color: #000090;
+  color: white;
+}
+.hexgrid .hexgrid.activeByte1.activeLetter0.hexEditMode .dgrid-focus .hexLine .byte1 .letter0 {
+  background-color: #000090;
+  color: white;
+}
+.hexgrid .hexgrid.activeByte1.activeLetter1.hexEditMode .dgrid-focus .hexLine .byte1 .letter1 {
+  background-color: #000090;
+  color: white;
 }
 .hexgrid .field-lineNr {
   width: 100px;
   font-family: monospace;
+  text-align: right;
 }
 .hexgrid .hexLine {
   font-family: monospace;
   white-space: pre;
 }
-.hexgrid .dgrid-focus .hexLine {
-  background-color: yellow;
-}
 .hexgrid .hexLine .byte {
   display: inline-block;
-  width: 20px;
+  width: 16px;
   height: 16px;
   margin-left: 6px;
+  border: 1px;
+  background-color: #FFFFFF;
+  padding: 1px;
+}
+.hexgrid .hexLine .byte.edited {
+  background-color: #ffff90;
+}
+.hexgrid .hexLine .char.edited {
+  background-color: #ffff90;
 }
 .hexgrid .hexLine .byte8 {
   margin-left: 16px;
+}
+.hexgrid .hexLine .byte15 {
+  margin-right: 16px;
+}
+.hexgrid .hexLine .byte .letter {
+  display: inline-block;
+  width: 8px;
+  height: 16px;
+}
+.hexgrid .hexLine .char {
+  display: inline-block;
+  width: 8px;
+  height: 16px;
+}
+.hexgrid .dgrid-row .dgrid-row-table {
+  border: 0;
+}
+.hexgrid .dgrid-row .dgrid-cell {
+  border: 0;
+}
+.hexgrid .dgrid-row {
+  background-color: #D0D0D0;
+}
+.hexgrid .dgrid-row.dgrid-row-odd {
+  background-color: #C0C0C0;
+}
+.hexgrid .dgrid-focus.dgrid-row {
+  background-color: #E0E0FF;
+}
+.hexgrid .dgrid-focus.dgrid-row.dgrid-row-odd {
+  background-color: #E0E0FF;
 }

@@ -90,6 +90,12 @@ define([
       return this.hexGrid.getSaveData();
     }
     
+    , savePs: function(){
+      var ret = this.inherited(arguments);
+      ret.then(lang.hitch(this.hexGrid, "resetEdited"));
+      return ret;
+    }
+    
     , saveContentPs: function(par, content){
       var def = new Deferred();
       var name = this.getFileName(par.id);

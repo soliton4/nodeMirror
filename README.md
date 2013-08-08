@@ -1,6 +1,6 @@
 ## Description
 
-A development IDE build around CodeMirror.net.  
+A IDE build around CodeMirror.net.  
 If you dont know CodeMirror.net, please check it out. Its a great Project.  
 This projects aim is to follow the CodeMirror philosophy of pluginability and simplistic approach to give you a full (Web)Developer IDE.  
 So all you need is:  
@@ -19,8 +19,8 @@ features:
  - view / edit all content/types supported by CodeMirror.net  
  - view / edit all files in text mode or download them  
  - html tester / analyzer  
- - .less tester / .less online help / save your .less file immediately as .css file
- - hexeditor
+ - .less tester / .less online help / save your .less file immediately as .css file  
+ - awesome hexeditor  
  - integrated pegjs parser debugger  
  - download directories as zip files (buggy)   
  
