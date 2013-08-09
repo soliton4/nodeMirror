@@ -1,12 +1,15 @@
 {
   "name": "node-mirror",
-  "version": "0.0.23",
+  "version": "0.0.24",
   "author": {
     "name": "Matthias Behrens",
     "email": "matthias.behrens@gmail.com"
   },
   "description": "node.js + CodeMirror = Great IDE",
   "main": "./lib/nodemirror.js"
+  , "bin": {
+    "nodeMirror": "./bin/nodeMirror.js"
+  }
   , "dependencies" : {
     "restartable"   :  "*",
     "express" :  "3.x",

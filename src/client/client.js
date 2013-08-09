@@ -18,6 +18,8 @@ define([
   , "main/contentIO"
   , "client/globals"
   , "dojo/Deferred"
+  , "./Stub"
+  , "sol/fileName"
 ], function(
   domReady
   , extendDestroyable
@@ -38,6 +40,8 @@ define([
   , contentIO
   , globals
   , Deferred
+  , Stub
+  , fileName
 ){
   
   
@@ -53,13 +57,13 @@ define([
     globals.loadContent(parItem.id, insteadOf);
   };
   
-  globals.loadContent = function(parId, parStub){
+  globals.loadContent = function(parId, insteadOf){
     return globals.openContent({
       par: {
         type: "file"
         , id: parId
       },
-      instead: parStub
+      instead: insteadOf
     });
   };
   
@@ -72,6 +76,39 @@ define([
     }else{
       contentPs = contentIO.getContentDef(par.par);
     };
+    var existing = openIds[par.id];
+    if (existing){
+      if (!existing._destroyed){
+        existing.close();
+        existing.destroy();
+      };
+      delete openIds[par.id];
+    };
+    if (par.instead){
+      if (par.instead.par && par.instead.id !== undefined){
+        delete openIds[par.instead.id];
+      };
+      if (!par.instead._destroyed){
+        par.instead.close();
+        par.instead.destroy();
+      };
+    };
+    var stub = new Stub({
+        content: "opening " + par.par.id + " ..."
+      , title: fileName.single(par.par.id)
+        , par: par.par
+        , removeMe: function(){
+          delete openIds[this.par.id];
+        }
+        , close: function(){
+          tabs.removeChild(this);
+          delete openIds[this.par.id];
+        }
+    });
+    tabs.addChild(stub);
+    tabs.selectChild(stub);
+    
+    
     contentPs.then(lang.hitch(this, function(res){
       var module = moduleLoader.getModule(res.moduleId);
       if (!module){
@@ -97,15 +134,7 @@ define([
           };
           delete openIds[res.par.id];
         };
-        if (par.instead){
-          if (par.instead.par && par.instead.id !== undefined){
-            delete openIds[par.instead.id];
-          };
-          if (!par.instead._destroyed){
-            par.instead.close();
-            par.instead.destroy();
-          };
-        };
+        stub.close();
         openIds[res.par.id] = wgt;
         tabs.addChild(wgt);
         tabs.selectChild(wgt);

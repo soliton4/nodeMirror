@@ -1,1 +1,58 @@
-<html><body>xxx</body></html>
+<html><head>
+        <script>
+          // Configuration Object for Dojo Loader:
+    	  dojoConfig = {
+            baseUrl: "/", // Where we will put our packages
+            async: false, // We want to make sure we are using the "modern" loader
+            // While it is possible to use config-tlmSiblingOfDojo to tell the
+            // loader that your packages share the same root path as the loader,
+            // this really isn't always a good idea and it is better to be
+            // explicit about our package map.
+            packages: [{
+                name: "dojo",
+                location: "dojo"
+            },{
+                name: "dijit",
+                location: "dijit"
+            },{
+                name: "dojox",
+                location: "dojox"
+            },{
+                name: "main",
+                location: "main"
+            },{
+                name: "client",
+                location: "client"
+            },{
+                name: "sol",
+                location: "sol"
+            },{
+                name: "dgrid",
+                location: "dgrid"
+            },{
+                name: "jshint",
+                location: "jshint"
+            },{
+                name: "peg",
+                location: "peg"
+            },{
+                name: "codemirror",
+                location: "codemirror"
+            }]
+          };
+	    </script>
+  
+  <script src="/dojo/dojo.js">
+  </script>
+  <script>
+    dojo.addOnLoad(function(){
+      var t = dojo.byId("ta1");
+      dojo.connect(t, "keypress", function(e){
+        console.log("yay");
+      });
+    });
+  </script>
+  </head><body>
+    <textarea id="ta1">haha</textarea>
+  </body>
+</html>
