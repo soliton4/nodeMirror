@@ -7,6 +7,7 @@ define([], function(){
   , "modules/Text"
   , "modules/Html"
   , "modules/Less"
+  , "modules/Peg"
   ];
   
 });
