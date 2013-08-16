@@ -50,15 +50,16 @@ var profile = (function(){
             "server/server": {
                 include: [ 
                   "server/server"
-                  , "sol/string"
-                  , "main/serverOnly"
-                  , "main/codemirror/subtypes"
-                  , "modules/Text"
-                  , "modules/Directory"
-                  , "modules/Binary"
-                  , "modules/Less"
-                  , "modules/Html"
-                  , "main/codemirror/fake"
+                , "sol/string"
+                , "main/serverOnly"
+                , "main/codemirror/subtypes"
+                , "modules/Text"
+                , "modules/Directory"
+                , "modules/Binary"
+                , "modules/Less"
+                , "modules/Html"
+                , "modules/Peg"
+                , "main/codemirror/fake"
                 ]
             }
         }
