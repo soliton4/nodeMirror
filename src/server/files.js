@@ -149,7 +149,13 @@ define([
     , readTextDef: function(parFileName){
       var def = new Deferred();
       fs.readFile(parFileName, {encoding: "utf8"}, function(err, data){
-        def.resolve(data);
+        if (typeof data == "object"){
+          def.resolve(data.toString());
+        }else if (typeof data == "string"){
+          def.resolve(data);
+        }else{
+          def.resolve("file could not be read");
+        };
       });
       return def.promise;
     }
