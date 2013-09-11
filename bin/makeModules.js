@@ -60,3 +60,13 @@ destPath = __dirname + "/../src/peg/";
 modulizer.convertFile(srcPath + "PEG.js", {
   "return": "PEG"
 }, destPath + "Peg.js", errFun);
+
+
+// term
+srcPath = __dirname + "/../generic-js/term/";
+destPath = __dirname + "/../src/term/";
+
+modulizer.convertFile(srcPath + "term.js", {
+  "return": "Terminal"
+}, destPath + "Terminal.js", errFun);
+

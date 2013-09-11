@@ -5,6 +5,8 @@ define([
   , "dojo/node!http"
   , "dojo/has"
   , "dojo/node!fs"
+  , "dojo/node!session.socket.io"
+  , "dojo/node!connect"
 ], function(
   express
   , mimeMagic
@@ -12,6 +14,8 @@ define([
   , http
   , has
   , fs
+  , sessionIo
+  , connect
 ){
   // first add our server-modules flag so we can use same source files for server and client
   has.add("server-modules", function(){
@@ -41,7 +45,6 @@ define([
   ){
     //console.log(nodeMirrorConfig);
     
-    
     EasyZip = easyZip.EasyZip;
     
     var mirror = express();
@@ -51,6 +54,19 @@ define([
     if (nodeMirrorConfig.username){
       mirror.use(express.basicAuth(nodeMirrorConfig.username, nodeMirrorConfig.password));
     };
+    
+    var cookieParser = express.cookieParser('my session secret');
+    var sessionStore = new connect.middleware.session.MemoryStore();
+    
+    mirror.use(cookieParser);
+    mirror.use(express.session({
+      store: sessionStore,
+      cookie : {
+        path : '/',
+        httpOnly : true,
+        maxAge : null
+      }
+    }));
     
     
     mirror.use(express.bodyParser());
@@ -111,7 +127,23 @@ define([
       });
     });
     
+    
+    
+    
     server.listen(nodeMirrorConfig.port);
+    
+    var io = socketIo.listen(server);
+    
+    
+    sessionSockets = new sessionIo(io, sessionStore, cookieParser);
+    
+    
+    sessionSockets.on('connection', function (err, socket, session) {
+      console.log(err);
+      console.log(session);
+      //your regular socket.io code goes here
+      //and you can still use your io object
+    });
     
     /*
     var io = socketIo.listen(server);

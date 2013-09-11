@@ -20,6 +20,7 @@ define([
   , "dojo/Deferred"
   , "./Stub"
   , "sol/fileName"
+  , "client/connection"
 ], function(
   domReady
   , extendDestroyable
@@ -42,6 +43,7 @@ define([
   , Deferred
   , Stub
   , fileName
+  , connection
 ){
   
   
