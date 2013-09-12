@@ -32,6 +32,7 @@ define([
     , "main/nodeControl"
     , "dojo/node!easy-zip"
     , "main/config"
+    , "dojo/node!pty.js"
   ], function(
     remoteCaller
     , treeItems
@@ -42,6 +43,7 @@ define([
     , nodeControl  // is not used here but must be loaded!!!
     , easyZip
     , nodeMirrorConfig
+    , pty
   ){
     //console.log(nodeMirrorConfig);
     
@@ -139,10 +141,40 @@ define([
     
     
     sessionSockets.on('connection', function (err, socket, session) {
+      if (err){
+        return;
+      };
+      var terminals = {};
+      var nextTerminalId = 0;
+      
       console.log(err);
-      console.log(session);
+      //console.log(session);
       //your regular socket.io code goes here
       //and you can still use your io object
+      socket.on("openterminal", function(respond){
+        console.log("opening terminal");
+        var termid = "terminal" + nextTerminalId;
+        nextTerminalId++;
+        
+        terminals[termid] = pty.spawn('bash', [], {
+          name: 'xterm-color',
+          cols: 80,
+          rows: 30,
+          cwd: process.env.HOME,
+          env: process.env
+        });
+        
+        var term = terminals[termid];
+        term.on("data", function(data){
+          socket.emit(termid, data);
+        });
+        socket.on(termid, function(data){
+          term.write(data);
+        });
+        respond({
+          termid: termid
+        });
+      });
     });
     
     /*

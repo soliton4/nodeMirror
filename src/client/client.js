@@ -21,6 +21,8 @@ define([
   , "./Stub"
   , "sol/fileName"
   , "client/connection"
+  , "dojo/dom-attr"
+  , "client/Terminal"
 ], function(
   domReady
   , extendDestroyable
@@ -44,12 +46,21 @@ define([
   , Stub
   , fileName
   , connection
+  , domAttr
+  , TerminalContent
 ){
   
   
   
   var tabs;
   var openIds = {};
+  
+  
+  globals.openExtra = function(parExtra){
+    tabs.addChild(parExtra);
+    tabs.selectChild(parExtra);
+  };
+  
   
   globals.openItem = function(parItem, insteadOf){
     if (openIds[parItem.id]){
@@ -140,6 +151,7 @@ define([
         openIds[res.par.id] = wgt;
         tabs.addChild(wgt);
         tabs.selectChild(wgt);
+        domAttr.set(wgt.domNode, "title", "");
         def.resolve(wgt);
       }, function(){
         console.log("widget creation error");
@@ -186,6 +198,14 @@ define([
     }
   });
   treeMenu.addChild(restartBtn);
+  
+  var terminalBtn = new Button({
+    label: "Terminal"
+    , onClick: function(){
+      globals.openExtra(new TerminalContent({}));
+    }
+  });
+  treeMenu.addChild(terminalBtn);
   
   var treeCP = new ContentPane({
     "class": "treeCP"
