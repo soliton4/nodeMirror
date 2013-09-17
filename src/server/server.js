@@ -171,6 +171,15 @@ define([
         socket.on(termid, function(data){
           term.write(data);
         });
+        socket.on(termid + "_resize", function(size){
+          console.log("resize event");
+          console.log(size);
+          try{
+          term.resize(size.x, size.y);
+          }catch(e){
+            console.log(e);
+          }
+        });
         respond({
           termid: termid
         });

@@ -21,12 +21,16 @@ define([
       var term = this.terminal;
       connection.emit("openterminal", function(par){
         var termid = par.termid;
+        term.on("resize", function(size){
+          connection.emit(termid + "_resize", size);
+        });
         connection.on(termid, function(data){
           term.write(data);
         });
         term.on("data", function(data){
           connection.emit(termid, data);
         });
+        term.emitResize();
       });
     }
   });
