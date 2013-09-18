@@ -6,6 +6,7 @@ define([], function(){
   , "modules/Directory"
   , "modules/Text"
   , "modules/Html"
+  , "modules/JavaScript"
   , "modules/Less"
   , "modules/Peg"
   ];

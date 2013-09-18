@@ -65,20 +65,13 @@ define([
     }
     
     , updateHints: function() {
-      if (!JSHINT){
-        return;
-      };
-      var mode = this.mirror.getMode();
-      if (!mode || mode.name != "javascript"){
+      if (!JSHINT || !this.jshint){
         return;
       };
       
       this.mirror.operation(lang.hitch(this, function(){
         var i;
-        for (i = 0; i < this.widgets.length; ++i){
-          this.mirror.removeLineWidget(this.widgets[i]);
-        };
-        this.widgets = [];
+        this._removeLineWgts();
         
         JSHINT(this.mirror.getValue(), {
           laxcomma: true
@@ -108,6 +101,14 @@ define([
       }));
     }
     
+    , _removeLineWgts: function(){
+      var i;
+      for (i = 0; i < this.widgets.length; ++i){
+        this.mirror.removeLineWidget(this.widgets[i]);
+      };
+      this.widgets = [];
+    }
+    
     , postMixInProperties: function(){
       this.inherited(arguments);
     }
@@ -115,14 +116,39 @@ define([
     , startup: function(){
       if (this._started) { return; };
       this.inherited(arguments);
-      this.mirror.on("change", lang.hitch(this, function(){
-        if (this.jshintErrors > 0){
-          this.checkDelayed.execNow();
-        }else{
-          this.checkDelayed.exec();
+      
+      if (this.jshint === undefined){
+        var mode = this.mirror.getMode();
+        if (mode && mode.name == "javascript"){
+          this.jshint = true;
         };
-      }));
-      this.checkDelayed.execNow();
+      };
+      
+      if (this.jshint){
+        this._startJshint();
+      };
+    }
+    ,_setJshintAttr: function(parValue){
+      this._set("jshint", parValue);
+      if (parValue){
+        this._startJshint();
+      }else{
+        this._removeLineWgts();
+      };
+    }
+    
+    , _startJshint: function(){
+      if (!this._jshintOn){
+        this._jshintOn = true;
+        this.mirror.on("change", lang.hitch(this, function(){
+          if (this.jshintErrors > 0){
+            this.checkDelayed.exec(300);
+          }else{
+            this.checkDelayed.exec();
+          };
+        }));
+      };
+      this.checkDelayed.exec(500);
     }
     
     , _setValueAttr: function(parValue){

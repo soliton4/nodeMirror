@@ -4,13 +4,42 @@ define([
   , "dijit/_WidgetBase"
   , "sol/wgt/mixin/resize"
   , "dojo/_base/array"
+  , "sol/wgt/Try"
+  , "sol/wgt/Text"
 ], function(
   declare
   , Terminal
   , _WidgetBase
   , resizeMixin
   , array
+  , Try
+  , Text
 ){
+  
+  var charBox;
+  
+  var getCharBox = function(){
+    if (charBox){
+      return charBox;
+    };
+    var tryWgt = new Try({});
+    var text = new Text({
+      text: "."
+    });
+    
+    tryWgt.placeAt(document.body);
+    charBox = tryWgt.getMarginBox({
+      node: text.domNode
+      , "class": "terminal"
+    });
+    
+    text.destroy();
+    tryWgt.destroy();
+    return charBox;
+  };
+  
+  
+  
   return declare([_WidgetBase, resizeMixin], {
     buildRendering: function(){
       this.inherited(arguments);
@@ -47,9 +76,10 @@ define([
     }
     , emitResize: function(){
       var box = this.get("contentBox");
+      var tb = getCharBox();
       this.dims = {
-        x: Math.floor((box.w - 10) / 7)
-        , y: Math.floor((box.h - 10) / 13)
+        x: Math.floor((box.w - 10) / tb.w)
+        , y: Math.floor((box.h - 10) / tb.h)
       };
       var dims = this.dims;
       this.terminal.resize(dims.x, dims.y);

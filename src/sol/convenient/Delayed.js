@@ -9,9 +9,14 @@ define([
       this.delay = par.delay || 100;
     }
     
-    , exec: function(){
+    , exec: function(parDelay){
       this.cancel();
-      this.timeout = setTimeout(this.fun, this.delay);
+      try{
+        var delay = parDelay !== undefined ? parDelay : this.delay;
+        this.timeout = setTimeout(this.fun, delay);
+      }catch(e){
+        this.timeout = setTimeout(this.fun, this.delay);
+      };
     }
     
     , execNow: function(){
