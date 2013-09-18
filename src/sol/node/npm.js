@@ -1,12 +1,12 @@
 define([
   "dojo/node!npm"
   , "dojo/_base/declare"
-  , "dojo/deferred"
+  , "dojo/Deferred"
   , "dojo/_base/lang"
 ], function(
   npm
   , declare
-  , deferred
+  , Deferred
   , lang
 ){
   
@@ -20,45 +20,56 @@ define([
     npmPs.resolve(npm);
   });
   
-  var Installer = declare([], {
-    constructor: function(parModuleName){
-      this.moduleName = parModuleName;
-      this.installDef = new Deferred();
-      this.errorDef = new Deferred();
-    }
-    
-    , install: function(){
-      this.installDef.resolve();
-      delete this.installDef;
-      npm.commands.install([this.moduleName], lang.hitch(this, function(err, data){
-        if (err){
-          this.errorDef.resolve();
-        }else{
-          this.errorDef.reject();
-        };
-        
-      }));
-    }
-    , on: function(parWhat, parFun){
-      if (parWhat == "installing"){
-        this.installDef.then(parFun);
-      };
-      if (parWhat == "installing"){
-        this.installDef.then(parFun);
-      };
-    }
-  });
-  
   return {
-    
+    //{
+    //  name
+    //  onInstall
+    //  onError
+    //  onLoad
+    //}
+    load: function(par){
+      var def = new Deferred();
+      if (par.onLoad){
+        def.then(par.onLoad);
+      };
+      if (par.onError){
+        def.then(undefined, par.onError);
+      };
+      
+      try {
+        require(["dojo/node!" + par.name], function(module){
+          def.resolve(module);
+          return;
+        });
+      }catch(err){
+        console.log(err);
+      
+        npmPs.then(function(npm){
+          if (par.onInstall){
+            par.onInstall(par);
+          };
+          npm.commands.install([par.name], function(err, data){
+            if (err){
+              def.reject(err);
+              return;
+            };
+            try{
+              var pathStr = process.cwd() + "/" + data[0][1];
+              require(["dojo/node!" + pathStr], function(module){
+                def.resolve(module);
+                return;
+              });
+              
+            }catch(e){
+              def.reject(e);
+            };
+          });
+        });
+        
+      };
+      
+      return def;
+    }
   };
   
 });
-npm.load(myConfigObject, function (er) {
-  if (er) return handlError(er)
-  npm.commands.install(["some", "args"], function (er, data) {
-    if (er) return commandFailed(er)
-    // command succeeded, and data might have some info
-  })
-  npm.on("log", function (message) { .... })
-})

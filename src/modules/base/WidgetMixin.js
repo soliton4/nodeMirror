@@ -71,6 +71,10 @@ define([
       this.set("title", this.get("dirtyTitle"));
     }
     
+    , _setTitleAttr: function(parTitle){
+      this._set("title", parTitle); // to skip the dom node mapping
+    }
+    
     , _getDirtyTitleAttr: function(){
       var t = "" + this.get("originalTitle");
       if (!t.length){

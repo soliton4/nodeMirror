@@ -7,6 +7,7 @@ define([
   , "dojo/node!fs"
   , "dojo/node!session.socket.io"
   , "dojo/node!connect"
+  , "dojo/Deferred"
 ], function(
   express
   , mimeMagic
@@ -16,6 +17,7 @@ define([
   , fs
   , sessionIo
   , connect
+  , Deferred
 ){
   // first add our server-modules flag so we can use same source files for server and client
   has.add("server-modules", function(){
@@ -32,7 +34,7 @@ define([
     , "main/nodeControl"
     , "dojo/node!easy-zip"
     , "main/config"
-    , "dojo/node!pty.js"
+    , "sol/node/npm"
   ], function(
     remoteCaller
     , treeItems
@@ -43,8 +45,13 @@ define([
     , nodeControl  // is not used here but must be loaded!!!
     , easyZip
     , nodeMirrorConfig
-    , pty
+    , npm
   ){
+    
+    console.log('Current directory: ' + process.cwd());
+    
+    
+    
     //console.log(nodeMirrorConfig);
     
     EasyZip = easyZip.EasyZip;
@@ -77,6 +84,12 @@ define([
       remoteCaller.serverCall(req.body).then(function(par){
         res.send({ result: par });
       });
+    });
+    
+    mirror.put("/reconnect", function(req, res){
+      console.log("----------------- recon request");
+      res.setHeader('Content-Type', "application/json");
+      res.send({ reconnected: true });
     });
     
     mirror.get('/download', function(req, res){
@@ -139,11 +152,20 @@ define([
     
     sessionSockets = new sessionIo(io, sessionStore, cookieParser);
     
-    
+    var pty;
     sessionSockets.on('connection', function (err, socket, session) {
+      console.log("----------------- socket con request");
       if (err){
+        console.log("-------------------------------------------------- connection error");
+        console.log(err);
+        console.log("-------------------------------------------------- connection error");
+        if (socket){
+          console.log("socket present");
+          socket.emit("tryagain");
+        };
         return;
       };
+        console.log("-------------------------------------------------- new con");
       var terminals = {};
       var nextTerminalId = 0;
       
@@ -156,32 +178,63 @@ define([
         var termid = "terminal" + nextTerminalId;
         nextTerminalId++;
         
-        terminals[termid] = pty.spawn('bash', [], {
-          name: 'xterm-color',
-          cols: 80,
-          rows: 30,
-          cwd: process.env.HOME,
-          env: process.env
-        });
-        
-        var term = terminals[termid];
-        term.on("data", function(data){
-          socket.emit(termid, data);
-        });
-        socket.on(termid, function(data){
-          term.write(data);
-        });
-        socket.on(termid + "_resize", function(size){
-          console.log("resize event");
-          console.log(size);
-          try{
-          term.resize(size.x, size.y);
-          }catch(e){
-            console.log(e);
-          }
-        });
         respond({
           termid: termid
+        });
+        
+        var def = new Deferred();
+        
+        if (pty){
+          def.resolve(pty);
+        }else{
+          npm.load({
+            name: "pty.js"
+            , onInstall: function(){
+              socket.emit(termid + "_meta", {
+                event: "install"
+              });
+            }
+            , onError: function(e){
+              socket.emit(termid + "_meta", {
+                event: "installerror"
+              });
+              def.reject();
+            }
+            , onLoad: function(module){
+              def.resolve(module);
+            }
+          });
+        };
+        
+        def.then(function(parPty){
+          pty = parPty;
+          terminals[termid] = pty.spawn('bash', [], {
+            name: 'xterm-color',
+            cols: 80,
+            rows: 30,
+            cwd: process.env.HOME,
+            env: process.env
+          });
+          
+          var term = terminals[termid];
+          term.on("data", function(data){
+            socket.emit(termid, data);
+          });
+          socket.on(termid, function(data){
+            term.write(data);
+          });
+          socket.on(termid + "_resize", function(size){
+            console.log("resize event");
+            console.log(size);
+            try{
+            term.resize(size.x, size.y);
+            }catch(e){
+              console.log(e);
+            }
+          });
+          socket.emit(termid + "_meta", {
+            event: "ready"
+          });
         });
       });
     });

@@ -51,6 +51,9 @@ var profile = (function(){
         }, {
           name: "style"
         , location: "style"
+        }, {
+          name: "term"
+        , location: "term"
         }],
         staticHasFeatures: {
           "dom": 1

@@ -1,11 +1,11 @@
 {
   "name": "node-mirror",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "author": {
     "name": "Matthias Behrens",
     "email": "matthias.behrens@gmail.com"
   },
-  "description": "node.js + CodeMirror = Great IDE",
+  "description": "node.js + CodeMirror = Great IDE and Admin Tool",
   "main": "./lib/nodemirror.js"
   , "bin": {
     "nodeMirror": "./bin/nodeMirror.js"
@@ -19,7 +19,10 @@
     "easy-zip": "*",
     "optimist": "*",
     "runtime-configuration": "*",
-    "less": "*"
+    "less": "*",
+    "session.socket.io": "*",
+    "connect": "*",
+    "npm": "*"
   },  
   "keywords": [
     "editor"
