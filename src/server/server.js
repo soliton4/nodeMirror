@@ -81,13 +81,18 @@ define([
     mirror.use(express.bodyParser());
     
     mirror.put('/apicall', function(req, res){
-      remoteCaller.serverCall(req.body).then(function(par){
-        res.send({ result: par });
-      });
+      try{
+        remoteCaller.serverCall(req.body).then(function(par){
+          res.send({ result: par });
+        });
+      }catch(e){
+        console.log(e);
+        res.close();
+      };
     });
     
     mirror.put("/reconnect", function(req, res){
-      console.log("----------------- recon request");
+      //console.log("----------------- recon request");
       res.setHeader('Content-Type', "application/json");
       res.send({ reconnected: true });
     });
@@ -154,7 +159,7 @@ define([
     
     var pty;
     sessionSockets.on('connection', function (err, socket, session) {
-      console.log("----------------- socket con request");
+      //console.log("----------------- socket con request");
       if (err){
         console.log("-------------------------------------------------- connection error");
         console.log(err);
@@ -165,7 +170,7 @@ define([
         };
         return;
       };
-        console.log("-------------------------------------------------- new con");
+        //console.log("-------------------------------------------------- new con");
       var terminals = {};
       var nextTerminalId = 0;
       
@@ -208,7 +213,7 @@ define([
         
         def.then(function(parPty){
           pty = parPty;
-          terminals[termid] = pty.spawn('bash', [], {
+          terminals[termid] = pty.spawn("bash", [], {
             name: 'xterm-color',
             cols: 80,
             rows: 30,
@@ -217,6 +222,10 @@ define([
           });
           
           var term = terminals[termid];
+          term.on("title", function(data){
+            console.log("title change:");
+            console.log(data);
+          });
           term.on("data", function(data){
             socket.emit(termid, data);
           });
@@ -224,8 +233,8 @@ define([
             term.write(data);
           });
           socket.on(termid + "_resize", function(size){
-            console.log("resize event");
-            console.log(size);
+            //console.log("resize event");
+            //console.log(size);
             try{
             term.resize(size.x, size.y);
             }catch(e){

@@ -88,6 +88,11 @@ define([
     , isDirDef: function(parFileName){
       var def = new Deferred();
       fs.stat(parFileName, function(err, stat){
+        if (err){
+          console.log(err);
+          def.reject(parFileName);
+          return;
+        };
         if (stat.isDirectory()){
           def.resolve(parFileName);
         };
