@@ -37,12 +37,12 @@ define([
       var rejectFun = lang.hitch(def, "reject");
       var name = nameTranslator.fileName(par.id);
       files.contentTypeDef(name).then(function(parType){
-        console.log(parType);
+        //console.log(parType);
         par.contentType = parType;
         moduleLoader.findModulePs(par).then(function(module){
           try{
             module.getContentPs(par).then(function(content){
-              console.log("have content");
+              //console.log("have content");
               def.resolve({
                 content: content
                 , par: par

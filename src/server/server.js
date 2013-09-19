@@ -153,7 +153,7 @@ define([
     server.listen(nodeMirrorConfig.port);
     
     var io = socketIo.listen(server);
-    
+    io.set("log level", 0);
     
     sessionSockets = new sessionIo(io, sessionStore, cookieParser);
     
@@ -174,7 +174,6 @@ define([
       var terminals = {};
       var nextTerminalId = 0;
       
-      console.log(err);
       //console.log(session);
       //your regular socket.io code goes here
       //and you can still use your io object

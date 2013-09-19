@@ -20,7 +20,7 @@ define([
   var nodeControl;
   var cluster;
   if (has("server-modules")){
-    console.log("running on server");
+    //console.log("running on server");
     if (config.restartableObj){
       console.log("has restartable");
     };

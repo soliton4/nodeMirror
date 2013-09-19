@@ -45,7 +45,7 @@ define([
     , isCompetentPs: function(par){
       var def = this.def();
       if (par.contentType == "inode/directory"){
-        console.log("resolving");
+        //console.log("resolving");
         def.resolve();
       }else{
         def.reject();
@@ -101,13 +101,13 @@ define([
           require([
             "main/contentIO"
           ], function(contentIO){
-            console.log("done2" + newFileNameStr);
+            //console.log("done2" + newFileNameStr);
             try{
               contentIO.getContentDef({
                 type: "file"
                 , id: newFileNameStr
               }).then(function(parContent){
-                console.log("done3" + newFileNameStr);
+                //console.log("done3" + newFileNameStr);
                 def.resolve(parContent);
               }, function(e){
                 console.log(e);

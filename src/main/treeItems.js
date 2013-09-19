@@ -37,7 +37,7 @@ define([
        return treeItems.getItemDef("");
     }
     , getItemDef: function(parId){
-      console.log(parId);
+      //console.log(parId);
       var def = new Deferred();
       var item = {
         id: parId
@@ -45,7 +45,7 @@ define([
       };
       files.dirsDef(nameTranslator.fileName(parId)).then(function(ar){
         item.hasChildren = !!ar;
-        console.log("resolve:" + parId);
+        //console.log("resolve:" + parId);
         def.resolve(item);
       });
       return def;
@@ -60,9 +60,9 @@ define([
           return;
         };
         var resultAr = [];
-        console.log(ar);
+        //console.log(ar);
         solPromise.allDone(array.map(ar, function(parFileName){
-          console.log(parFileName);
+          //console.log(parFileName);
           return treeItems.getItemDef(nameTranslator.reduceName(parFileName)).then(lang.hitch(resultAr, "push"));
         })).then(function(){
           def.resolve(resultAr);
