@@ -207,6 +207,26 @@ define([
   });
   treeMenu.addChild(terminalBtn);
   
+  var nodeBtn = new Button({
+    label: "Node"
+    , onClick: function(){
+      globals.openExtra(new TerminalContent({
+        mode: "node"
+      }));
+    }
+  });
+  //treeMenu.addChild(nodeBtn);
+  
+  var debugBtn = new Button({
+    label: "Dbg"
+    , onClick: function(){
+      globals.openExtra(new TerminalContent({
+        mode: "dbg"
+      }));
+    }
+  });
+  //treeMenu.addChild(debugBtn);
+  
   var treeCP = new ContentPane({
     "class": "treeCP"
     , "region": "center"

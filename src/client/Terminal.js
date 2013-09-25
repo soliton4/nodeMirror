@@ -23,7 +23,9 @@ define([
       this.addChild(this.terminal);
       var self = this;
       var term = this.terminal;
-      connection.emit("openterminal", function(par){
+      connection.emit("openterminal", {
+        mode: this.mode
+      }, function(par){
         var termid = par.termid;
         
         var installWgt;

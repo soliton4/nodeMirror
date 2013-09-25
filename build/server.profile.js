@@ -59,6 +59,7 @@ var profile = (function(){
                 , "modules/Less"
                 , "modules/Html"
                 , "modules/Peg"
+                , "modules/JavaScript"
                 , "main/codemirror/fake"
                 ]
             }

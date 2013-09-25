@@ -26,6 +26,7 @@ mkdir ../release/nodeMirror/src/client
 mkdir ../release/nodeMirror/src/client/dojo
 
 cp ../release/client/dojo/dojo.js ../release/nodeMirror/src/client/dojo/
+cp ../release/client/dojo/dojo.js.map ../release/nodeMirror/src/client/dojo/
 cp -R ../release/client/dojo/nls ../release/nodeMirror/src/client/dojo/
 cp -R ../release/client/dojo/resources ../release/nodeMirror/src/client/dojo/
 cp -R ../release/client/dojo/selector ../release/nodeMirror/src/client/dojo/

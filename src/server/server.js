@@ -35,6 +35,7 @@ define([
     , "dojo/node!easy-zip"
     , "main/config"
     , "sol/node/npm"
+    , "dojo/node!net"
   ], function(
     remoteCaller
     , treeItems
@@ -46,6 +47,7 @@ define([
     , easyZip
     , nodeMirrorConfig
     , npm
+    , net
   ){
     
     console.log('Current directory: ' + process.cwd());
@@ -177,7 +179,7 @@ define([
       //console.log(session);
       //your regular socket.io code goes here
       //and you can still use your io object
-      socket.on("openterminal", function(respond){
+      socket.on("openterminal", function(par, respond){
         console.log("opening terminal");
         var termid = "terminal" + nextTerminalId;
         nextTerminalId++;
@@ -185,6 +187,50 @@ define([
         respond({
           termid: termid
         });
+        
+        if (par.mode == "node"){
+          process.__defineGetter__('stderr', function() { 
+            return {
+              write: function(data){
+                socket.emit(termid, data);
+                console.log(data);
+              }
+            };
+          });
+          /*process.stdout.on('data', function(data){
+            socket.emit(termid, data);
+          });
+          process.stderr.on('data', function(data){
+            socket.emit(termid, data);
+          });
+          socket.on(termid, function(data){
+            process.stdin.emit('data', data);
+          });*/
+          socket.emit(termid + "_meta", {
+            event: "ready"
+          });
+          socket.emit(termid, "welcome");
+          console.log("ok");
+          
+          return;
+        };
+        if (par.mode == "dbg"){
+          var dbgSock = new net.Socket();
+          dbgSock.connect(5858, function(par1, par2){
+            console.log("listener evt");
+            //console.log(par1);
+          });
+          dbgSock.on("data", function(data){
+            console.log(data.toString());
+            socket.emit(termid, data.toString());
+          });
+          socket.emit(termid + "_meta", {
+            event: "ready"
+          });
+          console.log("dbg ok");
+          
+          return;
+        };
         
         var def = new Deferred();
         
@@ -212,13 +258,24 @@ define([
         
         def.then(function(parPty){
           pty = parPty;
-          terminals[termid] = pty.spawn("bash", [], {
-            name: 'xterm-color',
-            cols: 80,
-            rows: 30,
-            cwd: process.env.HOME,
-            env: process.env
-          });
+          if (process.platform == "win32"){
+            // use fork instead
+            terminals[termid] = pty.fork("c:\\windows\\system32\\cmd.exe", [], {
+              name: 'xterm-color',
+              cols: 80,
+              rows: 30,
+              cwd: process.env.HOME,
+              env: process.env
+            });
+          }else{
+            terminals[termid] = pty.spawn("bash", [], {
+              name: 'xterm-color',
+              cols: 80,
+              rows: 30,
+              cwd: process.env.HOME,
+              env: process.env
+            });
+          };
           
           var term = terminals[termid];
           term.on("title", function(data){
@@ -247,46 +304,5 @@ define([
       });
     });
     
-    /*
-    var io = socketIo.listen(server);
-    
-    
-    
-    
-    var term = pty.spawn('bash', [], {
-      name: 'xterm-color',
-      cols: 80,
-      rows: 30,
-      cwd: process.env.HOME,
-      env: process.env
-    });
-    
-    io.sockets.on('connection', function (socket) {
-      console.log("connecting");
-      //socket.emit('news', { hello: 'world' });
-      socket.on("create", function(cols, rows, fn){
-        console.log("create");
-        fn(null, {
-          id: 1
-        });
-      });
-      socket.on("data", function(id, data){
-        console.log("data");
-        //term.write(data);
-      });
-      /*term.on('data', function(data) {
-        socket.emit('data', 1, data);
-        console.log(data);
-      });* /
-    });
-    
-    term.on('close', function() {
-      // Make sure it closes
-      // on the clientside
-      console.log("term close");
-    });
-    
-    console.log(typeof(term));
-    */
   });
 });

@@ -85,6 +85,7 @@ var profile = (function(){
                 , "modules/Text"
                 , "modules/Directory"
                 , "modules/Binary"
+                , "modules/JavaScript"
                 , "modules/Less"
                 , "modules/Html"
                 , "modules/binary/HexGrid"
