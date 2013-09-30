@@ -16,6 +16,8 @@
 
 @import url('../client/terminal.css');
 
+@import url('../debug/style.css');
+
 
 * { 
   outline: none; 

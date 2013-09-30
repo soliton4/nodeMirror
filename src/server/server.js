@@ -36,6 +36,8 @@ define([
     , "main/config"
     , "sol/node/npm"
     , "dojo/node!net"
+    , "dojo/node!json-socket"
+    , "sol/node/debug/Protocol"
   ], function(
     remoteCaller
     , treeItems
@@ -48,6 +50,8 @@ define([
     , nodeMirrorConfig
     , npm
     , net
+    , jsonSocket
+    , debugProtocol
   ){
     
     console.log('Current directory: ' + process.cwd());
@@ -214,23 +218,53 @@ define([
           
           return;
         };
+        
+        
         if (par.mode == "dbg"){
+          //jsonSocket
           var dbgSock = new net.Socket();
+          //var dbgSock = new jsonSocket(new net.Socket()); //Decorate a standard net.Socket with JsonSocket
+          
           dbgSock.connect(5858, function(par1, par2){
             console.log("listener evt");
             //console.log(par1);
           });
+          var dbgProt = new debugProtocol();
+          dbgProt.on("break", function(par){
+            socket.emit(termid, {
+              type: "break"
+              , body: par
+            });
+          });
           dbgSock.on("data", function(data){
-            console.log(data.toString());
-            socket.emit(termid, data.toString());
+            dbgProt.write(data);
           });
           socket.emit(termid + "_meta", {
             event: "ready"
           });
-          console.log("dbg ok");
+          
+          socket.on(termid, function(msg, callBack){
+            if (msg.type == "source"){
+              dbgProt.getSource({id: msg.id}).then(function(parRes){
+                console.log(parRes);
+                callBack(parRes);
+              });
+            };
+          });
+          dbgProt.on("data", function(par){
+            console.log("writing:");
+            console.log(par);
+            console.log("------------------------");
+            dbgSock.write(par);
+          });
+          //type: "source"
+          //, id: source.id
           
           return;
         };
+        
+        
+        
         
         var def = new Deferred();
         

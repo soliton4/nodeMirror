@@ -23,6 +23,7 @@ define([
   , "client/connection"
   , "dojo/dom-attr"
   , "client/Terminal"
+  , "debug/Wgt"
 ], function(
   domReady
   , extendDestroyable
@@ -48,6 +49,7 @@ define([
   , connection
   , domAttr
   , TerminalContent
+  , DebugWgt
 ){
   
   
@@ -59,6 +61,11 @@ define([
   globals.openExtra = function(parExtra){
     tabs.addChild(parExtra);
     tabs.selectChild(parExtra);
+  };
+
+  globals.addTab = function(parWgt){
+    tabs.addChild(parWgt);
+    tabs.selectChild(parWgt);
   };
   
   
@@ -220,12 +227,12 @@ define([
   var debugBtn = new Button({
     label: "Dbg"
     , onClick: function(){
-      globals.openExtra(new TerminalContent({
+      globals.openExtra(new DebugWgt({
         mode: "dbg"
       }));
     }
   });
-  //treeMenu.addChild(debugBtn);
+  treeMenu.addChild(debugBtn);
   
   var treeCP = new ContentPane({
     "class": "treeCP"
