@@ -8,7 +8,7 @@ define([], function(){
   , "modules/Html"
   , "modules/JavaScript"
   , "modules/Less"
-  , "modules/Peg"
+  //, "modules/Peg"
   ];
   
 });

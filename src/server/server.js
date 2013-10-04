@@ -36,7 +36,6 @@ define([
     , "main/config"
     , "sol/node/npm"
     , "dojo/node!net"
-    , "dojo/node!json-socket"
     , "sol/node/debug/Protocol"
   ], function(
     remoteCaller
@@ -50,7 +49,6 @@ define([
     , nodeMirrorConfig
     , npm
     , net
-    , jsonSocket
     , debugProtocol
   ){
     
@@ -221,9 +219,7 @@ define([
         
         
         if (par.mode == "dbg"){
-          //jsonSocket
           var dbgSock = new net.Socket();
-          //var dbgSock = new jsonSocket(new net.Socket()); //Decorate a standard net.Socket with JsonSocket
           
           dbgSock.connect(5858, function(par1, par2){
             console.log("listener evt");
