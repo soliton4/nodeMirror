@@ -37,7 +37,37 @@ define([
       
       this.mirror.set("jshint", false);
       
+      this.continueBtn = this.ownObj(new Button({
+        onClick: lang.hitch(this, "_continue", undefined)
+        , label: "continue"
+      }));
+      this.menu.addChild(this.continueBtn);
+      
+      this.stepInBtn = this.ownObj(new Button({
+        onClick: lang.hitch(this, "_continue", "in")
+        , label: "step in"
+      })); 
+      this.menu.addChild(this.stepInBtn);
+      
+      this.stepNextBtn = this.ownObj(new Button({
+        onClick: lang.hitch(this, "_continue", "next")
+        , label: "next"
+      })); 
+      this.menu.addChild(this.stepNextBtn);
+      
+      this.stepOutBtn = this.ownObj(new Button({
+        onClick: lang.hitch(this, "_continue", "out")
+        , label: "step out"
+      })); 
+      this.menu.addChild(this.stepOutBtn);
+      
       return ret;
+    }
+    
+    , _continue: function(parStep){
+      this.debuggerObj.cont(parStep).then(lang.hitch(this, function(par){
+        debugger;
+      }));
     }
     
     , constructor: function(par){

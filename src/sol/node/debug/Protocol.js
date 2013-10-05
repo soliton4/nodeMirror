@@ -196,5 +196,47 @@ define([
       return def;
     }
     
+    , _commmand: function(parCmd, parArg){
+      var def = new Deferred();
+      var dataStr = "";
+      var dataJsn = {
+        seq: this.seq++
+        , type: "request"
+        , "command": parCmd
+      };
+      
+      if (parArg){
+        dataJsn.arguments = parArg;
+      };
+      
+      dataStr = "Content-Length: ";
+      var jsnStr = json.stringify(dataJsn);
+      dataStr += jsnStr.length;
+      dataStr += "\r\n\r\n";
+      dataStr += jsnStr;
+      this._data(dataStr);
+      
+      //"type":"response","command":"scripts","success":true,"body":
+      
+      this._expectResponse({
+        command: parCmd
+      }).then(function(parResponse){
+        console.log(parResponse);
+        def.resolve(parResponse);
+      });
+      
+      return def;
+    }
+    
+    , cont: function(par){
+      var def = new Deferred();
+      this._commmand("continue", par.step ? {
+        stepaction: par.step
+      } : undefined).then(function(res){
+        def.resolve(res);
+      });
+      return def;
+    }
+    
   });
 });

@@ -88,5 +88,18 @@ define([
       
     }
     
+    , cont: function(parStep){
+      var def = new Deferred();
+      
+      connection.emit(this.termid, {
+        type: "continue"
+        , step: parStep
+      }, lang.hitch(this, function(par){
+        def.resolve(par);
+      }));
+      
+      return def;
+    }
+    
   });
 });

@@ -250,6 +250,12 @@ define([
                 callBack(parRes);
               });
             };
+            if (msg.type == "continue"){
+              dbgProt.cont({step: msg.step}).then(function(parRes){
+                console.log(parRes);
+                callBack(parRes);
+              });
+            };
           });
           dbgProt.on("data", function(par){
             console.log("writing:");
