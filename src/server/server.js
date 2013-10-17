@@ -37,6 +37,7 @@ define([
     , "sol/node/npm"
     , "dojo/node!net"
     , "sol/node/debug/Protocol"
+    , "dojo/node!../../lib/terminal.js"
   ], function(
     remoteCaller
     , treeItems
@@ -50,6 +51,7 @@ define([
     , npm
     , net
     , debugProtocol
+    , terminal
   ){
     
     console.log('Current directory: ' + process.cwd());
@@ -190,34 +192,6 @@ define([
           termid: termid
         });
         
-        if (par.mode == "node"){
-          process.__defineGetter__('stderr', function() { 
-            return {
-              write: function(data){
-                socket.emit(termid, data);
-                console.log(data);
-              }
-            };
-          });
-          /*process.stdout.on('data', function(data){
-            socket.emit(termid, data);
-          });
-          process.stderr.on('data', function(data){
-            socket.emit(termid, data);
-          });
-          socket.on(termid, function(data){
-            process.stdin.emit('data', data);
-          });*/
-          socket.emit(termid + "_meta", {
-            event: "ready"
-          });
-          socket.emit(termid, "welcome");
-          console.log("ok");
-          
-          return;
-        };
-        
-        
         if (par.mode == "dbg"){
           var dbgSock = new net.Socket();
           
@@ -287,6 +261,7 @@ define([
               def.reject();
             }
             , onLoad: function(module){
+              terminal.setPty(module);
               def.resolve(module);
             }
           });
@@ -294,51 +269,27 @@ define([
         
         def.then(function(parPty){
           pty = parPty;
-          if (process.platform == "win32"){
-            // use fork instead
-            terminals[termid] = pty.fork("c:\\windows\\system32\\cmd.exe", [], {
-              name: 'xterm-color',
-              cols: 80,
-              rows: 30,
-              cwd: process.env.HOME,
-              env: process.env
-            });
-          }else{
-            terminals[termid] = pty.spawn("bash", [], {
-              name: 'xterm-color',
-              cols: 80,
-              rows: 30,
-              cwd: process.env.HOME,
-              env: process.env
-            });
-          };
           
-          var term = terminals[termid];
-          term.on("title", function(data){
-            console.log("title change:");
-            console.log(data);
-          });
-          term.on("data", function(data){
-            socket.emit(termid, data);
-          });
-          socket.on(termid, function(data){
-            term.write(data);
-          });
-          socket.on(termid + "_resize", function(size){
-            //console.log("resize event");
-            //console.log(size);
-            try{
-            term.resize(size.x, size.y);
-            }catch(e){
-              console.log(e);
-            }
-          });
-          socket.emit(termid + "_meta", {
-            event: "ready"
+          terminal.newTerminal(function(term){
+            term.onData = function(data){
+              socket.emit(termid, data);
+            };
+            socket.on(termid, function(data){
+              term.write(data);
+            });
+            socket.on(termid + "_resize", function(size){
+              try{
+                term.resize(size.x, size.y);
+              }catch(e){
+                console.log(e);
+              }
+            });
+            socket.emit(termid + "_meta", {
+              event: "ready"
+            });
           });
         });
       });
     });
-    
   });
-});
+}); // thats far to many brackets
