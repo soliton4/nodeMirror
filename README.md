@@ -52,6 +52,13 @@ the npm distribution is a release build
 check out my git page to get the development version which you can use to customize node-mirror  
 there is a build script that lets you build your own node-mirror  
 
+to switch of the experimental terminal or debugger use this command line parameters  
+
+`
+node node_modules/node-mirror/bin/nodeMirror.js --no-terminal --no-debug
+`  
+
+
 ## License
 
 BSD - maybe i will relicense it under MIT when i have found out what the differences are

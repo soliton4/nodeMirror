@@ -21,7 +21,7 @@ CodeMirror.defineMode("debugging", function(config, parserConfig) {
   return {
     startState: function(basecolumn) {
       return {
-        line: 0,
+        line: 0
       };
     },
     
