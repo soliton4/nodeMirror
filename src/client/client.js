@@ -24,6 +24,7 @@ define([
   , "dojo/dom-attr"
   , "client/Terminal"
   , "debug/Wgt"
+  , "main/config"  
 ], function(
   domReady
   , extendDestroyable
@@ -50,8 +51,8 @@ define([
   , domAttr
   , TerminalContent
   , DebugWgt
+  , config
 ){
-  
   
   
   var tabs;
@@ -212,17 +213,12 @@ define([
       globals.openExtra(new TerminalContent({}));
     }
   });
-  treeMenu.addChild(terminalBtn);
-  
-  var nodeBtn = new Button({
-    label: "Node"
-    , onClick: function(){
-      globals.openExtra(new TerminalContent({
-        mode: "node"
-      }));
-    }
+  config.get("terminal").then(function(useTerminal){
+    if (useTerminal === false){
+      return;
+    };
+    treeMenu.addChild(terminalBtn);
   });
-  //treeMenu.addChild(nodeBtn);
   
   var debugBtn = new Button({
     label: "Dbg"
@@ -232,7 +228,12 @@ define([
       }));
     }
   });
-  treeMenu.addChild(debugBtn);
+  config.get("debug").then(function(useDebug){
+    if (useDebug === false){
+      return;
+    };
+    treeMenu.addChild(debugBtn);
+  });
   
   var treeCP = new ContentPane({
     "class": "treeCP"

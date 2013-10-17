@@ -56,6 +56,7 @@ define([
     
     console.log('Current directory: ' + process.cwd());
     
+    //console.log(nodeMirrorConfig);
     
     
     //console.log(nodeMirrorConfig);
@@ -184,6 +185,11 @@ define([
       //your regular socket.io code goes here
       //and you can still use your io object
       socket.on("openterminal", function(par, respond){
+        if (nodeMirrorConfig.terminal === false){
+          respond({
+          });
+          return;
+        };
         console.log("opening terminal");
         var termid = "terminal" + nextTerminalId;
         nextTerminalId++;

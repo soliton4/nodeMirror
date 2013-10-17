@@ -54,6 +54,9 @@ var profile = (function(){
         }, {
           name: "term"
         , location: "term"
+        }, {
+          name: "debug"
+        , location: "debug"
         }],
         staticHasFeatures: {
           "dom": 1

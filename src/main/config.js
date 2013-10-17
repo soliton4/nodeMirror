@@ -28,6 +28,8 @@ define([
     
     , clientConfig: {
       "theme": true
+      , "terminal": true
+      , "debug": true
     }
     , saveable: {
       "theme": true
