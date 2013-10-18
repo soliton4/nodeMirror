@@ -28,7 +28,7 @@ define([
         
         var def = new Deferred();
         
-        if (pty){
+        if (pty || process.platform == "win32"){
           def.resolve(pty);
         }else{
           npm.load({
