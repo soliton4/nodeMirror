@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\..\..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\..\..\deps">
+      <UniqueIdentifier>{D8C1C9B5-38B1-FC5D-54EB-0CB99232FA56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\..\..\deps\winpty">
+      <UniqueIdentifier>{65CA4A4C-2F90-FF0A-086F-3A4E81B2F5F5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\..\..\deps\winpty\shared">
+      <UniqueIdentifier>{20D50607-EB73-BC01-11AE-A2B6030BB0A1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\..\..\deps\winpty\agent">
+      <UniqueIdentifier>{8474C169-9C01-C09B-BA71-B21D816D6E84}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\deps\winpty\winpty.gyp">
+      <Filter>..\..\..\deps\winpty</Filter>
+    </None>
+    <ClCompile Include="..\..\..\deps\winpty\shared\DebugClient.cc">
+      <Filter>..\..\..\deps\winpty\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\deps\winpty\agent\Agent.cc">
+      <Filter>..\..\..\deps\winpty\agent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\deps\winpty\agent\EventLoop.cc">
+      <Filter>..\..\..\deps\winpty\agent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\deps\winpty\agent\Coord.cc">
+      <Filter>..\..\..\deps\winpty\agent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\deps\winpty\agent\AgentAssert.cc">
+      <Filter>..\..\..\deps\winpty\agent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\deps\winpty\agent\Win32Console.cc">
+      <Filter>..\..\..\deps\winpty\agent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\deps\winpty\agent\Terminal.cc">
+      <Filter>..\..\..\deps\winpty\agent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\deps\winpty\agent\main.cc">
+      <Filter>..\..\..\deps\winpty\agent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\deps\winpty\agent\ConsoleInput.cc">
+      <Filter>..\..\..\deps\winpty\agent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\deps\winpty\agent\NamedPipe.cc">
+      <Filter>..\..\..\deps\winpty\agent</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\deps\winpty\agent\SmallRect.cc">
+      <Filter>..\..\..\deps\winpty\agent</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
