@@ -25,6 +25,8 @@ define([
   , "client/Terminal"
   , "debug/Wgt"
   , "main/config"  
+  , "dojo/dom"
+  , "dojo/dom-construct"
 ], function(
   domReady
   , extendDestroyable
@@ -52,6 +54,8 @@ define([
   , TerminalContent
   , DebugWgt
   , config
+  , dom
+  , domConstruct
 ){
   
   
@@ -260,6 +264,9 @@ define([
   
   // rendering bug;
   setTimeout(lang.hitch(mainBc, "resize"), 100);
-  setTimeout(lang.hitch(mainBc, "resize"), 500);
+  setTimeout(function(){
+    mainBc.resize();
+    domConstruct.destroy(dom.byId("startupscreen"));
+  }, 500);
   
 });

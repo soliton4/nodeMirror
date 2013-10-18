@@ -38,6 +38,7 @@ define([
     , "dojo/node!net"
     , "sol/node/debug/Protocol"
     , "dojo/node!../../lib/terminal.js"
+    , "term/server"
   ], function(
     remoteCaller
     , treeItems
@@ -52,6 +53,7 @@ define([
     , net
     , debugProtocol
     , terminal
+    , terminalServer
   ){
     
     console.log('Current directory: ' + process.cwd());
@@ -177,6 +179,10 @@ define([
         };
         return;
       };
+      
+      terminalServer.newConnection(socket);
+      return;
+      
         //console.log("-------------------------------------------------- new con");
       var terminals = {};
       var nextTerminalId = 0;

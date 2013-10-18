@@ -5,14 +5,6 @@
     <!-- socket.io -->
       <script src="/socket.io/socket.io.js"></script>
       
-      <script>
-        /*var socket = io.connect('http://localhost:3000');
-        socket.on('news', function (data) {
-          console.log(data);
-          socket.emit('my other event', { my: 'data' });
-        });*/
-      </script>
-    
     <!-- dojo -->
       <!-- config -->
         <script>
@@ -70,5 +62,11 @@
 	  <link rel="stylesheet" type="text/css" href="style/style.css">
   </head>
   <body>
+    <div id="startupscreen">
+      <div class="graynode"></div>
+      <div class="startupmsg">
+        loading ...
+      </div>
+    </div>
   </body>
 </html>
