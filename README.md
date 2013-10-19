@@ -62,8 +62,19 @@ node node_modules/node-mirror/bin/nodeMirror.js --no-terminal --no-debug
 
 due to some incopatibility between the terminal module and the node cluser module in windows, the restart function is disabled in Windows.  
 Sorry!  
-
-
+  
+  
+## Special Thanks  
+  
+* CodeMirror (https://github.com/chjj/pty.js)  
+for creating the most developer friendly editor  
+  
+* pty.js (https://github.com/chjj/pty.js)  
+for making terminals in node.j possible  
+  
+* all the contributers, testers and users  
+for making this a great IDE  
+  
 ## License
 
 BSD - maybe i will relicense it under MIT when i have found out what the differences are
