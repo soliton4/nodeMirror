@@ -32,6 +32,9 @@ define([
               rcInstance.set(parName, parValue);
               rcInstance.save("ini");
             };
+            if (process.platform == "win32"){
+              defaultConfig.restart = false;
+            };
             load(defaultConfig);
           });
         });

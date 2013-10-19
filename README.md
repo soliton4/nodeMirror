@@ -58,6 +58,11 @@ to switch of the experimental terminal or debugger use this command line paramet
 node node_modules/node-mirror/bin/nodeMirror.js --no-terminal --no-debug
 `  
 
+## Windows Users  
+
+due to some incopatibility between the terminal module and the node cluser module in windows, the restart function is disabled in Windows.  
+Sorry!  
+
 
 ## License
 

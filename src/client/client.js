@@ -209,7 +209,12 @@ define([
       nodeControl.restartDef();
     }
   });
-  treeMenu.addChild(restartBtn);
+  config.get("restart").then(function(useRestart){
+    if (useRestart === false){
+      return;
+    };
+    treeMenu.addChild(restartBtn);
+  });
   
   var terminalBtn = new Button({
     label: "Terminal"

@@ -30,6 +30,7 @@ define([
       "theme": true
       , "terminal": true
       , "debug": true
+      , "restart": true
     }
     , saveable: {
       "theme": true
