@@ -1,6 +1,6 @@
 {
   "name": "node-mirror",
-  "version": "0.0.28",
+  "version": "0.0.90",
   "author": {
     "name": "Matthias Behrens",
     "email": "matthias.behrens@gmail.com"
@@ -11,7 +11,7 @@
     "nodeMirror": "./bin/nodeMirror.js"
   }
   , "dependencies" : {
-    "restartable"   :  "*",
+    "restartable"   :  ">= 0.0.14",
     "express" :  "3.x",
     "mime": "*",
     "mime-magic": "*",

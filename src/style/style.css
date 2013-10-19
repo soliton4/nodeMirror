@@ -113,3 +113,9 @@ body {
   z-index: 110000;
   border-radius: 4px;
 }
+
+#startupscreen .startupmsg .msg {
+  text-align: center;
+  font-size: large;
+}
+

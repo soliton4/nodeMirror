@@ -19,6 +19,7 @@ mkdir ../release/nodeMirror/lib
 
 cp ../lib/nodeMirror.js ../release/nodeMirror/lib/
 cp ../lib/terminal.js ../release/nodeMirror/lib/
+cp ../lib/pty-win ../release/nodeMirror/lib/
 cp ../bin/nodeMirror.js ../release/nodeMirror/bin/
 
 cp ../src/index.build.html ../release/nodeMirror/src/index.html

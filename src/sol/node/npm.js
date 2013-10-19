@@ -46,9 +46,15 @@ define([
       
         npmPs.then(function(npm){
           if (par.onInstall){
-            par.onInstall(par);
+            try{
+              par.onInstall(par);
+            }catch(e){
+              console.log(e);
+            };
           };
+          console.log("installing npm");
           npm.commands.install([par.name], function(err, data){
+            console.log("..x.");
             if (err){
               def.reject(err);
               return;

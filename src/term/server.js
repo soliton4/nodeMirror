@@ -29,22 +29,27 @@ define([
         var def = new Deferred();
         
         if (pty || process.platform == "win32"){
+          console.log("resoliving");
           def.resolve(pty);
         }else{
+          console.log("installing");
           npm.load({
             name: "pty.js"
             , onInstall: function(){
-              socket.emit(termid + "_meta", {
+              console.log("install..");
+              socket.emit("terminal_meta", {
                 event: "install"
               });
             }
             , onError: function(e){
-              socket.emit(termid + "_meta", {
+              console.log("error..");
+              socket.emit("terminal_meta", {
                 event: "installerror"
               });
               def.reject();
             }
             , onLoad: function(module){
+              console.log("load..");
               terminal.setPty(module);
               pty = module;
               def.resolve(module);

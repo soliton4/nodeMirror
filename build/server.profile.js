@@ -27,6 +27,9 @@ var profile = (function(){
         },{
             name: "sol",
             location: "sol"
+        },{
+            name: "term",
+            location: "term"
         }],
         staticHasFeatures: {
           "host-node": 1 // Ensure we "force" the loader into Node.js mode
@@ -61,6 +64,7 @@ var profile = (function(){
                 , "modules/Peg"
                 , "modules/JavaScript"
                 , "main/codemirror/fake"
+                , "term/server"
                 ]
             }
         }

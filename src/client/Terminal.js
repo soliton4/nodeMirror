@@ -13,6 +13,7 @@ define([
 ){
   return declare([BorderContainer], {
     title: "Terminal"
+    , closable: true
     , "class": "terminalTab"
     , buildRendering: function(){
       this.inherited(arguments);
@@ -23,26 +24,20 @@ define([
       this.addChild(this.terminal);
       var self = this;
       var term = this.terminal;
-      connection.emit("openterminal", {
-        mode: this.mode
-      }, function(par){
-        var termid = par.termid;
-        
-        var installWgt;
-        
-        connection.on(termid + "_meta", function(meta){
+      
+        connection.on("terminal_meta", function(meta){
           if (meta.event == "install"){
-            installWgt = new Text({
+            self.installWgt = new Text({
               text: "please wait while pty.js is being installed ..."
               , region: "top"
               , "class": "message"
             });
-            self.addChild(installWgt);
-            self.own(installWgt);
+            self.addChild(self.installWgt);
+            self.own(self.installWgt);
           };
           if (meta.event == "installerror"){
-            if (installWgt){
-              installWgt.destroy();
+            if (self.installWgt){
+              self.installWgt.destroy();
             };
             errorWgt = new Text({
               text: "installation of pty.js was not successful ..."
@@ -52,9 +47,18 @@ define([
             self.addChild(errorWgt);
             self.own(errorWgt);
           };
+        });
+      
+      
+      connection.emit("openterminal", {
+        mode: this.mode
+      }, function(par){
+        var termid = par.termid;
+        
+        connection.on(termid + "_meta", function(meta){
           if (meta.event == "ready"){
-            if (installWgt){
-              installWgt.destroy();
+            if (self.installWgt){
+              self.installWgt.destroy();
             };
             self.resize();
             term.emitResize();
