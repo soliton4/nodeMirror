@@ -72,6 +72,7 @@ define([
     
     constructor: function(){
       var self = this;
+      this.socketDef = new Deferred();
       connection.on("connect", function(socket, session){
         self.handleConnection(socket, session);
       });
@@ -121,8 +122,10 @@ define([
     
     , getList: function(){
       var def = new Deferred();
-      this.socket.emit("terminal/getList", function(parList){
-        def.resolve(parList);
+      this.socketDef.then(function(socket){
+        socket.emit("terminal/getList", function(parList){
+          def.resolve(parList);
+        });
       });
       return def;
     }
@@ -226,6 +229,9 @@ define([
     _handleConnection = function(socket){
       var self = this;
       this.socket = socket;
+      this.socketDef.resolve(socket);
+      this.socketDef = new Deferred();
+      this.socketDef.resolve(socket);
       this.socket.on("terminalListChange", function(parList){
         if (self.wgt){
           self.wgt.listChanged(parList);

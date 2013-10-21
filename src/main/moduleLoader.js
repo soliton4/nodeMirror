@@ -58,10 +58,14 @@ define([
           var module;
           try{
             module = this.modules[i];
-            module.isCompetentPs(par).then(function(){
-              def.resolve(module);
-              return;
-            }, loop); // calls itself when it is rejected
+            if (module.isCompetentPs){
+              module.isCompetentPs(par).then(function(){
+                def.resolve(module);
+                return;
+              }, loop); // calls itself when it is rejected
+            }else{
+              loop();
+            };
           }catch(e){
             console.log(e);
             loop();

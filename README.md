@@ -4,10 +4,10 @@ A IDE build around CodeMirror.net.
 If you dont know CodeMirror.net, please check it out. Its a great Project.  
 This projects aim is to follow the CodeMirror philosophy of pluginability and simplistic approach to give you a full (Web)Developer IDE.  
 So all you need is:  
-- a Computer (i recommend a unix machine) - update 0.0.15 it runs in win  
-- node.js and the knowledge how to start it  
-- this Project  
-
+ - a Computer (unix recommended but windows is supported as well)  
+ - node.js  
+ - this Project  
+  
 and you have answered the Question about which Editor to choose.  
 You will be able to edit your code from anywhere you want. if you dont like the colors you just change em. if support for a mimetype is missing you can just add it.  
 You will never again have to be frustrated about a missing feature within your IDE because you can just add it. At least if you know JavaScript.  
@@ -22,7 +22,8 @@ features:
  - .less tester / .less online help / save your .less file immediately as .css file  
  - awesome hexeditor  
  - integrated pegjs parser debugger  
- - download directories as zip files (buggy)   
+ - download directories as zip files (alpha)   
+ - Terminals (!)  
  
 
 ## Security  

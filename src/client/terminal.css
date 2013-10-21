@@ -3,10 +3,10 @@
   background-color: yellow;
 }
 
-@font-face { font-family: Unicorns1; src: url('/fonts/unicorns/eenhoorn-light.ttf'); } 
+/*@font-face { font-family: Unicorns1; src: url('/fonts/unicorns/eenhoorn-light.ttf'); } 
 @font-face { font-family: Unicorns1; src: url('/fonts/unicorns/magical_unicorn.ttf'); } 
 @font-face { font-family: Unicorns1; src: url('/fonts/unicorns/magical_unicorn_sans.ttf'); } 
-    
+  */  
 
 .terminalTab .seeunicorns {
   background-image: url("/image/luna1.png");
@@ -19,7 +19,7 @@
   background-color: none;
 }
 
-.terminalTab.experimental .terminal {
+/*.terminalTab.experimental .terminal {
   font-family: Unicorns1, "DejaVu Sans Mono", "Liberation Mono", monospace;\n';
   font-size: 60px !important;
-}
+}*/

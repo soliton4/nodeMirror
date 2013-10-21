@@ -29,6 +29,7 @@ mkdir ../release/nodeMirror/src/client/dojo
 
 cp ../release/client/dojo/dojo.js ../release/nodeMirror/src/client/dojo/
 cp ../release/client/dojo/dojo.js.map ../release/nodeMirror/src/client/dojo/
+cp ../release/client/dojo/dojo.js.uncompressed.js ../release/nodeMirror/src/client/dojo/
 cp -R ../release/client/dojo/nls ../release/nodeMirror/src/client/dojo/
 cp -R ../release/client/dojo/resources ../release/nodeMirror/src/client/dojo/
 cp -R ../release/client/dojo/selector ../release/nodeMirror/src/client/dojo/
@@ -70,3 +71,6 @@ cp ../release/server/server/server.js ../release/nodeMirror/src/server/
 
 mkdir ../release/nodeMirror/src/style
 cp ../release/client/style/style.css ../release/nodeMirror/src/style/
+
+mkdir ../release/nodeMirror/src/image
+cp ../src/image/* ../release/nodeMirror/src/image/

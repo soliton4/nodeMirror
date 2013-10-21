@@ -53,6 +53,7 @@ define([
             terminal: term
           });
           tabs.addChild(tab);
+          tabs.selectChild(tab);
           self.tabs[term.termid] = tab;
           self._addTerm(term.termid);
         });
@@ -62,6 +63,7 @@ define([
             terminal: term
           });
           tabs.addChild(tab);
+          tabs.selectChild(tab);
           self.tabs[item.id] = tab;
         });
       };
