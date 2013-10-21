@@ -22,5 +22,19 @@ define([
       globals.openItem(item);
     }
     
+    , startup: function(){
+      if (this._started){
+        return;
+      };
+      this.inherited(arguments);
+      return;
+      setTimeout(function(){
+        globals.openItem({
+          id: ""
+          , name: "/"
+        });
+      }, 0);
+    }
+    
   });
 });

@@ -41,12 +41,21 @@ define([
     
     , addChild: function(){
       this.wgt.addChild.apply(this.wgt, arguments);
+      return;
+      var a = arguments;
+      this.provideMainWidgetPs().then(function(wgt){
+        wgt.addChild.apply(wgt, a);
+      });
     }
     , removeChild: function(){
       this.wgt.removeChild.apply(this.wgt, arguments);
     }
     , selectChild: function(){
-      this.wgt.selectChild.apply(this.wgt, arguments);
+      /*var a = arguments;
+      this.provideMainWidgetPs().then(function(wgt){
+        wgt.selectChild.apply(wgt, a);
+      });*/
+      //this.wgt.selectChild.apply(this.wgt, arguments);
     }
     
   });
