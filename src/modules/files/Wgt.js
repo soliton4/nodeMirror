@@ -12,7 +12,7 @@ define([
   return declare([
     Tree
   ], {
-    title: "files"
+    title: "Files"
     
     , constructor: function(){
       this.model = new Model();

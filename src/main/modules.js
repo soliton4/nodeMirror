@@ -16,6 +16,7 @@ define([], function(){
   , "modules/Peg"
     
   , "modules/Terminal"
+  , "modules/Control"
   ];
   
 });

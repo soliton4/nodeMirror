@@ -16,7 +16,7 @@ define([
   return declare([
     Tree
   ], {
-    title: "Term"
+    title: "Term."
     
     , showRoot: false
     
