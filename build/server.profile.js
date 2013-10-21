@@ -60,6 +60,7 @@ var profile = (function(){
                 , "modules/SideBar"
                 , "modules/ContentTabs"
                 , "modules/Terminal"
+                , "modules/Control"
                 , "modules/Text"
                 , "modules/Directory"
                 , "modules/Binary"

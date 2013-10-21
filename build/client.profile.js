@@ -93,6 +93,8 @@ var profile = (function(){
                 , "modules/contentTabs/Wgt"
                 , "modules/Terminal"
                 , "modules/terminal/Wgt"
+                , "modules/Control"
+                , "modules/control/Wgt"
                 , "modules/Text"
                 , "modules/Directory"
                 , "modules/Binary"
