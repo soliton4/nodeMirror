@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{E33CECFC-ED3E-C203-0CEA-3A5ECEE08650}</ProjectGuid>
+    <ProjectGuid>{DFDA221F-8CB2-BDD9-83EA-7C54AE5EAAE2}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>pty</RootNamespace>
   </PropertyGroup>
@@ -41,7 +41,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\src;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\deps\uv\include;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\deps\v8\include;..\deps\winpty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\src;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\deps\uv\include;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\deps\v8\include;..\deps\winpty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -58,7 +58,7 @@
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\$(Configuration)\node.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;DelayImp.lib;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\$(Configuration)\node.lib;shlwapi.lib</AdditionalDependencies>
       <AllowIsolation>true</AllowIsolation>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -68,13 +68,13 @@
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\src;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\deps\uv\include;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\deps\v8\include;..\deps\winpty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\src;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\deps\uv\include;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\deps\v8\include;..\deps\winpty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;BUILDING_V8_SHARED=1;BUILDING_UV_SHARED=1;BUILDING_NODE_EXTENSION;DEBUG;_DEBUG;%(PreprocessorDefinitions);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\src;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\deps\uv\include;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\deps\v8\include;..\deps\winpty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\src;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\deps\uv\include;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\deps\v8\include;..\deps\winpty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -99,7 +99,7 @@
       <AdditionalOptions>/LTCG %(AdditionalOptions)</AdditionalOptions>
     </Lib>
     <Link>
-      <AdditionalDependencies>C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\$(Configuration)\node.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;DelayImp.lib;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\$(Configuration)\node.lib;shlwapi.lib</AdditionalDependencies>
       <AllowIsolation>true</AllowIsolation>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -112,7 +112,7 @@
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\src;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\deps\uv\include;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\deps\v8\include;..\deps\winpty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\src;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\deps\uv\include;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\deps\v8\include;..\deps\winpty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;BUILDING_V8_SHARED=1;BUILDING_UV_SHARED=1;BUILDING_NODE_EXTENSION;%(PreprocessorDefinitions);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -124,11 +124,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="deps\winpty\winpty-agent.vcxproj">
-      <Project>{4F09CDD8-7AC1-35DE-C0AF-95203E8E7529}</Project>
+      <Project>{129FB6F3-CCF4-811A-8167-8D204BCBEBF7}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="deps\winpty\winpty.vcxproj">
-      <Project>{5016B1A9-F8FF-4F77-3F93-88C6E8F4B68E}</Project>
+      <Project>{2E27533B-A10E-BFBD-648D-E199E8DA8781}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>

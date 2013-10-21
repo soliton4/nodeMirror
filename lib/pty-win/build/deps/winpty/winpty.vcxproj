@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{5016B1A9-F8FF-4F77-3F93-88C6E8F4B68E}</ProjectGuid>
+    <ProjectGuid>{2E27533B-A10E-BFBD-648D-E199E8DA8781}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>winpty</RootNamespace>
   </PropertyGroup>
@@ -39,7 +39,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\src;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\deps\uv\include;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\deps\v8\include;..\..\..\deps\winpty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\src;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\deps\uv\include;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\deps\v8\include;..\..\..\deps\winpty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -56,7 +56,7 @@
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\$(Configuration)\node.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;DelayImp.lib;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\$(Configuration)\node.lib;user32.lib</AdditionalDependencies>
       <AllowIsolation>true</AllowIsolation>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -66,13 +66,13 @@
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\src;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\deps\uv\include;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\deps\v8\include;..\..\..\deps\winpty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\src;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\deps\uv\include;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\deps\v8\include;..\..\..\deps\winpty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;BUILDING_V8_SHARED=1;BUILDING_UV_SHARED=1;UNICODE;_UNICODE;_WIN32_WINNT=0x0501;NOMINMAX;WINPTY;DEBUG;_DEBUG;%(PreprocessorDefinitions);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\src;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\deps\uv\include;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\deps\v8\include;..\..\..\deps\winpty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\src;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\deps\uv\include;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\deps\v8\include;..\..\..\deps\winpty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -97,7 +97,7 @@
       <AdditionalOptions>/LTCG %(AdditionalOptions)</AdditionalOptions>
     </Lib>
     <Link>
-      <AdditionalDependencies>C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\$(Configuration)\node.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;DelayImp.lib;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\$(Configuration)\node.lib;user32.lib</AdditionalDependencies>
       <AllowIsolation>true</AllowIsolation>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -110,7 +110,7 @@
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\src;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\deps\uv\include;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.5\deps\v8\include;..\..\..\deps\winpty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\src;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\deps\uv\include;C:\Users\MaBehrens.UNIVERSE\.node-gyp\0.10.21\deps\v8\include;..\..\..\deps\winpty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;BUILDING_V8_SHARED=1;BUILDING_UV_SHARED=1;UNICODE;_UNICODE;_WIN32_WINNT=0x0501;NOMINMAX;WINPTY;%(PreprocessorDefinitions);%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
   </ItemDefinitionGroup>
