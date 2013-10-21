@@ -40,8 +40,6 @@ define([
     }
     
     , addChild: function(){
-      this.wgt.addChild.apply(this.wgt, arguments);
-      return;
       var a = arguments;
       this.provideMainWidgetPs().then(function(wgt){
         wgt.addChild.apply(wgt, a);
@@ -51,10 +49,10 @@ define([
       this.wgt.removeChild.apply(this.wgt, arguments);
     }
     , selectChild: function(){
-      /*var a = arguments;
+      var a = arguments;
       this.provideMainWidgetPs().then(function(wgt){
         wgt.selectChild.apply(wgt, a);
-      });*/
+      });
       //this.wgt.selectChild.apply(this.wgt, arguments);
     }
     

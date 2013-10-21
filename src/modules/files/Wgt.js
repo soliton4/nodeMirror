@@ -27,7 +27,6 @@ define([
         return;
       };
       this.inherited(arguments);
-      return;
       setTimeout(function(){
         globals.openItem({
           id: ""
