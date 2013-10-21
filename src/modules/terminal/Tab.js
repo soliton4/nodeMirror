@@ -28,6 +28,7 @@ define([
       config.get("seeunicorns").then(function(seeunicorns){
         if (seeunicorns){
           domClass.add(self.domNode, "seeunicorns");
+          domClass.add(self.terminalWgt.domNode, "seeunicorns");
         };
       });
       this.addChild(this.terminalWgt);

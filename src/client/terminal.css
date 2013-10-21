@@ -8,11 +8,11 @@
 @font-face { font-family: Unicorns1; src: url('/fonts/unicorns/magical_unicorn_sans.ttf'); } 
     
 
-.terminalTab.seeunicorns {
+.terminalTab .seeunicorns {
   background-image: url("/image/luna1.png");
 }
 
-.terminalTab.seeunicorns .terminal {
+.terminalTab .seeunicorns .terminal {
   background: rgb(0, 0, 0); /* Fall-back for browsers that don't
                                     support rgba */
   background: rgba(0, 0, 0, 0.5) !important;
