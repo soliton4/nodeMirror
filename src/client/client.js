@@ -27,6 +27,7 @@ define([
   , "main/config"  
   , "dojo/dom"
   , "dojo/dom-construct"
+  , "dojo/_base/array"
 ], function(
   domReady
   , extendDestroyable
@@ -56,7 +57,30 @@ define([
   , config
   , dom
   , domConstruct
+  , array
 ){
+  
+  domClass.add(document.body, "nodeMirror");
+  domClass.add(document.body, "claro");
+  var mainBc = new BorderContainer({
+    "class": "mainBc"
+    , gutters: false
+    , liveSplitters: true
+  });
+  mainBc.placeAt(document.body);
+  mainBc.startup();
+  
+  
+  // modules -----------------------------------------------------
+  var modules = moduleLoader.getModules();
+  array.forEach(modules, function(module){
+    if (module.provideMainWidgetPs){
+      module.provideMainWidgetPs().then(function(wgt){
+        mainBc.addChild(wgt);
+      });
+    };
+  });
+  
   
   
   var tabs;
@@ -179,29 +203,6 @@ define([
     globals.openItem(par.item, par.insteadOf);
   });
   
-  domClass.add(document.body, "nodeMirror");
-  domClass.add(document.body, "claro");
-  var mainBc = new BorderContainer({
-    "class": "mainBc"
-    , gutters: false
-    , liveSplitters: true
-  });
-  mainBc.placeAt(document.body);
-  mainBc.startup();
-  
-  var sideBar = new BorderContainer({
-    "class": "sideBar"
-    , "region": "left"
-    , splitter: true
-  });
-  mainBc.addChild(sideBar);
-  
-  
-  var treeMenu = new ToolBar({
-    "class": "treeMenu"
-    , "region": "top"
-  });
-  sideBar.addChild(treeMenu);
   
   var restartBtn = new Button({
     label: "Restart"
@@ -213,7 +214,7 @@ define([
     if (useRestart === false){
       return;
     };
-    treeMenu.addChild(restartBtn);
+    //treeMenu.addChild(restartBtn);
   });
   
   var terminalBtn = new Button({
@@ -226,7 +227,7 @@ define([
     if (useTerminal === false){
       return;
     };
-    treeMenu.addChild(terminalBtn);
+    //treeMenu.addChild(terminalBtn);
   });
   
   var debugBtn = new Button({
@@ -241,31 +242,11 @@ define([
     if (useDebug === false){
       return;
     };
-    treeMenu.addChild(debugBtn);
+    //treeMenu.addChild(debugBtn);
   });
   
-  var treeCP = new ContentPane({
-    "class": "treeCP"
-    , "region": "center"
-  });
-  sideBar.addChild(treeCP);
   
-  
-  var tree = new Tree({
-    "region": "left"
-    , splitter: true
-    , onClick: function(item, node, evt){
-      globals.openItem(item);
-    }
-  });
-  tree.placeAt(treeCP);
-  tree.startup();
-  
-  
-  tabs = new TabContainer({
-    "region": "center"
-  });
-  mainBc.addChild(tabs);
+  tabs = moduleLoader.getModule("modules/ContentTabs");
   
   // rendering bug;
   setTimeout(lang.hitch(mainBc, "resize"), 100);

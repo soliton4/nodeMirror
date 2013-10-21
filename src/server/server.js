@@ -39,6 +39,7 @@ define([
     , "sol/node/debug/Protocol"
     , "dojo/node!../../lib/terminal.js"
     , "term/server"
+    , "main/connection"
   ], function(
     remoteCaller
     , treeItems
@@ -54,6 +55,7 @@ define([
     , debugProtocol
     , terminal
     , terminalServer
+    , connection
   ){
     
     console.log('Current directory: ' + process.cwd());
@@ -179,8 +181,9 @@ define([
         };
         return;
       };
+      connection.newConnection(socket, session);
       
-      terminalServer.newConnection(socket);
+      //terminalServer.newConnection(socket);
       return;
       
         //console.log("-------------------------------------------------- new con");

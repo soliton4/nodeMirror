@@ -70,11 +70,11 @@ Sorry!
 for creating the most developer friendly editor  
   
 * pty.js (https://github.com/chjj/pty.js)  
-for making terminals in node.j possible  
+for making terminals in node.js possible  
   
 * all the contributers, testers and users  
 for making this a great IDE  
   
 ## License
 
-BSD - maybe i will relicense it under MIT when i have found out what the differences are
+BSD

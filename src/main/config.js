@@ -31,6 +31,7 @@ define([
       , "terminal": true
       , "debug": true
       , "restart": true
+      , "seeunicorns": true
     }
     , saveable: {
       "theme": true

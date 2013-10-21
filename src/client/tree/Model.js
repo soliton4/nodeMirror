@@ -8,19 +8,19 @@ define([
   return declare([
   ], {
     getRoot: function(thenFun, errFun){
-	  treeItems.getRootDef().then(thenFun, errFun);
+      treeItems.getRootDef().then(thenFun, errFun);
 	}
 	, getLabel: function(parItem){
-	  return parItem.name;
+      return parItem.name;
 	}
 	, mayHaveChildren: function(parItem){
-	  return parItem.hasChildren;
+      return parItem.hasChildren;
 	}
 	, getIdentity: function(parItem){
-	  return parItem.id;
+      return parItem.id;
 	}
 	, getChildren: function(parItem, thenFun, errFun){
-	  treeItems.getChildrenDef(parItem.id).then(thenFun, errFun);
+      treeItems.getChildrenDef(parItem.id).then(thenFun, errFun);
 	}
   });
 });

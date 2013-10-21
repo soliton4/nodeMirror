@@ -28,6 +28,10 @@ define([
       return this.namedModules[parModuleId];
     }
     
+    , getModules: function(){
+      return array.map(this.modules, function(i){ return i; });
+    }
+    
     , findModulePs: function(par){
       
       var def = new Deferred();
@@ -73,23 +77,34 @@ define([
     
   });
   moduleLoader = new ModuleLoader();
+  var registerDef;
   
   
   var loader = {  // loads all the required modules, registers them and returns the moduleLoader Object
     
     load: function(id, require, load){
-      //if (has("server-modules")){
-      require(modules, function(){
-        array.forEach(arguments, function(module, index){
-          var moduleId = modules[index];
-          var SingletonClass = declare(moduleId, [_RemoteCall, module], {
-            buildRendering: function(){}
+      if (!registerDef){
+        registerDef = new Deferred();
+        require(modules, function(){
+          array.forEach(arguments, function(module, index){
+            var moduleId = modules[index];
+            var tempMixin = {
+              buildRendering: function(){
+                if (this.keepBuildRendering){
+                  this.inherited(arguments);
+                };
+              }
+            };
+            var SingletonClass = declare(moduleId, [_RemoteCall, module], tempMixin);
+            var singleton = new SingletonClass();
+            singleton.ModuleClass = module;
+            singleton.moduleId = moduleId;
+            moduleLoader.register(singleton, moduleId);
           });
-          var singleton = new SingletonClass();
-          singleton.ModuleClass = module;
-          singleton.moduleId = moduleId;
-          moduleLoader.register(singleton, moduleId);
+          registerDef.resolve();
         });
+      };
+      registerDef.then(function(){
         load(moduleLoader);
       });
     }

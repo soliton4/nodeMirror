@@ -3,11 +3,15 @@ define([
   , "dojo/request/xhr"
   , "dojo/_base/lang"
   , "dojo/json"
+  , "main/connection"
+  , "dojo/_base/array"
 ], function(
   declare
   , xhr
   , lang
   , json
+  , connection
+  , array
 ){
   
   var ioUrl = window.location.origin;
@@ -36,6 +40,11 @@ define([
   
   var socket = io.connect(ioUrl, opts);
   var sceduled = false;
+  var connected = false;
+  
+  var _on = {
+    "connect": []
+  };
   
   var initSocket;
   var reconnect = function(){
@@ -63,6 +72,19 @@ define([
   };
   
   initSocket = function(){
+    
+    socket.on("connect", function(){
+      connection.newConnection(socket);
+      array.forEach(_on.connect, function(fun){
+        try{
+          fun(socket);
+        }catch(e){
+          console.log(e);
+        };
+      });
+      connected = true;
+    });
+    
     var fun = function(parWhat){
       //console.log(parWhat);
       try{
@@ -85,9 +107,20 @@ define([
     socket.on("tryagain", lang.hitch({}, fun, "tryagain"));
   };
   initSocket(socket);
-
+  
   return {
-    on: function(){
+    on: function(parWhat, parFun){
+      if (parWhat == "connect"){
+        _on.connect.push(parFun);
+        if (connected){
+          try{
+            parFun(socket);
+          }catch(e){
+            console.log(e);
+          };
+        };
+        return;
+      };
       socket.on.apply(socket, arguments);
     }
     , emit: function(){

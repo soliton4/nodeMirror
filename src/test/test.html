@@ -52,7 +52,40 @@
       });
     });
   </script>
+  <style>
+    body {
+      background-color: black;
+      color: white;
+    }
+    @font-face { font-family: Delicious1; src: url('/fonts/unicorns/eenhoorn-light.ttf'); } 
+    @font-face { font-family: Delicious2; src: url('/fonts/unicorns/magical_unicorn.ttf'); } 
+    @font-face { font-family: Delicious3; src: url('/fonts/unicorns/magical_unicorn_sans.ttf'); } 
+    
+    .fonttest1 { 
+      font-family: Delicious1, sans-serif, monospace; 
+      font-size: 90px;
+      letter-spacing: 50px;
+    }
+    .fonttest2 { 
+      font-family: Delicious3, sans-serif; 
+      font-size: 50px;
+    }
+    .fonttest3 { 
+      font-family: Delicious3, sans-serif; 
+      font-size: 50px;
+    }
+  </style>
   </head><body>
+    <div class="fonttest1">
+      ~home>run.sh;<br>
+      .../xxxWWW
+    </div>
+    <div class="fonttest2">
+      ~home>run.sh;
+    </div>
+    <div class="fonttest3">
+      ~home>run.sh;
+    </div>
     <textarea id="ta1">haha</textarea>
   </body>
 </html>

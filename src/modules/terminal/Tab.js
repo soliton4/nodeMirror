@@ -1,6 +1,6 @@
 define([
   "dojo/_base/declare"
-  , "term/TerminalWgt"
+  , "./TerminalWgt"
   , "dijit/layout/BorderContainer"
   , "client/connection"
   , "sol/wgt/Text"
@@ -22,17 +22,31 @@ define([
     , buildRendering: function(){
       var self = this;
       this.inherited(arguments);
-      this.terminal = new Terminal({
+      this.terminalWgt = new Terminal({
         region: "center"
-        
       });
       config.get("seeunicorns").then(function(seeunicorns){
         if (seeunicorns){
           domClass.add(self.domNode, "seeunicorns");
         };
       });
-      this.addChild(this.terminal);
-      var term = this.terminal;
+      this.addChild(this.terminalWgt);
+      var term = this.terminalWgt;
+      
+      this.terminal.on("data", function(data){
+        term.write(data);
+      });
+      this.terminal.on("resize", function(data){
+        term.emitResize(data);
+      });
+      term.on("resize", function(size){
+        self.terminal.resize(size);
+      });
+      term.on("data", function(data){
+        self.terminal.write(data);
+      });
+      return;
+      
       
         connection.on("terminal_meta", function(meta){
           if (meta.event == "install"){
