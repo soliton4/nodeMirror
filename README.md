@@ -11,9 +11,6 @@ So all you need is:
 and you have answered the Question about which Editor to choose.  
 You will be able to edit your code from anywhere you want. if you dont like the colors you just change em. if support for a mimetype is missing you can just add it.  
 You will never again have to be frustrated about a missing feature within your IDE because you can just add it. At least if you know JavaScript.  
-  
-For every Content Type where a CodeMirror Mode exists, a CodeMirror instance will be opened. Also every content Type starting with text/* will be opened using CodeMirror.  
-For all other files there is a download button.
 
 features:  
  - view / edit all content/types supported by CodeMirror.net  
@@ -24,15 +21,27 @@ features:
  - integrated pegjs parser debugger  
  - download directories as zip files (alpha)   
  - Terminals (!)  
- 
 
+
+## Files Module  
+  
+For every Content Type where a CodeMirror Mode exists, a CodeMirror instance will be opened. Also every content Type starting with text/* will be opened using CodeMirror.  
+For all other files there is a download button.  
+If a file is opened for which no native Text Mode exists it will be opened in a Hex Editor. You can switch between hex view and text view.
+  
+  
+## Terminal Module  
+  
+utilizing pty.js nodeMirror allows you to have several terminals within your browser. the Terminals will stay open when you close your browser window. You can even have the same terminal open on different browsers / machines opening new possibilities for collaboration.   
+  
+  
 ## Security  
   
 pass username and password to secure your local files from being hacked  
-
-
+  
+  
 ## Usage  
-
+  
 `
 npm install node-mirror  
 `  
@@ -59,12 +68,6 @@ to switch of the experimental terminal or debugger use this command line paramet
 node node_modules/node-mirror/bin/nodeMirror.js --no-terminal --no-debug
 `  
 
-## Windows Users  
-
-due to some incopatibility between the terminal module and the node cluser module in windows, the restart function is disabled in Windows.  
-Sorry!  
-  
-  
 ## Special Thanks  
   
 * CodeMirror (https://github.com/chjj/pty.js)  
