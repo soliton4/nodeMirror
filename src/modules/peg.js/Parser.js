@@ -36,6 +36,7 @@ define([
         "class": "pegjs output"
         , region: "center"
         , value: undefined
+        , expandlevel: 0
       }));
       this.inspector.region = "center";
       this.addChild(this.inspector);
@@ -48,8 +49,10 @@ define([
       
       try{
         var parsed = this.parser.parse(this.mirror.get("value"));
+        this.inspector.set("name", "result");
         this.inspector.set("value", parsed);
       }catch(e){
+        this.inspector.set("name", "error");
         this.inspector.set("value", e);
       }
     }

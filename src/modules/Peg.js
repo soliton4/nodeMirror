@@ -9,6 +9,7 @@ define([
   , "sol/string"
   , "main/clientOnly!./peg.js/Parser"
   , "main/clientOnly!dijit/form/Button"
+  , "main/clientOnly!dojo/dom-class"
 ], function(
   declare
   , Base
@@ -20,6 +21,7 @@ define([
   , solString
   , Parser
   , Button
+  , domClass
 ){
   
   var additionalSubtypes = {
@@ -62,24 +64,52 @@ define([
     , buildRendering: function(){
       var ret = this.inherited(arguments);
       this.parseBtn = this.ownObj(new Button({
-        onClick: lang.hitch(this, "parse")
-        , label: "parse"
+        onClick: lang.hitch(this, "openparser")
+        , label: "try Parser"
       })); 
       this.menu.addChild(this.parseBtn);
+      this.closeParseBtn = this.ownObj(new Button({
+        onClick: lang.hitch(this, "closeparser")
+        , label: "close Try Bar"
+      })); 
+      domClass.add(this.closeParseBtn.domNode, "invisible");
+      this.menu.addChild(this.closeParseBtn);
+      
+      this.reinitParserBtn = this.ownObj(new Button({
+        onClick: lang.hitch(this, "reinitParser")
+        , label: "reapply Peg Code"
+      })); 
+      domClass.add(this.reinitParserBtn.domNode, "invisible");
+      this.menu.addChild(this.reinitParserBtn);
       return ret;
     }
     
-    , parse: function(){
+    , openparser: function(){
+      domClass.add(this.parseBtn.domNode, "invisible");
+      domClass.remove(this.closeParseBtn.domNode, "invisible");
+      domClass.remove(this.reinitParserBtn.domNode, "invisible");
+      //this.menu.resize();
       if (!this.parser){
         this.parser = this.ownObj(new Parser({
           parent: this
         }));
-        this.addChild(this.parser);
         this.mirror.on("change", lang.hitch(this, function(){
           this.parser.parserCodeChanged();
         }));
       };
+      this.addChild(this.parser);
       this.parser.parse();
+    }
+    , closeparser: function(){
+      domClass.remove(this.parseBtn.domNode, "invisible");
+      domClass.add(this.closeParseBtn.domNode, "invisible");
+      domClass.add(this.reinitParserBtn.domNode, "invisible");
+      //this.menu.resize();
+      this.removeChild(this.parser);
+    }
+    
+    , reinitParser: function(){
+      
     }
     
   });

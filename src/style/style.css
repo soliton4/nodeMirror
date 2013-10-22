@@ -119,3 +119,6 @@ body {
   font-size: large;
 }
 
+.invisible {
+  display: none;
+}

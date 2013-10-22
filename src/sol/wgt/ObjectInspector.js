@@ -15,6 +15,7 @@ define([
 ){
   
   var makestoreFun = function(){
+    var self = this;
     this.store = {
 		data: [this.value],
         nextId: 1,
@@ -66,7 +67,7 @@ define([
           return [{
             v: this.data[0]
             , text: this._genEntry(this.data[0])
-            , name: ""
+            , name: self.name
           }];
 		}
         , _genEntry: function(v, name){
@@ -110,9 +111,40 @@ define([
 
   
   var Inspector = declare([OnDemandGrid, DijitRegistry, Keyboard, Selection], {
-    constructor: function(par){
+    name: ""
+    
+    , constructor: function(par){
+      var self = this;
       this.value = par.value;
+      if (par.name){
+        this.name = par.name;
+      };
       makestoreFun.apply(this);
+      
+      this.columns = [
+        tree({
+          label: "Name"
+          , field: "name"
+          , sortable: false
+          , shouldExpand: function(row, level, previouslyExpanded){
+            // summary:
+            //		Function called after each row is inserted to determine whether
+            //		expand(rowElement, true) should be automatically called.
+            //		The default implementation re-expands any rows that were expanded
+            //		the last time they were rendered (if applicable).
+            if ((self.expandlevel !== undefined) && level <= self.expandlevel){
+              return true;
+            };
+            return previouslyExpanded;
+          }
+        })
+        , {
+          label: "Value"
+          , field: "text"
+          , sortable: false
+        }
+      ];
+      
     }
     
     , isLeftToRight: function(){
@@ -126,11 +158,7 @@ define([
       makestoreFun.apply(this);
       this.refresh();
     }
-      , columns: [
-            tree({ label: "Name", field: "name", sortable: false }),
-            { label:"Value", field: "text", sortable: false}
-      ]
-    });
+  });
   return Inspector;
   
 });
