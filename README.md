@@ -70,7 +70,7 @@ node node_modules/node-mirror/bin/nodeMirror.js --no-terminal --no-debug
 
 ## Special Thanks  
   
-* CodeMirror ( http://http://codemirror.net/ )  
+* CodeMirror ( http://codemirror.net/ )  
 for creating the most developer friendly editor  
   
 * pty.js ( https://github.com/chjj/pty.js )  
