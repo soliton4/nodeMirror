@@ -1,0 +1,9 @@
+.cmdFmWgt {
+  position: absolute;
+  z-index: 10;
+}
+
+.cmdFmCover {
+  position: absolute;
+  z-index: 11;
+}

@@ -55,6 +55,15 @@ define([
       });
       //this.wgt.selectChild.apply(this.wgt, arguments);
     }
+    , getIndexOfChild: function(){
+      var def = new Deferred();
+      var a = arguments;
+      this.provideMainWidgetPs().then(function(wgt){
+        def.resolve(wgt.getIndexOfChild.apply(wgt, a));
+      });
+      return def;
+      //this.wgt.selectChild.apply(this.wgt, arguments);
+    }
     
   });
 });

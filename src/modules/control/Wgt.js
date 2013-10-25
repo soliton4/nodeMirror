@@ -5,6 +5,12 @@ define([
   , "dojo/_base/array"
   , "dijit/layout/ContentPane"
   , "dijit/form/Button"
+  , "sol/wgt/Iframe"
+  , "sol/wgt/mixin/resize"
+  , "dojo/_base/lang"
+  , "dojo/dom-class"
+  , "dojo/dom-geometry"
+  , "dojo/dom-construct"
 ], function(
   declare
   , Tree
@@ -12,7 +18,50 @@ define([
   , array
   , ContentPane
   , Button
+  , Iframe
+  , resize
+  , lang
+  , domClass
+  , domGeometry
+  , domConstruct
 ){
+  var musicWgt;
+  
+  var MusicWgt = declare([Iframe, resize], {
+    src: "http://cmd.fm?referer=NodeMirror"
+    , "class": "cmdFmWgt"
+    , constructor: function(){
+      
+    }
+  });
+  
+  var MusicTab = declare([ContentPane], {
+    title: "music"
+    , closable: true
+    , buildRendering: function(){
+      this.inherited(arguments);
+    }
+    , onShow: function(){
+      domClass.remove(musicWgt.domNode, "invisible");
+      this._pos();
+    }
+    , onHide: function(){
+      domClass.add(musicWgt.domNode, "invisible");
+    }
+    , _pos: function(){
+      var pos = domGeometry.position(this.domNode);
+      domGeometry.setMarginBox(musicWgt.domNode, { t: pos.y, l: pos.x });
+    }
+    , resize: function(par){
+      this.inherited(arguments);
+      musicWgt.resize({
+        h: par.h
+        , w: par.w
+      });
+      this._pos();
+    }
+  });
+  
   return declare([
     ContentPane
   ], {
@@ -32,6 +81,43 @@ define([
         }
       });
       this.restartBtn.placeAt(this.domNode);
+      
+      this.playMusicBtn = new Button({
+        label: "play Music"
+        , onClick: function(){
+          var tabs = moduleLoader.getModule("modules/ContentTabs");
+          
+          if (!musicWgt){
+            musicWgt = new MusicWgt({
+            });
+            domClass.add(musicWgt.domNode, "invisible");
+            musicWgt.placeAt(document.body);
+          };
+          if (!self.musicTab){
+            self.musicTab = new MusicTab({
+              onClose: function(){
+                domClass.add(musicWgt.domNode, "invisible");
+                setTimeout(lang.hitch(this, function(){
+                  this.destroy();
+                }), 0);
+                self.musicTab = undefined;
+                return true;
+              }
+            });
+          };
+          tabs.getIndexOfChild(self.musicTab).then(function(idx){
+            if (idx == -1){
+              tabs.addChild(self.musicTab);
+            };
+            try{
+              tabs.selectChild(self.musicTab);
+            }catch(e){
+              // dont care
+            };
+          });
+        }
+      });
+      this.playMusicBtn.placeAt(this.domNode);
     }
     
     , startup: function(){
