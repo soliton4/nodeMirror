@@ -87,13 +87,13 @@ for making this a great IDE
 # screenshots
   
 ![Folder view](src/image/screenshots/nodeMirrorFolder.png)
-  Browse your project folder
+  Browse your project folder  
   
 ![JavaScript Editor](src/image/screenshots/nodeMirrorJavaScript.png)
-  edit JavaScript with online Syntax Check
+  edit JavaScript with online Syntax Check  
   
 ![JavaScript Editor](src/image/screenshots/nodeMirrorHexEditor.png)
-  edit huge Files with the Hex Editor
+  edit huge Files with the Hex Editor  
   
 ![Terminal](src/image/screenshots/nodeMirrorTerminal.png)
   Yes you can use midnight commander in your Browser with your Mouse(!)  
@@ -101,6 +101,16 @@ for making this a great IDE
   
 ![less](src/image/screenshots/nodeMirrorLess.png)
   Have less online help available while testing your less file before saving it parallel as .less and .css file.  
+  
+![html](src/image/screenshots/nodeMirrorHtml.png)
+  test and analyse your HTML  
+  
+![html](src/image/screenshots/nodeMirrorHtml.png)
+  test and analyse your HTML  
+    
+![peg.js](src/image/screenshots/nodeMirrorPegJs.png)
+  try out that cool parser you just wrote  
+  
   
 ## License
 
