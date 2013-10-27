@@ -1,6 +1,8 @@
 ## tldr  
   
   --> [screenshots]: #screenshots
+  --> [screenshots](#screenshots)
+  --> [screenshots](README.md#screenshots)
   
 ## Description
 
