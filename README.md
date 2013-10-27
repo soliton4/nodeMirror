@@ -79,6 +79,12 @@ for making terminals in node.js possible
 * all the contributers, testers and users  
 for making this a great IDE  
   
+  
+# screenshots
+  
+![alt tag](src/image/screenshots/nodeMirrorFolder.png)
+
+  
 ## License
 
 BSD
