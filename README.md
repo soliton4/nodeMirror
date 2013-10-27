@@ -82,8 +82,19 @@ for making this a great IDE
   
 # screenshots
   
-![alt tag](src/image/screenshots/nodeMirrorFolder.png)
-
+![Folder view](src/image/screenshots/nodeMirrorFolder.png)
+  Browse your project folder
+  
+![JavaScript Editor](src/image/screenshots/nodeMirrorJavaScript.png)
+  edit JavaScript with online Syntax Check
+  
+![JavaScript Editor](src/image/screenshots/nodeMirrorHexEditor.png)
+  edit huge Files with the Hex Editor
+  
+![Terminal](src/image/screenshots/nodeMirrorTerminal.png)
+  Yes you can use midnight commander in your Browser with your Mouse(!)  
+  Thank you pty.js  
+  
   
 ## License
 
