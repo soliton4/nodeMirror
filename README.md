@@ -60,17 +60,15 @@ pass username and password to secure your local files from being hacked
   
 ## Usage  
   
-`
+```
 npm install node-mirror  
-`  
   
-`
 node node_modules/node-mirror/bin/nodeMirror.js --port 3000 --dir /home/sol/projects --username sol --password mysupersecretpassword
-`  
+```
 
-`
+```
 http://127.0.0.1:3000/  
-`
+```
   
   
 ## miscellaneous  
@@ -88,9 +86,9 @@ cd build
   
 to switch of the terminal or the experimental debugger use this command line parameters  
   
-`
+```
 node node_modules/node-mirror/bin/nodeMirror.js --no-terminal --no-debug
-`  
+```  
 
 ## Special Thanks  
   
@@ -127,6 +125,12 @@ for making this a great IDE
   
 ![peg.js](src/image/screenshots/nodeMirrorPegJs.png)
   try out that cool parser you just wrote  
+  
+  
+# whats to expect for 0.2?
+  
+  - JavaScript debugging
+  - more CodeMirror feature integrations
   
   
 ## License
