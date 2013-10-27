@@ -104,26 +104,26 @@ for making this a great IDE
   
 ## screenshots
   
-![Folder view](src/image/screenshots/nodeMirrorFolder.png)
+![Folder view](https://raw.github.com/soliton4/nodeMirror/master/src/image/screenshots/nodeMirrorFolder.png)
   Browse your project folder  
   
-![JavaScript Editor](src/image/screenshots/nodeMirrorJavaScript.png)
+![JavaScript Editor](https://raw.github.com/soliton4/nodeMirror/master/src/image/screenshots/nodeMirrorJavaScript.png)
   edit JavaScript with online Syntax Check  
   
-![JavaScript Editor](src/image/screenshots/nodeMirrorHexEditor.png)
+![JavaScript Editor](https://raw.github.com/soliton4/nodeMirror/master/src/image/screenshots/nodeMirrorHexEditor.png)
   edit huge Files with the Hex Editor  
   
-![Terminal](src/image/screenshots/nodeMirrorTerminal.png)
+![Terminal](https://raw.github.com/soliton4/nodeMirror/master/src/image/screenshots/nodeMirrorTerminal.png)
   Yes you can use midnight commander in your Browser with your Mouse(!)  
   Thank you pty.js  
   
-![less](src/image/screenshots/nodeMirrorLess.png)
+![less](https://raw.github.com/soliton4/nodeMirror/master/src/image/screenshots/nodeMirrorLess.png)
   Have less online help available while testing your less file before saving it parallel as .less and .css file.  
   
-![html](src/image/screenshots/nodeMirrorHtml.png)
+![html](https://raw.github.com/soliton4/nodeMirror/master/src/image/screenshots/nodeMirrorHtml.png)
   test and analyse your HTML  
   
-![peg.js](src/image/screenshots/nodeMirrorPegJs.png)
+![peg.js](https://raw.github.com/soliton4/nodeMirror/master/src/image/screenshots/nodeMirrorPegJs.png)
   try out that cool parser you just wrote  
   
   
