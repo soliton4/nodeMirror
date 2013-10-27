@@ -102,7 +102,7 @@ for making terminals in node.js possible
 for making this a great IDE  
   
   
-# screenshots
+## screenshots
   
 ![Folder view](src/image/screenshots/nodeMirrorFolder.png)
   Browse your project folder  
@@ -127,10 +127,16 @@ for making this a great IDE
   try out that cool parser you just wrote  
   
   
-# whats to expect for 0.2?
+## whats to expect for 0.2?
   
   - JavaScript debugging
   - more CodeMirror feature integrations
+  
+  
+## Contributions welcome!
+  
+  i am a good coder but my gui designs are poor.  
+  while i am happy about all kinds of contributions i especially ask for icon designs / css.  
   
   
 ## License
