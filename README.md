@@ -4,19 +4,32 @@
   
 ## Description
 
-A IDE build around CodeMirror.net.  
-If you dont know CodeMirror.net, please check it out. Its a great Project.  
-This projects aim is to follow the CodeMirror philosophy of pluginability and simplistic approach to give you a full (Web)Developer IDE.  
-So all you need is:  
- - a Computer (unix recommended but windows is supported as well)  
- - node.js  
- - this Project  
+Develop your App completely within the Browser.  
+Administrate your Server and edit your Code from where ever you are.  
   
-and you have answered the Question about which Editor to choose.  
-You will be able to edit your code from anywhere you want. if you dont like the colors you just change em. if support for a mimetype is missing you can just add it.  
-You will never again have to be frustrated about a missing feature within your IDE because you can just add it. At least if you know JavaScript.  
+NodeMirror is a IDE utilizing CodeMirror.net, pty.js and other cool libraries.  
+  
+I wrote it to fit the needs of a Developer and to make maximal usage of the CodeMirror Editor library.  
+Giving you a Powerful IDE and Admin tool.  
 
-features:  
+Ever asked yourself which Editor you should choose? This is trying to answer that Question once and for all ;)
+  
+  
+## Requirements  
+  
+  - a Unix / Windows Computer
+  - node.js
+  - the ability to start a node.js app
+  
+  
+## Customizablity
+  
+  NodeMirror is open Source. You can easily customize it to your needs.  
+  Everything is a module. If you are missing some functionality let me know or fork it and write a module.
+  
+  
+## features include:
+  
  - view / edit all content/types supported by CodeMirror.net  
  - view / edit all files in text mode or download them  
  - html tester / analyzer  
@@ -25,12 +38,13 @@ features:
  - integrated pegjs parser debugger  
  - download directories as zip files (alpha)   
  - Terminals (!)  
-
-
+ - more ...  
+  
+  
 ## Files Module  
   
 For every Content Type where a CodeMirror Mode exists, a CodeMirror instance will be opened. Also every content Type starting with text/* will be opened using CodeMirror.  
-For all other files there is a download button.  
+For all other files there is a download button or a Hex Editor.  
 If a file is opened for which no native Text Mode exists it will be opened in a Hex Editor. You can switch between hex view and text view.
   
   
@@ -57,17 +71,23 @@ node node_modules/node-mirror/bin/nodeMirror.js --port 3000 --dir /home/sol/proj
 `
 http://127.0.0.1:3000/  
 `
-
-this is still beta. but i am using this for development so you can expect more.  
-i am getting pretty comfortable with this project. maybe i will release 0.1 soon.
-
+  
+  
+## miscellaneous  
+  
+i am using this for my development so you can expect more.  
+  
 the npm distribution is a release build  
+check out my git page to get the development version which you can use to customize NodeMirror  
+call the build script to make your own version of NodeMirror  
 
-check out my git page to get the development version which you can use to customize node-mirror  
-there is a build script that lets you build your own node-mirror  
-
-to switch of the experimental terminal or debugger use this command line parameters  
-
+`
+cd build
+./build.sh
+`  
+  
+to switch of the terminal or the experimental debugger use this command line parameters  
+  
 `
 node node_modules/node-mirror/bin/nodeMirror.js --no-terminal --no-debug
 `  
@@ -105,9 +125,6 @@ for making this a great IDE
 ![html](src/image/screenshots/nodeMirrorHtml.png)
   test and analyse your HTML  
   
-![html](src/image/screenshots/nodeMirrorHtml.png)
-  test and analyse your HTML  
-    
 ![peg.js](src/image/screenshots/nodeMirrorPegJs.png)
   try out that cool parser you just wrote  
   
