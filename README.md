@@ -1,8 +1,6 @@
 ## tldr  
   
-  --> [screenshots]: #screenshots
   --> [screenshots](#screenshots)
-  --> [screenshots](README.md#screenshots)
   
 ## Description
 
@@ -101,6 +99,8 @@ for making this a great IDE
   Yes you can use midnight commander in your Browser with your Mouse(!)  
   Thank you pty.js  
   
+![less](src/image/screenshots/nodeMirrorLess.png)
+  Have less online help available while testing your less file before saving it parallel as .less and .css file.  
   
 ## License
 
