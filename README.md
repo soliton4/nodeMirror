@@ -81,10 +81,10 @@ the npm distribution is a release build
 check out my git page to get the development version which you can use to customize NodeMirror  
 call the build script to make your own version of NodeMirror  
 
-`
+```
 cd build  
 ./build.sh  
-`  
+```  
   
 to switch of the terminal or the experimental debugger use this command line parameters  
   
