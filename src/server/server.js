@@ -19,6 +19,7 @@ define([
   , connect
   , Deferred
 ){
+  
   // first add our server-modules flag so we can use same source files for server and client
   has.add("server-modules", function(){
     return true; 

@@ -19,6 +19,10 @@ define([
     title: "Terminal"
     , closable: true
     , "class": "terminalTab"
+    , onShow: function(){
+      this.inherited(arguments);
+      this.terminalWgt.focus();
+    }
     , buildRendering: function(){
       var self = this;
       this.inherited(arguments);

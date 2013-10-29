@@ -43,6 +43,7 @@ define([
     }
     , onShow: function(){
       domClass.remove(musicWgt.domNode, "invisible");
+      musicWgt.domNode.contentWindow.focus();
       this._pos();
     }
     , onHide: function(){

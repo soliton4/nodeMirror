@@ -64,6 +64,10 @@ define([
       
       this.resizeHandler = [];
     }
+    , focus: function(){
+      this.terminal.focus();
+      this.terminal.element.focus();
+    }
     , on: function(parWhat, parHandler){
       if (parWhat == "resize"){
         this.resizeHandler.push(parHandler);

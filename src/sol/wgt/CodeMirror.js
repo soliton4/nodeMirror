@@ -23,6 +23,7 @@ define([
     , theme: "default"
     , matchBrackets: true
     , readOnly: false
+    , autoCloseBrackets: true
   };
   
   return declare([
@@ -58,6 +59,11 @@ define([
         this.mirror.setValue(this.value);
       };
       this.widgets = [];
+    }
+    
+    , focus: function(){
+      this.inherited(arguments);
+      this.mirror.focus();
     }
     
     , on: function(parWhat, parFun){

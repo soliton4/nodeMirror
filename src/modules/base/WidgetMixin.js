@@ -136,6 +136,8 @@ define([
         menu.addChild(menu._buttons.binaryModeButton);
       };
       
+      this.inherited(arguments);
+      
       return menu;
     }
     

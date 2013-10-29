@@ -13,12 +13,16 @@ define([
   , "main/clientOnly!codemirror/theme/all"
   , "main/clientOnly!dijit/form/Select"
   , "main/config"
+  , "main/clientOnly!dijit/form/DropDownButton"
+  , "main/clientOnly!./text/settingsDlg"
+  , "dojo/topic"
   
   , "main/clientOnly!codemirror/mode/allModes"
   , "main/clientOnly!codemirror/addon/dialog/dialog"
   , "main/clientOnly!codemirror/addon/search/search"
   , "main/clientOnly!codemirror/addon/search/searchcursor"
   , "main/clientOnly!codemirror/addon/edit/matchbrackets"
+  , "main/clientOnly!codemirror/addon/edit/closebrackets"
 ], function(
   declare
   , Base
@@ -34,6 +38,9 @@ define([
   , allThemes
   , Select
   , config
+  , DropDownButton
+  , settingsDlg
+  , topic
 ){
   
   var additionalSubtypes = {
@@ -113,11 +120,16 @@ define([
       return files.writeTextDef(this.getFileName(par.id), parContent.text);
     }
     
+    , onShow: function(){
+      this.inherited(arguments);
+      this.mirror.focus();
+    }
     
     , buildRendering: function(){
       var ret = this.inherited(arguments);
+      var self = this;
       
-      this.themeSelect = this.ownObj(new Select({
+      /*this.themeSelect = this.ownObj(new Select({
         options: array.map(allThemes, function(theme){
           return {
             label: theme
@@ -126,7 +138,7 @@ define([
         })
         , onChange: lang.hitch(this, "changeTheme")
       }));
-      this.menu.addChild(this.themeSelect);
+      this.menu.addChild(this.themeSelect);*/
       
       this.mirror = this.ownObj(new CodeMirror({
         region: "center"
@@ -135,6 +147,7 @@ define([
         , lineNumbers: true
         , theme: "twilight"
         , matchBrackets: true
+        , autoCloseBrackets: true
       }));
       this.addChild(this.mirror);
       this.mirror.on("change", lang.hitch(this, function(){
@@ -142,16 +155,28 @@ define([
           this.set("dirty", true);
         };
       }));
+      this.ownObj(topic.subscribe("files/codemirror/theme/change", function(parTheme){
+        self.mirror.set("theme", parTheme);
+      }));
       config.get("theme").then(lang.hitch(this, function(theme){
         this.mirror.set("theme", theme);
-        this.themeSelect.set("value", theme);
+        //this.themeSelect.set("value", theme);
       }));
+      this.ownObj(topic.subscribe("files/codemirror/changeSetting", function(par){
+        self.mirror.set(par.setting, par.value);
+      }));
+      
       return ret;
     }
     
-    , changeTheme: function(){
-      this.mirror.set("theme", this.themeSelect.get("value"));
-      config.set("theme", this.themeSelect.get("value"));
+    , createMenu: function(){
+      var menu = this.inherited(arguments);
+      this.settingsBtn = this.ownObj(new DropDownButton({
+        label: "Settings",
+        dropDown: settingsDlg()
+      }));
+      menu.addChild(this.settingsBtn);
+      return menu;
     }
     
     , _setContentAttr: function(parContent){
