@@ -14,6 +14,8 @@ var helperDefine = function(parRequire, parFactory){
 };
 helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
 (function () {
+  "use strict";
+
   function forEach(arr, f) {
     for (var i = 0, e = arr.length; i < e; ++i) f(arr[i]);
   }
@@ -60,7 +62,7 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
     return scriptHint(editor, pigKeywordsU, function (e, cur) {return e.getTokenAt(cur);});
   }
   CodeMirror.pigHint = pigHint; // deprecated
-  CodeMirror.registerHelper("hint", "pig", hinter);
+  CodeMirror.registerHelper("hint", "pig", pigHint);
 
   var pigKeywords = "VOID IMPORT RETURNS DEFINE LOAD FILTER FOREACH ORDER CUBE DISTINCT COGROUP "
   + "JOIN CROSS UNION SPLIT INTO IF OTHERWISE ALL AS BY USING INNER OUTER ONSCHEMA PARALLEL "

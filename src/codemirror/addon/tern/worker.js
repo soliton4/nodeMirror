@@ -13,6 +13,8 @@ var helperDefine = function(parRequire, parFactory){
   };
 };
 helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
+// declare global: tern, server
+
 var server;
 
 this.onmessage = function(e) {

@@ -127,7 +127,7 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
     if (options.async)
       options.getAnnotations(cm, updateLinting, options);
     else
-      updateLinting(cm, options.getAnnotations(cm.getValue()));
+      updateLinting(cm, options.getAnnotations(cm.getValue(), options));
   }
 
   function updateLinting(cm, annotationsNotSorted) {

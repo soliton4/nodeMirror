@@ -7,7 +7,9 @@ define([
 ){
   var subtypes = {};
   array.forEach(meta, function(info){
-    subtypes[info.mime.split("/")[1]] = true;
+    if (info.mime){
+      subtypes[info.mime.split("/")[1]] = true;
+    };
   });
   return subtypes;
 });

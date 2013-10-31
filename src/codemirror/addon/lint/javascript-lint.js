@@ -14,6 +14,8 @@ var helperDefine = function(parRequire, parFactory){
 };
 helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
 (function() {
+  "use strict";
+  // declare global: JSHINT
 
   var bogus = [ "Dangerous comment" ];
 

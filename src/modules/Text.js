@@ -16,6 +16,7 @@ define([
   , "main/clientOnly!dijit/form/DropDownButton"
   , "main/clientOnly!./text/settingsDlg"
   , "dojo/topic"
+  , "main/clientOnly!modules/text/codeMirrorSettings"
   
   , "main/clientOnly!codemirror/mode/allModes"
   , "main/clientOnly!codemirror/addon/dialog/dialog"
@@ -23,6 +24,16 @@ define([
   , "main/clientOnly!codemirror/addon/search/searchcursor"
   , "main/clientOnly!codemirror/addon/edit/matchbrackets"
   , "main/clientOnly!codemirror/addon/edit/closebrackets"
+  , "main/clientOnly!codemirror/addon/fold/xml-fold"
+  , "main/clientOnly!codemirror/addon/edit/matchtags"
+  , "main/clientOnly!codemirror/addon/edit/trailingspace"
+  , "main/clientOnly!codemirror/addon/edit/closetag"
+  , "main/clientOnly!codemirror/addon/fold/foldcode"
+  , "main/clientOnly!codemirror/addon/fold/foldgutter"
+  , "main/clientOnly!codemirror/addon/fold/brace-fold"
+  , "main/clientOnly!codemirror/addon/fold/comment-fold"
+  , "main/clientOnly!codemirror/addon/fold/foldcode"
+  
 ], function(
   declare
   , Base
@@ -41,13 +52,14 @@ define([
   , DropDownButton
   , settingsDlg
   , topic
+  , codeMirrorSettings
 ){
   
   var additionalSubtypes = {
     "peg.js": true
     , "x-empty": true
   };
-    
+  
   var additionalTypes = {
     "inode/x-empty": true
   };
@@ -147,7 +159,7 @@ define([
         , lineNumbers: true
         , theme: "twilight"
         , matchBrackets: true
-        , autoCloseBrackets: true
+        , gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
       }));
       this.addChild(this.mirror);
       this.mirror.on("change", lang.hitch(this, function(){
@@ -155,16 +167,12 @@ define([
           this.set("dirty", true);
         };
       }));
-      this.ownObj(topic.subscribe("files/codemirror/theme/change", function(parTheme){
-        self.mirror.set("theme", parTheme);
-      }));
-      config.get("theme").then(lang.hitch(this, function(theme){
-        this.mirror.set("theme", theme);
-        //this.themeSelect.set("value", theme);
-      }));
-      this.ownObj(topic.subscribe("files/codemirror/changeSetting", function(par){
-        self.mirror.set(par.setting, par.value);
-      }));
+      codeMirrorSettings.on("settings", function(settings){
+        var s;
+        for (s in settings){
+          self.mirror.set(s, settings[s]);
+        };
+      });
       
       return ret;
     }

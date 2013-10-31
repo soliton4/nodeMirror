@@ -7,6 +7,8 @@ define([
   , "sol/convenient/Delayed"
   , "codemirror/CodeMirror"
   , "jshint/jshint"
+  , "codemirror/addon/hint/all"
+  , "dojo/_base/array"
 ], function(
   declare
   , lang
@@ -15,6 +17,8 @@ define([
   , Delayed
   , CodeMirror
   , JSHINT
+  , allHints
+  , array
 ){
 
   var cmOptions = {
@@ -24,7 +28,17 @@ define([
     , matchBrackets: true
     , readOnly: false
     , autoCloseBrackets: true
+    , matchTags: true
+    , showTrailingSpace: false
+    , autoCloseTags: true
+    , foldGutter: true
+    , gutters: true
   };
+  
+  var hintMap = {};
+  array.forEach(allHints, function(parHint){
+    hintMap[parHint] = true;
+  });
   
   return declare([
     WidgetBase
@@ -59,6 +73,11 @@ define([
         this.mirror.setValue(this.value);
       };
       this.widgets = [];
+    }
+    
+    , _setAutoCompleteAttr: function(parValue){
+      this._set("autoComplete", parValue);
+      
     }
     
     , focus: function(){

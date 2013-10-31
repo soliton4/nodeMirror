@@ -39,6 +39,9 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
 //   no tip should be shown. By default the docstring is shown.
 // * typeTip: Like completionTip, but for the tooltips shown for type
 //   queries.
+// * responseFilter: A function(doc, query, request, error, data) that
+//   will be applied to the Tern responses before treating them
+//
 //
 // It is possible to run the Tern server in a web worker by specifying
 // these additional options:
@@ -54,6 +57,7 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
 
 (function() {
   "use strict";
+  // declare global: tern
 
   CodeMirror.TernServer = function(options) {
     var self = this;
@@ -107,7 +111,7 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
 
     getHint: function(cm, c) { return hint(this, cm, c); },
 
-    showType: function(cm) { showType(this, cm); },
+    showType: function(cm, pos) { showType(this, cm, pos); },
 
     updateArgHints: function(cm) { updateArgHints(this, cm); },
 
@@ -117,8 +121,16 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
 
     rename: function(cm) { rename(this, cm); },
 
-    request: function(cm, query, c) {
-      this.server.request(buildRequest(this, findDoc(this, cm.getDoc()), query), c);
+    request: function (cm, query, c, pos) {
+      var self = this;
+      var doc = findDoc(this, cm.getDoc());
+      var request = buildRequest(this, doc, query, pos);
+
+      this.server.request(request, function (error, data) {
+        if (!error && self.options.responseFilter)
+          data = self.options.responseFilter(doc, query, request, error, data);
+        c(error, data);
+      });
     }
   };
 
@@ -224,7 +236,7 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
 
   // Type queries
 
-  function showType(ts, cm) {
+  function showType(ts, cm, pos) {
     ts.request(cm, "type", function(error, data) {
       if (error) return showError(ts, cm, error);
       if (ts.options.typeTip) {
@@ -239,7 +251,7 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
         }
       }
       tempTooltip(cm, tip);
-    });
+    }, pos);
   }
 
   // Maintaining argument hints
@@ -248,12 +260,24 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
     closeArgHints(ts);
 
     if (cm.somethingSelected()) return;
-    var lex = cm.getTokenAt(cm.getCursor()).state.lexical;
+    var state = cm.getTokenAt(cm.getCursor()).state;
+    var inner = CodeMirror.innerMode(cm.getMode(), state);
+    if (inner.mode.name != "javascript") return;
+    var lex = inner.state.lexical;
     if (lex.info != "call") return;
 
-    var ch = lex.column, pos = lex.pos || 0;
-    for (var line = cm.getCursor().line, e = Math.max(0, line - 9), found = false; line >= e; --line)
-      if (cm.getLine(line).charAt(ch) == "(") {found = true; break;}
+    var ch, pos = lex.pos || 0, tabSize = cm.getOption("tabSize");
+    for (var line = cm.getCursor().line, e = Math.max(0, line - 9), found = false; line >= e; --line) {
+      var str = cm.getLine(line), extra = 0;
+      for (var pos = 0;;) {
+        var tab = str.indexOf("\t", pos);
+        if (tab == -1) break;
+        extra += tabSize - (tab + extra) % tabSize - 1;
+        pos = tab + 1;
+      }
+      ch = lex.column - extra;
+      if (str.charAt(ch) == "(") {found = true; break;}
+    }
     if (!found) return;
 
     var start = Pos(line, ch);
@@ -430,7 +454,7 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
     for (var file in perFile) {
       var known = ts.docs[file], chs = perFile[file];;
       if (!known) continue;
-      chs.sort(function(a, b) { return cmpPos(b, a); });
+      chs.sort(function(a, b) { return cmpPos(b.start, a.start); });
       var origin = "*rename" + (++nextChangeOrig);
       for (var i = 0; i < chs.length; ++i) {
         var ch = chs[i];
@@ -441,13 +465,13 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
 
   // Generic request-building helper
 
-  function buildRequest(ts, doc, query) {
+  function buildRequest(ts, doc, query, pos) {
     var files = [], offsetLines = 0, allowFragments = !query.fullDocs;
     if (!allowFragments) delete query.fullDocs;
     if (typeof query == "string") query = {type: query};
     query.lineCharPositions = true;
     if (query.end == null) {
-      query.end = doc.doc.getCursor("end");
+      query.end = pos || doc.doc.getCursor("end");
       if (doc.doc.somethingSelected())
         query.start = doc.doc.getCursor("start");
     }
@@ -601,7 +625,7 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
     worker.onmessage = function(e) {
       var data = e.data;
       if (data.type == "getFile") {
-        getFile(ts, name, function(err, text) {
+        getFile(ts, data.name, function(err, text) {
           send({type: "getFile", err: String(err), text: text, id: data.id});
         });
       } else if (data.type == "debug") {

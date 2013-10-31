@@ -6,6 +6,7 @@ define([
   , "./config/load!node-mirror"
   , "main/_RemoteCall"
   , "dojo/Deferred"
+  , "modules/text/codeMirrorSetable"
 ], function(
   declare
   , dojoConfig
@@ -14,9 +15,14 @@ define([
   , nodeMirrorConfig
   , _RemoteCall
   , Deferred
+  , codeMirrorSetable
 ){
   var isServer = has("server-modules");
   var config;
+  
+  var codeMirrorSaveable = function(parValue){
+    return parValue.substr(0, 11) == "codemirror-" && codeMirrorSetable.hasOwnProperty(parValue.substr(11));
+  };
   
   var ConfigCls = declare("Config", [
     _RemoteCall
@@ -27,14 +33,12 @@ define([
     }
     
     , clientConfig: {
-      "theme": true
-      , "terminal": true
+      "terminal": true
       , "debug": true
       , "restart": true
       , "seeunicorns": true
     }
     , saveable: {
-      "theme": true
     }
     
     , constructor: function(){
@@ -55,7 +59,7 @@ define([
         console.log("doing a set");
         try{
         this.config[parName] = parValue;
-        if (this.saveable[parName]){
+        if (this.saveable[parName] || codeMirrorSaveable(parName)){
           nodeMirrorConfig.set(parName, parValue);
         };
         nodeMirrorConfig[parName] = parValue;
@@ -79,7 +83,7 @@ define([
         console.log("doing a set");
         try{
         this.config[parName] = parValue;
-        if (this.saveable[parName]){
+        if (this.saveable[parName] || codeMirrorSaveable(parName)){
           nodeMirrorConfig.set(parName, parValue);
         };
         nodeMirrorConfig[parName] = parValue;
@@ -101,8 +105,7 @@ define([
     , clientSetConfig: function(parName, parValue){
       console.log("doing it");
       var def = new Deferred();
-      if (this.clientConfig[parName]){
-        console.log("aha");
+      if (this.clientConfig[parName] || codeMirrorSaveable(parName)){
         this.set2(parName, parValue);
       };
       def.resolve();
@@ -131,6 +134,9 @@ define([
       var i;
       for(i in this.clientConfig){
         res[i] = nodeMirrorConfig[i];
+      };
+      for(i in codeMirrorSetable){
+        res["codemirror-" + i] = nodeMirrorConfig["codemirror-" + i];
       };
       def.resolve(res);
       return def;

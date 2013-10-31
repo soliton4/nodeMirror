@@ -217,7 +217,7 @@ var standardConfig = {
   });
   
   var allThemesStr = "";
-  var allThemesJsStr = "define([], function(){ return [";
+  var allThemesJsStr = "define([], function(){ return [\"default\", ";
   var allThemesJsStarted = false;
   
   var srcThemeDir = srcPath + "theme/";
@@ -235,6 +235,9 @@ var standardConfig = {
         return;
       };
       array.forEach(data, function(parFile){
+        if (parFile == "ambiance-mobile.css"){
+          return;
+        };
         if (solString.endsWith(parFile, ".css")){
           allThemesStr += "@import url(\"" + parFile + "\");\n";
           if (allThemesJsStarted){
@@ -256,7 +259,48 @@ var standardConfig = {
       fs.writeFile(destThemeDir + "all.js", allThemesJsStr);
     });
   });
-    
+
+  
+  var allHintsJsStr = "define([], function(){ return [";
+  var allHintsJsStarted = false;
+  
+  var srcHintDir = srcPath + "addon/hint/";
+  var destHintDir = destPath + "addon/hint/";
+  fs.mkdir(destHintDir, null, function(err){
+    if (err){
+      if (err.errno != 47){
+        console.log(err);
+        return;
+      };
+    };
+    fs.readdir(srcHintDir, function(err, data){
+      if (err){
+        console.log(err);
+        return;
+      };
+      array.forEach(data, function(parFile){
+        if (solString.endsWith(parFile, ".js")){
+          //allThemesStr += "@import url(\"" + parFile + "\");\n";
+          if (allHintsJsStarted){
+            allHintsJsStr += ", ";
+          };
+          allHintsJsStr += "\"" + solString.cutEnd(parFile, 3) + "\"";
+          allHintsJsStarted = true;
+          fs.readFile(srcHintDir + parFile, function(err, data){
+            if (err){
+              console.log(err);
+              return;
+            };
+            fs.writeFile(destHintDir + parFile, data);
+          });
+        };
+      });
+      //fs.writeFile(destHintDir + "all.css", allThemesStr);
+      allHintsJsStr += "]; });";
+      fs.writeFile(destHintDir + "all.js", allHintsJsStr);
+    });
+  });
+
 
 //  jshint
 
