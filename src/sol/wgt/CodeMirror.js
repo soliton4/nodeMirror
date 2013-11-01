@@ -33,12 +33,25 @@ define([
     , autoCloseTags: true
     , foldGutter: true
     , gutters: true
+    , extraKeys: {}
   };
   
   var hintMap = {};
   array.forEach(allHints, function(parHint){
     hintMap[parHint] = true;
   });
+  
+  CodeMirror.commands.autocomplete = function(cm) {
+    var mode = cm.getMode();
+    if (mode){
+      if (CodeMirror.hint[mode.name]){
+        CodeMirror.showHint(cm, CodeMirror.hint[mode.name]);
+        return;
+      };
+    };
+    CodeMirror.showHint(cm, CodeMirror.hint.anyword);
+    //CodeMirror.showHint(cm, CodeMirror.hint.javascript);
+  };  
   
   return declare([
     WidgetBase
@@ -77,7 +90,13 @@ define([
     
     , _setAutoCompleteAttr: function(parValue){
       this._set("autoComplete", parValue);
-      
+      var keyMap = this.mirror.getOption("extraKeys") || {};
+      if (parValue){
+        keyMap["Ctrl-Space"] = "autocomplete";
+      }else{
+        delete keyMap["Ctrl-Space"];
+      };
+      this.mirror.setOption("extraKeys", keyMap);
     }
     
     , focus: function(){

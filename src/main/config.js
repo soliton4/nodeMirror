@@ -136,7 +136,7 @@ define([
         res[i] = nodeMirrorConfig[i];
       };
       for(i in codeMirrorSetable){
-        res["codemirror-" + i] = nodeMirrorConfig["codemirror-" + i];
+        res["codemirror-" + i] = nodeMirrorConfig.hasOwnProperty("codemirror-" + i) ? nodeMirrorConfig["codemirror-" + i] : codeMirrorSetable[i];
       };
       def.resolve(res);
       return def;

@@ -102,7 +102,14 @@ define([
         , valueSet: valueSetCheckBoxFun
         , onChange: onChangeCheckBoxFun
         
+      }), new CheckBox({
+        label: "Ctrl+Space auto complete"
+        , setting: "autoComplete"
+        , valueSet: valueSetCheckBoxFun
+        , onChange: onChangeCheckBoxFun
+        
       })];
+      
       
       
       

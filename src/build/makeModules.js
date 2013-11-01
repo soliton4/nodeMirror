@@ -259,9 +259,16 @@ var standardConfig = {
       fs.writeFile(destThemeDir + "all.js", allThemesJsStr);
     });
   });
-
   
-  var allHintsJsStr = "define([], function(){ return [";
+  
+  
+  // hints
+  
+  
+  
+  var allHintsJsStr = "define([\"codemirror/CodeMirror\"";
+  var allHintsArStr = "[";
+  //var allHintsJsStr = "define([], function(){ return [";
   var allHintsJsStarted = false;
   
   var srcHintDir = srcPath + "addon/hint/";
@@ -282,9 +289,13 @@ var standardConfig = {
         if (solString.endsWith(parFile, ".js")){
           //allThemesStr += "@import url(\"" + parFile + "\");\n";
           if (allHintsJsStarted){
-            allHintsJsStr += ", ";
+            allHintsArStr += ", ";
           };
-          allHintsJsStr += "\"" + solString.cutEnd(parFile, 3) + "\"";
+          allHintsArStr += "\"" + solString.cutEnd(parFile, 3) + "\"";
+          allHintsJsStr += ", \"codemirror/addon/hint/";
+          allHintsJsStr += solString.cutEnd(parFile, 3);
+          allHintsJsStr += "\"";
+          
           allHintsJsStarted = true;
           fs.readFile(srcHintDir + parFile, function(err, data){
             if (err){
@@ -295,8 +306,10 @@ var standardConfig = {
           });
         };
       });
-      //fs.writeFile(destHintDir + "all.css", allThemesStr);
-      allHintsJsStr += "]; });";
+      allHintsArStr += "]";
+      allHintsJsStr += "], function(){ return ";
+      allHintsJsStr += allHintsArStr;
+      allHintsJsStr += "; });";
       fs.writeFile(destHintDir + "all.js", allHintsJsStr);
     });
   });

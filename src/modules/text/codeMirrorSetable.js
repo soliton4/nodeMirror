@@ -8,5 +8,6 @@ define([
     , showTrailingSpace: false
     , autoCloseTags: true
     , foldGutter: true
+    , autoComplete: true
   };
 });
