@@ -12,7 +12,7 @@ var helperDefine = function(parRequire, parFactory){
     module.exports = parFactory.apply(undefined, parAr);
   };
 };
-helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
+helperDefine(["codemirror/CodeMirror", "codemirror/lint/coffeelint"], function(CodeMirror, coffeelint){
 // Depends on coffeelint.js from http://www.coffeelint.org/js/coffeelint.js
 
 // declare global: coffeelint

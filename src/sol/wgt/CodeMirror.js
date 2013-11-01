@@ -6,7 +6,7 @@ define([
   , "dojo/dom-geometry"
   , "sol/convenient/Delayed"
   , "codemirror/CodeMirror"
-  , "jshint/jshint"
+  //, "jshint/jshint"
   , "codemirror/addon/hint/all"
   , "dojo/_base/array"
 ], function(
@@ -16,7 +16,7 @@ define([
   , domGeometry
   , Delayed
   , CodeMirror
-  , JSHINT
+  //, JSHINT
   , allHints
   , array
 ){
@@ -34,6 +34,7 @@ define([
     , foldGutter: true
     , gutters: true
     , extraKeys: {}
+    , lint: true
   };
   
   var hintMap = {};
@@ -50,7 +51,6 @@ define([
       };
     };
     CodeMirror.showHint(cm, CodeMirror.hint.anyword);
-    //CodeMirror.showHint(cm, CodeMirror.hint.javascript);
   };  
   
   return declare([
@@ -74,9 +74,9 @@ define([
         f(o, o[0].toUpperCase() + o.substr(1));
       };
       declare.safeMixin(this, mix);
-      this.checkDelayed = this.ownObj(new Delayed({
+      /*this.checkDelayed = this.ownObj(new Delayed({
         delay: 3000
-      }, lang.hitch(this, "updateHints")));
+      }, lang.hitch(this, "updateHints")));*/
     }
     
     , buildRendering: function(){
@@ -85,7 +85,7 @@ define([
       if (this.value){
         this.mirror.setValue(this.value);
       };
-      this.widgets = [];
+      //this.widgets = [];
     }
     
     , _setAutoCompleteAttr: function(parValue){
@@ -105,10 +105,10 @@ define([
     }
     
     , on: function(parWhat, parFun){
-      this.mirror.on(parWhat, parFun);
+      return this.mirror.on(parWhat, parFun);
     }
     
-    , updateHints: function() {
+    /*, updateHints: function() {
       if (!JSHINT || !this.jshint){
         return;
       };
@@ -143,15 +143,15 @@ define([
           this.jshintErrors++;
         };
       }));
-    }
+    }*/
     
-    , _removeLineWgts: function(){
+    /*, _removeLineWgts: function(){
       var i;
       for (i = 0; i < this.widgets.length; ++i){
         this.mirror.removeLineWidget(this.widgets[i]);
       };
       this.widgets = [];
-    }
+    }*/
     
     , postMixInProperties: function(){
       this.inherited(arguments);
@@ -168,20 +168,22 @@ define([
         };
       };
       
-      if (this.jshint){
+      this.mirror.refresh();
+      
+      /*if (this.jshint){
         this._startJshint();
-      };
+      };*/
     }
-    ,_setJshintAttr: function(parValue){
+    /*,_setJshintAttr: function(parValue){
       this._set("jshint", parValue);
       if (parValue){
         this._startJshint();
       }else{
         this._removeLineWgts();
       };
-    }
+    }*/
     
-    , _startJshint: function(){
+    /*, _startJshint: function(){
       if (!this._jshintOn){
         this._jshintOn = true;
         this.mirror.on("change", lang.hitch(this, function(){
@@ -193,7 +195,7 @@ define([
         }));
       };
       this.checkDelayed.exec(500);
-    }
+    }*/
     
     , _setValueAttr: function(parValue){
       this._set("value", parValue);

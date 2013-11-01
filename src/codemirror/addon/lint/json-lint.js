@@ -12,7 +12,7 @@ var helperDefine = function(parRequire, parFactory){
     module.exports = parFactory.apply(undefined, parAr);
   };
 };
-helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
+helperDefine(["codemirror/CodeMirror", "codemirror/lint/jsonlint"], function(CodeMirror, jsonlint){
 // Depends on jsonlint.js from https://github.com/zaach/jsonlint
 
 // declare global: jsonlint

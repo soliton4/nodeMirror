@@ -12,7 +12,7 @@ var helperDefine = function(parRequire, parFactory){
     module.exports = parFactory.apply(undefined, parAr);
   };
 };
-helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
+helperDefine(["codemirror/CodeMirror", "codemirror/lint/jshint"], function(CodeMirror, JSHINT){
 (function() {
   "use strict";
   // declare global: JSHINT

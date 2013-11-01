@@ -6,6 +6,8 @@ define([
   , "dojo/Deferred"
   , "sol/string"
   , "sol/promise"
+  , "dojo/_base/lang"
+  , "sol/fileName"
 ], function(
   modulizer
   , fs
@@ -14,6 +16,8 @@ define([
   , Deferred
   , solString
   , solPromise
+  , lang
+  , fileName
 ){
   
   var genericDir = dojoConfig.baseUrl + "../generic-js/";
@@ -73,6 +77,53 @@ var standardConfig = {
   }]
   , "return": "CodeMirror"
 };
+  var codemirrorStandardRequire = {
+    module: "codemirror/CodeMirror"
+    , as: "CodeMirror"
+  };
+  
+  var codemirrorExtraConfig = {
+    "coffeescript-lint.js": {
+      require: [codemirrorStandardRequire, {
+        module: "codemirror/lint/coffeelint"
+        , as: "coffeelint"
+      }]
+      , "return": "CodeMirror"
+    }
+    
+    , "css-lint.js": {
+      require: [codemirrorStandardRequire, {
+        module: "codemirror/lint/csslint"
+        , as: "CSSLint"
+      }]
+      , "return": "CodeMirror"
+    }
+    
+    , "javascript-lint.js": {
+      require: [codemirrorStandardRequire, {
+        module: "codemirror/lint/jshint"
+        , as: "JSHINT"
+      }]
+      , "return": "CodeMirror"
+    }
+    
+    , "json-lint.js": {
+      require: [codemirrorStandardRequire, {
+        module: "codemirror/lint/jsonlint"
+        , as: "jsonlint"
+      }]
+      , "return": "CodeMirror"
+    }
+  };
+  
+  var getConfig = function(parFilenameStr){
+    var fn = fileName.single(parFilenameStr);
+    if (codemirrorExtraConfig[fn]){
+      return codemirrorExtraConfig[fn];
+    }else{
+      return standardConfig;
+    };
+  };
 
   var modeDir = srcPath + "mode";
   var modeDestDir = destPath + "mode";
@@ -131,7 +182,7 @@ var standardConfig = {
                 return;
               };
               allModesStr += ", \"codemirror/mode/" + parDirName + "\"";
-              modulizer.convertFile(srcFile, standardConfig, modeDestDir + "/" + parDirName + ".js", errFun);
+              modulizer.convertFile(srcFile, getConfig(srcFile), modeDestDir + "/" + parDirName + ".js", errFun);
               def.resolve();
             });
           }else{
@@ -188,7 +239,7 @@ var standardConfig = {
             });
           }else{
             if (solString.endsWith(parFile, ".js")){
-              modulizer.convertFile(completeSrc + parFile, standardConfig, completeDest + parFile, errFun);
+              modulizer.convertFile(completeSrc + parFile, getConfig(parFile), completeDest + parFile, errFun);
               def.resolve();
             }else if (solString.endsWith(parFile, ".css")){
               cssAddOns += "@import url(\"" + parDir + parFile + "\");\n";
@@ -315,8 +366,83 @@ var standardConfig = {
   });
 
 
+  
+  // lint
+  
+  
+  
+  var allLintsJsStr = "define([\"codemirror/CodeMirror\"";
+  var allLintsArStr = "[";
+  var allLintsJsStarted = false;
+  
+  var srcLintDir = srcPath + "addon/lint/";
+  var destLintDir = destPath + "addon/lint/";
+  fs.mkdir(destLintDir, null, function(err){
+    if (err){
+      if (err.errno != 47){
+        console.log(err);
+        return;
+      };
+    };
+    fs.readdir(srcLintDir, function(err, data){
+      if (err){
+        console.log(err);
+        return;
+      };
+      array.forEach(data, function(parFile){
+        if (solString.endsWith(parFile, ".js")){
+          
+          if (parFile != "coffeescript-lint.js"){
+            if (allLintsJsStarted){
+              allLintsArStr += ", ";
+            };
+            allLintsArStr += "\"" + solString.cutEnd(parFile, 3) + "\"";
+            allLintsJsStr += ", \"codemirror/addon/lint/";
+            allLintsJsStr += solString.cutEnd(parFile, 3);
+            allLintsJsStr += "\"";
+          };
+          
+          allLintsJsStarted = true;
+          fs.readFile(srcLintDir + parFile, function(err, data){
+            if (err){
+              console.log(err);
+              return;
+            };
+            fs.writeFile(destLintDir + parFile, data);
+          });
+        };
+      });
+      allLintsArStr += "]";
+      allLintsJsStr += "], function(){ return ";
+      allLintsJsStr += allLintsArStr;
+      allLintsJsStr += "; });";
+      fs.writeFile(destLintDir + "all.js", allLintsJsStr);
+    });
+  });
+
+  
+  
+//  coffeelint
+
+modulizer.convertFile(genericDir + "coffeelint/coffeelint.js", {
+  "return": "module.exports"
+}, srcDir + "codemirror/lint/coffeelint.js", errFun);
+
+
+// csslint
+  
+modulizer.convertFile(genericDir + "csslint/release/csslint.js", {
+  "return": "CSSLint"
+}, srcDir + "codemirror/lint/csslint.js", errFun);
+  
+  
 //  jshint
 
+modulizer.convertFile(genericDir + "jshint/jshint-2.1.4.js", {
+  "return": "JSHINT"
+}, srcDir + "codemirror/lint/jshint.js", errFun);
+
+  
 jshintSrcPath = genericDir + "jshint/";
 jshintDestPath = srcDir + "jshint/";
 
@@ -324,6 +450,14 @@ modulizer.convertFile(jshintSrcPath + "jshint-2.1.4.js", {
   "return": "JSHINT"
 }, jshintDestPath + "jshint.js", errFun);
 
+  
+  // jsonlint
+  
+modulizer.convertFile(genericDir + "jsonlint/lib/jsonlint.js", {
+  "return": "jsonlint"
+}, srcDir + "codemirror/lint/jsonlint.js", errFun);
+  
+  
 // PEG.js
 pegSrcPath = genericDir + "peg/";
 pegDestPath = srcDir + "peg/";

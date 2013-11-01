@@ -12,7 +12,7 @@ var helperDefine = function(parRequire, parFactory){
     module.exports = parFactory.apply(undefined, parAr);
   };
 };
-helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
+helperDefine(["codemirror/CodeMirror", "codemirror/lint/csslint"], function(CodeMirror, CSSLint){
 // Depends on csslint.js from https://github.com/stubbornella/csslint
 
 // declare global: CSSLint

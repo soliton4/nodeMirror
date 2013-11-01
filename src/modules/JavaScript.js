@@ -32,8 +32,6 @@ define([
   var additionalTypes = {
   };
   
-  var lastTimeJsHint = true;
-  
   return declare([Base], {
     "class": "content text javascript"
     
@@ -65,16 +63,6 @@ define([
     
     , buildRendering: function(){
       var ret = this.inherited(arguments);
-      this.jshintBtn = this.ownObj(new ToggleButton({
-        onChange: lang.hitch(this, function(){
-          lastTimeJsHint = this.jshintBtn.get("checked");
-          this.mirror.set("jshint", lastTimeJsHint);
-        })
-        , label: "syntax check"
-        , checked: lastTimeJsHint
-      })); 
-      this.menu.addChild(this.jshintBtn);
-      this.mirror.set("jshint", lastTimeJsHint);
       return ret;
     }
     

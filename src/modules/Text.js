@@ -17,6 +17,7 @@ define([
   , "main/clientOnly!./text/settingsDlg"
   , "dojo/topic"
   , "main/clientOnly!modules/text/codeMirrorSettings"
+  , "main/clientOnly!dijit/form/ToggleButton"
   
   , "main/clientOnly!codemirror/mode/allModes"
   , "main/clientOnly!codemirror/addon/dialog/dialog"
@@ -33,6 +34,7 @@ define([
   , "main/clientOnly!codemirror/addon/fold/brace-fold"
   , "main/clientOnly!codemirror/addon/fold/comment-fold"
   , "main/clientOnly!codemirror/addon/fold/foldcode"
+  , "main/clientOnly!codemirror/addon/lint/all"
   
 ], function(
   declare
@@ -53,6 +55,7 @@ define([
   , settingsDlg
   , topic
   , codeMirrorSettings
+  , ToggleButton
 ){
   
   var additionalSubtypes = {
@@ -63,6 +66,8 @@ define([
   var additionalTypes = {
     "inode/x-empty": true
   };
+  
+  var lastTimeLint = true;
   
   return declare([Base], {
     "class": "content text"
@@ -141,17 +146,6 @@ define([
       var ret = this.inherited(arguments);
       var self = this;
       
-      /*this.themeSelect = this.ownObj(new Select({
-        options: array.map(allThemes, function(theme){
-          return {
-            label: theme
-            , value: theme
-          };
-        })
-        , onChange: lang.hitch(this, "changeTheme")
-      }));
-      this.menu.addChild(this.themeSelect);*/
-      
       this.mirror = this.ownObj(new CodeMirror({
         region: "center"
         , value: this.content.text
@@ -159,7 +153,7 @@ define([
         , lineNumbers: true
         , theme: "twilight"
         , matchBrackets: true
-        , gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
+        , gutters: ["CodeMirror-lint-markers", "CodeMirror-linenumbers", "CodeMirror-foldgutter"]
       }));
       this.addChild(this.mirror);
       this.mirror.on("change", lang.hitch(this, function(){
@@ -173,6 +167,17 @@ define([
           self.mirror.set(s, settings[s]);
         };
       });
+      
+      this.syntaxBtn = this.ownObj(new ToggleButton({
+        onChange: lang.hitch(this, function(){
+          lastTimeLint = this.syntaxBtn.get("checked");
+          this.mirror.set("lint", lastTimeLint);
+        })
+        , label: "syntax check"
+        , checked: lastTimeLint
+      })); 
+      this.menu.addChild(this.syntaxBtn);
+      this.mirror.set("lint", lastTimeLint);
       
       return ret;
     }
