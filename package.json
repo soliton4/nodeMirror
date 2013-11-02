@@ -1,6 +1,6 @@
 {
   "name": "node-mirror",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "author": {
     "name": "Matthias Behrens",
     "email": "matthias.behrens@gmail.com"
@@ -27,6 +27,7 @@
   },  
   "keywords": [
     "editor"
+    , "terminal"
     , "development"
     , "CodeMirror"
     , "IDE"

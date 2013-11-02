@@ -29,12 +29,14 @@ define([
     ".pl": "application/promiseLand" 
     , ".pegjs": "application/peg.js" 
     , ".less": "text/x-less"
+    , ".coffee": "text/x-coffeescript"
   };
 
   var forceTextExtensions = {
     ".pl": "application/promiseLand" 
     , ".pegjs": "application/peg.js" 
     , ".less": "text/x-less"
+    , ".coffee": "text/x-coffeescript"
   };
   
   var files;
@@ -101,6 +103,20 @@ define([
       return def.promise;
     }
     
+    , contentTypesDef: function(parFileNamesAr){
+      var def = new Deferred();
+      var result = {};
+      mimeMagic(parFileNamesAr, function (err, types) {
+        if (err) {
+          def.reject(err);
+          return;
+        };
+        def.resolve(types);
+      });
+      return def.promise;
+    }
+    
+    
     , contentTypeDef: function(parFileName){
       var def = new Deferred();
       var result = {};
@@ -123,7 +139,7 @@ define([
             isEmpty = true;
           };
             var extension;
-          if (type == "text/plain" || isEmpty){
+          if (type == "text/plain" || type == "application/octet-stream" || isEmpty){
             for (extension in customExtensions){
               if (parFileName.substr(parFileName.length - extension.length) == extension){
                 type = customExtensions[extension];
@@ -132,6 +148,7 @@ define([
               };
             };
             type = mime.lookup(parFileName);
+            console.log(type);
           }else if(solString.startsWith(type, "text/")){
             for (extension in forceTextExtensions){
               if (solString.endsWith(parFileName, extension)){

@@ -76,6 +76,13 @@ define([
         });
       });
       
+      /*files.childrenDef(fileName).then(function(ar){
+        files.contentTypesDef(ar).then(function(typesAr){
+          console.log(typesAr);
+        });
+        
+      });*/
+      
       return def;
     }
     
