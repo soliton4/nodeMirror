@@ -101,7 +101,7 @@ var standardConfig = {
     
     , "javascript-lint.js": {
       require: [codemirrorStandardRequire, {
-        module: "codemirror/lint/jshint"
+        module: "jshint/jshint"
         , as: "JSHINT"
       }]
       , "return": "CodeMirror"
