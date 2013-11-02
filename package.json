@@ -1,6 +1,6 @@
 {
   "name": "node-mirror",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "author": {
     "name": "Matthias Behrens",
     "email": "matthias.behrens@gmail.com"
@@ -22,7 +22,8 @@
     "less": "*",
     "session.socket.io": "*",
     "connect": "*",
-    "npm": "*"
+    "npm": "*",
+    "extend": "*"
   },  
   "keywords": [
     "editor"
