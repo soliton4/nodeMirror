@@ -39,6 +39,7 @@ define([
     , extraKeys: {}
     , placeholder: ""
     , lineWrapping: false
+    , keyMap: "default"
   };
   
   var hintMap = {};

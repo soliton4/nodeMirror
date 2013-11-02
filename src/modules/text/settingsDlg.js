@@ -10,6 +10,9 @@ define([
   , "main/config"
   , "dijit/form/CheckBox"
   , "modules/text/codeMirrorSettings"
+  
+  , "codemirror/keymap/emacs"
+  , "codemirror/keymap/vim"
 ], function(
   declare
   , TooltipDialog
@@ -70,6 +73,22 @@ define([
         })
         , label: "Color Theme"
         , setting: "theme"
+        , valueSet: valueSetFun
+        , onChange: onChangeFun
+        
+      }), new Select({
+        options: [{
+          label: "default"
+          , value: "default"
+        },{
+          label: "emacs"
+          , value: "emacs"
+        },{
+          label: "vim"
+          , value: "vim"
+        }]
+        , label: "Key Map"
+        , setting: "keyMap"
         , valueSet: valueSetFun
         , onChange: onChangeFun
         
@@ -163,6 +182,9 @@ define([
       setTimeout(function(){
         self.checkStarted(1);
       }, 0);
+    }
+    , destroy: function(){
+      debugger;
     }
     
   });

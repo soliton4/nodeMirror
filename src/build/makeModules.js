@@ -311,6 +311,19 @@ var standardConfig = {
     });
   });
   
+// keymaps
+  
+  
+modulizer.convertFile(genericDir + "CodeMirror/keymap/extra.js", standardConfig
+                      , srcDir + "codemirror/keymap/extra.js", errFun);
+
+modulizer.convertFile(genericDir + "CodeMirror/keymap/emacs.js", standardConfig
+                      , srcDir + "codemirror/keymap/emacs.js", errFun);
+
+  modulizer.convertFile(genericDir + "CodeMirror/keymap/vim.js", standardConfig
+                      , srcDir + "codemirror/keymap/vim.js", errFun);
+  
+  
   
   
   // hints

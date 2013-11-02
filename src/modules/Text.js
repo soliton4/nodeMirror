@@ -257,5 +257,12 @@ define([
       return this.content;
     }
     
+    , destroyRecursive: function(){
+      if (this.settingsBtn){
+        this.settingsBtn.dropDown = undefined;
+      }
+      this.inherited(arguments);
+    }
+    
   });
 });

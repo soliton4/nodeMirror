@@ -9,5 +9,6 @@ define([
     , autoCloseTags: true
     , foldGutter: true
     , autoComplete: true
+    , keyMap: "default"
   };
 });
