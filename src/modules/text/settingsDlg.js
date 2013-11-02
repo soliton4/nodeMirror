@@ -30,6 +30,7 @@ define([
       
       this.table = this.ownObj(new TableContainer({
         "class": "codeMirrorSettingsTable"
+        , labelWidth: 220
       }));
       this.table.placeAt(this.containerNode);
       

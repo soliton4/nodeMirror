@@ -18,6 +18,9 @@ define([
   , "dojo/topic"
   , "main/clientOnly!modules/text/codeMirrorSettings"
   , "main/clientOnly!dijit/form/ToggleButton"
+  , "main/clientOnly!dijit/form/Button"
+  , "main/clientOnly!dijit/DropDownMenu"
+  , "main/clientOnly!dijit/MenuItem"
   
   , "main/clientOnly!codemirror/mode/allModes"
   , "main/clientOnly!codemirror/addon/dialog/dialog"
@@ -35,6 +38,9 @@ define([
   , "main/clientOnly!codemirror/addon/fold/comment-fold"
   , "main/clientOnly!codemirror/addon/fold/foldcode"
   , "main/clientOnly!codemirror/addon/lint/all"
+  , "main/clientOnly!codemirror/addon/selection/active-line"
+  , "main/clientOnly!codemirror/addon/display/placeholder"
+  
   
 ], function(
   declare
@@ -56,6 +62,9 @@ define([
   , topic
   , codeMirrorSettings
   , ToggleButton
+  , Button
+  , DropDownMenu
+  , MenuItem
 ){
   
   var additionalSubtypes = {
@@ -151,9 +160,11 @@ define([
         , value: this.content.text
         , mode: this.par.contentType
         , lineNumbers: true
-        , theme: "twilight"
+        , styleActiveLine: true
+        , theme: "eclipse"
         , matchBrackets: true
         , gutters: ["CodeMirror-lint-markers", "CodeMirror-linenumbers", "CodeMirror-foldgutter"]
+        , placeholder: "empty File..."
       }));
       this.addChild(this.mirror);
       this.mirror.on("change", lang.hitch(this, function(){
@@ -178,6 +189,48 @@ define([
       })); 
       this.menu.addChild(this.syntaxBtn);
       this.mirror.set("lint", lastTimeLint);
+      
+      
+      var commentMenu = this.ownObj(new DropDownMenu({ style: "display: none;"}));
+      var commentBlock = this.ownObj(new MenuItem({
+        label: "block",
+        onClick: lang.hitch(this, function(){
+          this.mirror.blockComment();
+        })
+      }));
+      commentMenu.addChild(commentBlock);
+      
+      var commentLine = this.ownObj(new MenuItem({
+        label: "line",
+        onClick: lang.hitch(this, function(){
+          this.mirror.lineComment();
+        })
+      }));
+      commentMenu.addChild(commentLine);
+
+      var uncomment = this.ownObj(new MenuItem({
+        label: "uncomment",
+        onClick: lang.hitch(this, function(){
+          this.mirror.uncomment();
+        })
+      }));
+      commentMenu.addChild(uncomment);
+      
+      var button = this.ownObj(new DropDownButton({
+        label: "comment",
+        dropDown: commentMenu
+      }));
+      
+      this.menu.addChild(button);
+      
+      this.wrapBtn = this.ownObj(new ToggleButton({
+        onChange: lang.hitch(this, function(){
+          this.mirror.set("lineWrapping", this.wrapBtn.get("checked"));
+        })
+        , label: "wrap"
+        , checked: false
+      })); 
+      this.menu.addChild(this.wrapBtn);
       
       return ret;
     }

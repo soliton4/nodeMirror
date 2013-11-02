@@ -11,3 +11,6 @@
         background-position: bottom left;
         background-repeat: repeat-x;
       }
+
+
+.CodeMirror pre.CodeMirror-placeholder { opacity: 0.5; }

@@ -9,6 +9,8 @@ define([
   //, "jshint/jshint"
   , "codemirror/addon/hint/all"
   , "dojo/_base/array"
+  , "codemirror/addon/display/fullscreen"
+  , "codemirror/addon/comment/comment"
 ], function(
   declare
   , lang
@@ -19,6 +21,7 @@ define([
   //, JSHINT
   , allHints
   , array
+  , commentAddOn
 ){
 
   var cmOptions = {
@@ -34,7 +37,8 @@ define([
     , foldGutter: true
     , gutters: true
     , extraKeys: {}
-    , lint: true
+    , placeholder: ""
+    , lineWrapping: false
   };
   
   var hintMap = {};
@@ -57,7 +61,18 @@ define([
     WidgetBase
   ], {
     
-    constructor: function(){
+    extraKeys: {
+        "F11": function(cm) {
+          cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+        },
+        "Esc": function(cm) {
+          if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+        }
+      }
+    
+    , lint: true
+    
+    , constructor: function(){
       var mix = {
       };
       var o;
@@ -85,6 +100,7 @@ define([
       if (this.value){
         this.mirror.setValue(this.value);
       };
+      this.mirror.setOption("extraKeys", this.extraKeys);
       //this.widgets = [];
     }
     
@@ -106,6 +122,17 @@ define([
     
     , on: function(parWhat, parFun){
       return this.mirror.on(parWhat, parFun);
+    }
+    
+    , _setLintAttr: function(parValue){
+      this._set("lint", parValue);
+      
+      var helper = this.mirror.getHelper(CodeMirror.Pos(0, 0), "lint");
+      if (helper){
+        this.mirror.setOption("lint", parValue);
+      }else{
+        this.mirror.setOption("lint", false);
+      };
     }
     
     /*, updateHints: function() {
@@ -196,6 +223,36 @@ define([
       };
       this.checkDelayed.exec(500);
     }*/
+    
+    , blockComment: function(from, to, options){
+      if (!from){
+        from = this.mirror.getDoc().getCursor("start");
+      };
+      if (!to){
+        to = this.mirror.getDoc().getCursor("end");
+      };
+      this.mirror.blockComment(from, to);
+    }
+    
+    , lineComment: function(from, to, options){
+      if (!from){
+        from = this.mirror.getDoc().getCursor("start");
+      };
+      if (!to){
+        to = this.mirror.getDoc().getCursor("end");
+      };
+      this.mirror.lineComment(from, to);
+    }
+    
+    , uncomment: function(from, to, options){
+      if (!from){
+        from = this.mirror.getDoc().getCursor("start");
+      };
+      if (!to){
+        to = this.mirror.getDoc().getCursor("end");
+      };
+      this.mirror.uncomment(from, to);
+    }
     
     , _setValueAttr: function(parValue){
       this._set("value", parValue);
