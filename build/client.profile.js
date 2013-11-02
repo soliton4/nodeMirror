@@ -120,6 +120,21 @@ var profile = (function(){
                  ,"modules/base/WidgetMixin"
                 , "dojo/io/iframe"
                 , "sol/dlg/YesNoCancel"
+                , "dijit/form/DropDownButton"
+                , "modules/text/settingsDlg"
+                , "codemirror/addon/edit/closebrackets"
+                , "codemirror/addon/fold/xml-fold"
+                , "codemirror/addon/edit/closetag"
+                , "codemirror/addon/edit/matchtags"
+                , "codemirror/addon/edit/trailingspace"
+                , "codemirror/addon/fold/foldcode"
+                , "codemirror/addon/fold/foldgutter"
+                , "codemirror/addon/fold/brace-fold"
+                , "codemirror/addon/fold/comment-fold"
+                , "codemirror/addon/lint/all.js"
+                , "codemirror/addon/selection/active-line"
+                , "codemirror/addon/display/placeholder"
+                , "codemirror/addon/lint/all"
                 ]
               , boot: true
               , customBase: true

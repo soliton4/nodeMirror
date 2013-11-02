@@ -15,7 +15,6 @@ define([
   , "main/config"
   , "main/clientOnly!dijit/form/DropDownButton"
   , "main/clientOnly!./text/settingsDlg"
-  , "dojo/topic"
   , "main/clientOnly!modules/text/codeMirrorSettings"
   , "main/clientOnly!dijit/form/ToggleButton"
   , "main/clientOnly!dijit/form/Button"
@@ -59,7 +58,6 @@ define([
   , config
   , DropDownButton
   , settingsDlg
-  , topic
   , codeMirrorSettings
   , ToggleButton
   , Button
