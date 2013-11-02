@@ -233,6 +233,12 @@ define([
       return ret;
     }
     
+    , startup: function(){
+      if (this._started){ return; };
+      this.inherited(arguments);
+      setTimeout(lang.hitch(this.mirror, "focus"), 0);
+    }
+    
     , createMenu: function(){
       var menu = this.inherited(arguments);
       this.settingsBtn = this.ownObj(new DropDownButton({
