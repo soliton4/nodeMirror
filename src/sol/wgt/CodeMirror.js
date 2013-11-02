@@ -130,7 +130,18 @@ define([
       
       var helper = this.mirror.getHelper(CodeMirror.Pos(0, 0), "lint");
       if (helper){
-        this.mirror.setOption("lint", parValue);
+        if (parValue){
+          this.mirror.setOption("lint", {
+            laxcomma: true
+          , laxbreak: true
+          , multistr: true
+          , maxerr: 1000
+          , newcap: false
+          , "-W032": true
+          });
+        }else{
+          this.mirror.setOption("lint", parValue);
+        }
       }else{
         this.mirror.setOption("lint", false);
       };

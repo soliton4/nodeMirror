@@ -1,5 +1,10 @@
-function xxx(){
+function xxx(
+  x
+  , y
+){
   var somevar = "stuff";
-}
+};
+
+
 
 xxx();   
