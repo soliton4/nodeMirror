@@ -1,0 +1,277 @@
+<html>
+  <head>
+    <style>
+      .outer1 {
+        position: absolute;
+        top: 0px;
+        left: 200px;
+        width: 100px;
+        height: 300px;
+        -webkit-transform: rotate(-90deg);
+        direction:rtl;
+      }
+      
+      .outer2 {
+        border-style: solid;
+        border-color: transparent;
+        border-width: 1px;
+        border-radius: 10px;
+        display: inline-block;
+        width: 20px;
+        overflow: hidden;
+        position: relative;
+        min-height: 70px;
+        vertical-align: top;
+        /*background-color: lightblue;*/
+        margin-bottom: 8px;
+      }
+      
+      .outer2:hover {
+        background-color: lightblue;
+        border-color: blue;
+      }
+      
+      .inner1 {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+      }
+      .rotator {
+        /*position: relative;*/
+        display: inline-block;
+        position: absolute;
+        top: 2px;
+        left: 0px;
+        width: 20px;
+        height: 20px;
+        overflow: visible;
+        /*overflow-y: hidden;*/
+        overflow-x: visible;
+        white-space: nowrap;
+        -webkit-transform: rotate(90deg);
+      }
+      
+      .expander {
+        display: inline-block;
+        position: relative;
+        top: 0px;
+        left: 0px;
+        margin: 2px;
+        min-width: 70px;
+        white-space: nowrap;
+      }
+      .expander .text {
+        margin-top: 100%; /* 4:3 aspect ratio */
+        height: 0px;
+        overflow: hidden;
+      }
+      
+      #container {
+    display: inline-block;
+    position: relative;
+        top: 20px;
+        left: 20px;
+    min-width: 50px;
+        white-space: nowrap;
+        background-color: red;
+}
+#dummy {
+    margin-top: 100%; /* 4:3 aspect ratio */
+        height: 0px;
+        overflow: hidden;
+}
+#element {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+        /*background-color: silver /* show me! */
+}
+      
+    </style>
+  </head>
+  <body>
+    <div class="outer1">
+      <div class="outer2">
+      </div>
+      <div class="outer2">
+        <div class="expander">
+            <div class="text">test 123 4555</div>
+        </div>
+      </div>
+      <div class="outer2">
+        <div class="expander">
+            <div class="text">test 123 4555</div>
+        </div>
+        <div class="rotator">
+          <div class="inner1">
+            test 123 45555
+          </div>
+        </div>
+      </div>
+      <div class="outer2">
+        <div class="expander">
+            <div class="text">test 123 45556</div>
+        </div>
+        <div class="rotator">
+          <div class="inner1">
+            test 123 45556
+          </div>
+        </div>
+      </div>
+      <div class="outer2">
+        <div class="expander">
+            <div class="text">test 123 45556</div>
+        </div>
+        <div class="rotator">
+          <div class="inner1">
+            test 123 45556
+          </div>
+        </div>
+      </div>
+      <div class="outer2">
+        <div class="expander">
+            <div class="text">test 123 45556777</div>
+        </div>
+        <div class="rotator">
+          <div class="inner1">
+            test 123 45556777
+          </div>
+        </div>
+      </div>
+      <div class="outer2">
+        <div class="expander">
+            <div class="text">test 123 45556</div>
+        </div>
+        <div class="rotator">
+          <div class="inner1">
+            test 123 455556
+          </div>
+        </div>
+      </div>
+      <div class="outer2">
+        <div class="expander">
+            <div class="text">test 123 45556</div>
+        </div>
+        <div class="rotator">
+          <div class="inner1">
+            test 123 45556
+          </div>
+        </div>
+      </div>
+      <div class="outer2">
+        <div class="expander">
+            <div class="text">test 123 45556</div>
+        </div>
+        <div class="rotator">
+          <div class="inner1">
+            test 123 45556
+          </div>
+        </div>
+      </div>
+      <div class="outer2">
+        <div class="expander">
+            <div class="text">test 123 45556</div>
+        </div>
+        <div class="rotator">
+          <div class="inner1">
+            test 123 45556
+          </div>
+        </div>
+      </div>
+      <div class="outer2">
+        <div class="expander">
+            <div class="text">test 123 45556</div>
+        </div>
+        <div class="rotator">
+          <div class="inner1">
+            test 123 45556
+          </div>
+        </div>
+      </div>
+      <div class="outer2">
+        <div class="expander">
+            <div class="text">test 123 45556</div>
+        </div>
+        <div class="rotator">
+          <div class="inner1">
+            test 123 45556
+          </div>
+        </div>
+      </div>
+      <div class="outer2">
+        <div class="expander">
+            <div class="text">test 123 45556</div>
+        </div>
+        <div class="rotator">
+          <div class="inner1">
+            test 123 45556
+          </div>
+        </div>
+      </div>
+      <div class="outer2">
+        <div class="expander">
+            <div class="text">test 123 45556</div>
+        </div>
+        <div class="rotator">
+          <div class="inner1">
+            test 123 45556
+          </div>
+        </div>
+      </div>
+      <div class="outer2">
+        <div class="expander">
+            <div class="text">t</div>
+        </div>
+        <div class="rotator">
+          <div class="inner1">
+            t
+          </div>
+        </div>
+      </div>
+      <!--
+      <div class="outer2">
+        <div class="rotator">
+          <div class="inner1">
+            test 123 45555
+          </div>
+        </div>
+      </div>
+      <div class="outer2">
+        <div class="rotator">
+          <div class="inner1">
+            some 2nd test
+          </div>
+        </div>
+      </div>
+      <div class="rotator">
+        <div class="inner1">
+          some 2nd test
+        </div>
+      </div>
+      <div class="rotator">
+        <div class="inner1">
+          some 2nd test
+        </div>
+      </div>
+      <!--<div class="rotator">
+        <div class="inner1">
+          some 2nd test
+        </div>
+      </div>
+      <div class="rotator">
+        <div class="inner1">
+          some 2nd test
+        </div>
+      </div>-->
+    </div>
+    
+    <div id="container">
+      <div id="dummy">some text 2</div>
+      <div id="element">
+      </div>
+    </div>
+    
+  </body>
+</html>

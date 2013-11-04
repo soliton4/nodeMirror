@@ -104,6 +104,7 @@ define([
     }
     
     , contentTypesDef: function(parFileNamesAr){
+      var self = this;
       var def = new Deferred();
       var result = {};
       mimeMagic(parFileNamesAr, function (err, types) {
@@ -111,9 +112,58 @@ define([
           def.reject(err);
           return;
         };
-        def.resolve(types);
+        var waitAr = [];
+        //solPromise.allDone(
+        var resultAr = array.map(types, function(type, i){
+          if (type == "inode/directory"){
+            return {
+              name: parFileNamesAr[i]
+              , type: type
+            };
+          };
+          var d = new Deferred();
+          waitAr.push(d.promise);
+          var res = {
+            name: parFileNamesAr[i]
+            , type: type
+          };
+          fs.stat(parFileNamesAr[i], function(err, stats){
+            if (!err){
+              res.stats = stats;
+              res.type = self._contentTypeCorrection(res.name, res.type, res.stats);
+            };
+            d.resolve();
+          });
+          return res;
+        });
+        if (waitAr.length){
+          solPromise.allDone(waitAr).then(function(){
+            def.resolve(resultAr);
+          });
+        }else{
+          def.resolve(resultAr);
+        }
       });
       return def.promise;
+    }
+    
+    , _contentTypeCorrection: function(parFileName, type, stats){
+      var extension;
+      if (type == "text/plain" || type == "application/octet-stream" || stats.size === 0){
+        for (extension in customExtensions){
+          if (parFileName.substr(parFileName.length - extension.length) == extension){
+            return customExtensions[extension];
+          };
+        };
+        return mime.lookup(parFileName);
+      }else if(solString.startsWith(type, "text/")){
+        for (extension in forceTextExtensions){
+          if (solString.endsWith(parFileName, extension)){
+            return customExtensions[extension];
+          };
+        };
+      };
+      return type;
     }
     
     

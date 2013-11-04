@@ -8,6 +8,11 @@ define([
   , "dojo/topic"
   , "dijit/form/Button"
   , "sol/fileName"
+  , "dojo/date/locale"
+  , "dojo/dom-class"
+  , "dojo/dom-geometry"
+  , "sol/convenient/SceduleExec"
+  , "dojo/_base/array"
 ], function(
   declare
   , Grid
@@ -18,13 +23,22 @@ define([
   , topic
   , Button
   , fileName
+  , locale
+  , domClass
+  , domGeo
+  , SceduleExec
+  , array
 ){
   return declare([
         Grid, DijitRegistry, Selection
   ], {
     content: {} // will be provided
     , region: "center"
-    , columns: {
+    , showHeader: false
+    , viewMode: "details"
+    
+    , constructor: function(){
+      this.columns = {
         id: {
             label: "Name"
             , get: function(object){
@@ -33,8 +47,121 @@ define([
         },
         contentType: {
             label: "Content Type"
+            , get: function(object){
+              if (object.contentType == "inode/directory"){
+                return "dir";
+              }
+              return object.contentType;
+            }
+        },
+        size: {
+          label: "Size"
+        },
+        mtime: {
+          label: "modified"
+          , get: function(object){
+            return object.mtime;
+            /*if (object.mtime){
+              debugger;
+              var r;
+              r = locale.parse(object.mtime);
+              return r;
+            };
+            return "";*/
+          }
         }
+      };
+      var self = this;
+      this.correctSize = SceduleExec(function(){
+        var box = domGeo.getMarginBox(self.bodyNode);
+        domGeo.setMarginBox(self.bodyNode, {
+          h: box.w
+          , w: box.h
+        });
+      }, {
+        delay: 1000
+      });
     }
+    , buildRendering: function(){
+      this.inherited(arguments);
+      this._addViewClass();
+    }
+    , renderRow: function(object){
+      var node;
+      if (this.viewMode != "list"){
+        node = this.inherited(arguments);
+      }else{
+        
+        
+        var div = domConstruct.create("div", {
+          "class": "outer2"
+        });
+        
+        var expander = domConstruct.create("div", {
+          "class": "expander"
+        });
+        domConstruct.place(expander, div);
+        
+        var text = domConstruct.create("div", {
+          "class": "text"
+        });
+        domConstruct.place(text, expander);
+        
+        var nameNode = document.createTextNode(fileName.single(object.id));
+        domConstruct.place(nameNode, text);
+        
+        var rotator = domConstruct.create("div", {
+          "class": "rotator"
+        });
+        domConstruct.place(rotator, div);
+        
+        var inner1 = domConstruct.create("div", {
+          "class": "inner1"
+        });
+        domConstruct.place(inner1, rotator);
+        
+        var nameNode2 = document.createTextNode(fileName.single(object.id));
+        domConstruct.place(nameNode2, inner1);
+        
+        node = div;
+      };
+      if (object.contentType){
+        var a = object.contentType.split("/");
+        array.forEach(a, function(s){
+          if (s.length){
+            domClass.add(node, s);
+          };
+        });
+      };
+      return node;
+    }
+    
+    , _setViewMode: function(viewMode){
+      if (this.viewMode == viewMode){
+        return;
+      };
+      if (viewMode == "list"){
+        this.set("showHeader", false);
+      }else{
+        this.set("showHeader", true);
+      };
+      this._set("viewMode", viewMode);
+      this._addViewClass();
+    }
+    , _addViewClass: function(){
+      if (this.domNode){
+        domClass.remove(this.domNode, "list");
+        domClass.remove(this.domNode, "details");
+        domClass.add(this.domNode, this.viewMode);
+      };
+    }
+    
+    /*, resize: function(){
+      var ret = this.inherited(arguments);
+      //this.correctSize.exec();
+      return ret;
+    }*/
+    
     , selectionMode: "single"
     , startup: function(){
       if (this._started){
@@ -60,6 +187,7 @@ define([
       };
       this.refresh();
       this.renderArray(this.content.children);
+      this.resize();
     }
     
     , isLeftToRight: function(){

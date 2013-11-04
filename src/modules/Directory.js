@@ -12,6 +12,7 @@ define([
   , "main/clientOnly!./directory/NewDlg"
   , "main/clientOnly!dijit/form/Button"
   , "dojo/_base/lang"
+  , "main/clientOnly!sol/wgt/Turn"
 ], function(
   declare
   , Base
@@ -26,7 +27,9 @@ define([
   , NewDlg
   , Button
   , lang
+  , Turn
 ){
+  
   
   return declare([BaseBorderContainer], {
     
@@ -34,6 +37,8 @@ define([
     
     , reloadButton: true
     , downloadButton: true
+    , "class": "directory"
+    , viewMode: "list"
     
     // the model decides if it is competent to handle that type
     /* par: {
@@ -58,7 +63,7 @@ define([
       
       var fileName = this.getFileName(par.id);
       
-      files.childrenDef(fileName).then(function(ar){
+      /*files.childrenDef(fileName).then(function(ar){
         var result = {
           children: []
         };
@@ -74,14 +79,29 @@ define([
         })).then(function(){
           def.resolve(result);
         });
-      });
+      });*/
       
-      /*files.childrenDef(fileName).then(function(ar){
+      var result = {
+        children: []
+      };
+      files.childrenDef(fileName).then(function(ar){
         files.contentTypesDef(ar).then(function(typesAr){
-          console.log(typesAr);
+          result.children = array.map(typesAr, function(f){
+            var r = {
+              type: "file"
+              , contentType: f.type
+              , id: nameTranslator.reduceName(f.name)
+            };
+            if (f.stats){
+              r.size = f.stats.size;
+              r.mtime = f.stats.mtime;
+            };
+            return r;
+          });
+          def.resolve(result);
         });
         
-      });*/
+      });
       
       return def;
     }
@@ -161,12 +181,77 @@ define([
       }));
       this.menu.addChild(this.newButton);
       
+      var self = this;
+      require(["dijit/Menu", "dijit/MenuItem", "dijit/form/ComboButton", "dojo/domReady!"],
+        function(Menu, MenuItem, ComboButton){
+          var menu = new Menu({ style: "display: none;"});
+          var menuItem1 = new MenuItem({
+            label: "Details",
+            onClick: function(){ self.set("viewMode", "details"); }
+          });
+          menu.addChild(menuItem1);
+          
+          var menuItem2 = new MenuItem({
+            label: "List",
+            onClick: function(){ self.set("viewMode", "list"); }
+          });
+          menu.addChild(menuItem2);
+          
+          self.viewButton = new ComboButton({
+            label: "Details",
+            dropDown: menu,
+            viewMode: "details",
+            onClick: function(){ 
+              self.set("viewMode", this.viewMode); 
+            }
+          });
+          self.menu.addChild(self.viewButton);
+      });
+      
+      
       this.grid = this.ownObj(new Grid({
         content: this.content
         , mainWgt: this
+        , viewMode: this.viewMode
       }));
-      this.addChild(this.grid);
+
+      this.turnWgt = this.ownObj(new Turn({
+        region: "center"
+        , widget: this.grid
+        , rotate: -90
+      }));
+      this.addChild(this.turnWgt);
+      
       return ret;
+    }
+    
+    , _setViewModeAttr: function(viewMode){
+      if (this.viewMode == viewMode){
+        return;
+      };
+      this._set("viewMode", viewMode);
+      if (this.grid){
+        this.grid.set("viewMode", viewMode);
+        if (viewMode == "list"){
+          this.turnWgt.set("rotate", -90);
+        }else{
+          this.turnWgt.set("rotate", 0);
+        };
+        var self = this;
+        setTimeout(function(){
+          self.resize();
+          setTimeout(function(){
+            self.grid.doRender();
+          }, 0);
+        }, 0);
+        if (viewMode == "details"){
+          this.viewButton.set("viewMode", "list");
+          this.viewButton.set("label", "List");
+        }else{
+          this.viewButton.set("viewMode", "details");
+          this.viewButton.set("label", "Details");
+        }
+      };
     }
     
     , _setContentAttr: function(parContent){
