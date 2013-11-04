@@ -1,0 +1,299 @@
+/* Calendar
+ * 
+ * Styling Calendar mainly includes:
+ * 
+ * 1. Calendar container
+ * 		.dijitCalendar - main container
+ * 		.dijitCalendarHover / .dijitCalendarActive - states e.g. hover,active
+ * 
+ * 2. Month
+ * 		.dijitCalendarMonthContainer
+ * 		.dijitCalendarMonthLabel
+ *      .dijitCalendarDecrease / .dijitCalendarDecrease - icons for switching to previous/next month
+ *      .dijitCalendarArrowActive .dijitCalendarDecrease - states e.g. hover,active
+ * 
+ * 3. Date
+ * 		.dijitCalendarDayLabelTemplate - week day column header e.g. S M T W T F S
+ * 		.dijitCalendarDateTemplate - date label wrapper
+ * 		.dijitCalendarPreviousMonth .dijitCalendarDateLabel - special labels for previous or next month
+ *      .dijitCalendarSelectedDate .dijitCalendarDateLabel - styles for selected date
+ * 		.dijitCalendarDisabledDate .dijitCalendarDateLabel - styles for disabled date
+ * 		.dijitCalendarActiveDate .dijitCalendarDateLabel - states e.g. hover,active
+ * 
+ * 4. Year
+ * 		.dijitCalendarYearContainer
+ * 		.dijitCalendarYearLabel
+ * 		.dijitCalendarPreviousYear /.dijitCalendarNextYear
+ *      .dijitCalendarNextYearHover / .dijitCalendarPreviousYearHover - states e.g. hover,active
+ *      
+ * 5. Dropdown Month Menu
+ * 		.dijitCalendarMonthMenu - menu container     
+ * 		.dijitCalendarMonthMenu .dijitCalendarMonthLabel - month label in menu item
+ * 		.dijitCalendarMonthMenu .dijitCalendarMonthLabelHover - menu item hover state
+ */
+.dark .dijitCalendar {
+  border: solid 1px #303050;
+  border-collapse: separate;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  background-color: #404090;
+  background-image: url("images/calendar.png");
+  background-repeat: repeat-x;
+  background-image: -moz-linear-gradient(#000000 0px, rgba(0, 0, 0, 0.4) 2px, rgba(0, 0, 0, 0) 100%);
+  background-image: -webkit-linear-gradient(#000000 0px, rgba(0, 0, 0, 0.4) 2px, rgba(0, 0, 0, 0) 100%);
+  background-image: -o-linear-gradient(#000000 0px, rgba(0, 0, 0, 0.4) 2px, rgba(0, 0, 0, 0) 100%);
+  background-image: linear-gradient(#000000 0px, rgba(0, 0, 0, 0.4) 2px, rgba(0, 0, 0, 0) 100%);
+  text-align: center;
+  padding: 6px 5px 3px 5px;
+}
+.dj_ie6 .dark .dijitCalendar {
+  background-image: none;
+}
+.dark .dijitCalendar img {
+  border: none;
+}
+.dark .dijitCalendarHover,
+.dark .dijitCalendar:hover,
+.dark .dijitCalendarActive {
+  /* treat dijitCalendarActive like hover since there's
+	 * no concept of clicking a Calendar as a whole (although you can click things inside the calendar)
+	 */
+
+  background-color: #3333bc;
+  border: solid 1px #000050;
+}
+.dark .dijitCalendarMonthContainer th {
+  text-align: center;
+  padding-bottom: 4px;
+  vertical-align: middle;
+}
+.dark .dijitCalendarMonthLabel {
+  color: #f0f0f0;
+  font-size: 1.091em;
+  padding: 0 4px;
+}
+/* next/previous month arrows */
+.dark .dijitCalendarIncrementControl {
+  width: 18px;
+  height: 16px;
+  background-image: url("images/calendarArrows.png");
+  background-repeat: no-repeat;
+}
+.dj_ie6 .dark .dijitCalendarIncrementControl {
+  background-image: url("images/calendarArrows8bit.png");
+}
+.dark .dijitCalendarIncrease {
+  background-position: -18px 0;
+}
+.dark .dijitCalendarArrowHover .dijitCalendarDecrease,
+.dark .dijitCalendarArrow:hover .dijitCalendarDecrease {
+  background-position: -36px 0;
+}
+.dark .dijitCalendarArrowHover .dijitCalendarIncrease,
+.dark .dijitCalendarArrow:hover .dijitCalendarIncrease {
+  background-position: -55px 0;
+}
+.dark .dijitCalendarArrowActive .dijitCalendarDecrease,
+.dark .dijitCalendarArrow:active .dijitCalendarDecrease {
+  background-position: -72px 0;
+}
+.dark .dijitCalendarArrowActive .dijitCalendarIncrease,
+.dark .dijitCalendarArrow:active .dijitCalendarIncrease {
+  background-position: -91px 0;
+}
+.dark .dijitA11ySideArrow {
+  /* text +/- labels instead of arrow icons, for high contrast mode */
+
+  display: none;
+}
+.dark .dijitCalendarDayLabelTemplate {
+  padding-bottom: 0;
+  text-align: center;
+  border-bottom: 1px solid #303050;
+  padding: 0 3px 2px;
+}
+.dark .dijitCalendarDayLabel {
+  padding: 0 4px 0 4px;
+  font-weight: bold;
+  font-size: 0.909em;
+  text-align: center;
+  color: #f0f0f0;
+}
+.dark .dijitCalendarDateTemplate {
+  background-color: #000020;
+  border-bottom: 1px solid #606060;
+  padding-top: 0;
+  font-size: 0.909em;
+  font-family: Arial;
+  font-weight: bold;
+  letter-spacing: .05em;
+  text-align: center;
+  color: #f0f0f0;
+}
+.dj_ie6 .dark .dijitCalendarDateTemplate {
+  background-image: none;
+}
+.dark .dijitCalendarPreviousMonth,
+.dark .dijitCalendarNextMonth {
+  background-color: #3c3cad;
+  background-image: none;
+  border-bottom: solid 1px #606060;
+  /* todo: redundant with above .dijitCalendarDateTemplate rule */
+}
+.dark .dijitCalendarDateTemplate .dijitCalendarDateLabel {
+  text-decoration: none;
+  display: block;
+  padding: 3px 5px 3px 4px;
+  border: solid 1px #000020;
+  /* intentionally matches background-color, no visible border until hover/selection */
+
+  background-color: rgba(171, 212, 251, 0);
+  /* transparent causes black-flash animation problem on webkit */
+
+  -webkit-transition-property: background-color, border;
+  -moz-transition-property: background-color, border;
+  transition-property: background-color, border;
+  -webkit-transition-duration: 0.35s;
+  -moz-transition-duration: 0.35s;
+  transition-duration: 0.35s;
+}
+.dark .dijitCalendarPreviousMonth .dijitCalendarDateLabel,
+.dark .dijitCalendarNextMonth .dijitCalendarDateLabel {
+  color: #000050;
+  border-color: #3c3cad;
+  /* intentionally matches background-color, no visible border until hover/selection */
+
+}
+.dark .dijitCalendarYearContainer {
+  vertical-align: middle;
+}
+.dark .dijitCalendarYearControl {
+  padding: 1px 2px 2px 2px;
+}
+.dark .dijitCalendarYearLabel {
+  padding: 2px 0 0 0;
+  margin: 0;
+  font-size: 1.17em;
+}
+.dark .dijitCalendarYearLabel span {
+  /* trying to center next/current/previous year vertically, doesn't work on IE6/7 though */
+
+  vertical-align: middle;
+}
+.dark .dijitCalendarSelectedYear {
+  padding: 0 3px;
+}
+.dark .dijitCalendarNextYear,
+.dark .dijitCalendarPreviousYear {
+  padding: 1px 6px 1px 6px;
+  font-size: 0.909em;
+}
+.dark .dijitCalendarSelectedYear {
+  font-size: 1.091em;
+  color: #f0f0f0;
+}
+/* End Normal Calendar Style */
+/* Hovered Calendar Style */
+.dark .dijitCalendarHoveredDate .dijitCalendarDateLabel,
+.dark .dijitCalendarEnabledDate:hover .dijitCalendarDateLabel {
+  background-color: #3333bc;
+  border: solid 1px #000050;
+  color: #f0f0f0;
+  -webkit-transition-duration: 0.2s;
+  -moz-transition-duration: 0.2s;
+  transition-duration: 0.2s;
+}
+.dark .dijitCalendarNextYearHover,
+.dark .dijitCalendarNextYear:hover,
+.dark .dijitCalendarPreviousYearHover,
+.dark .dijitCalendarPreviousYear:hover {
+  color: #f0f0f0;
+  border: solid 1px #000020;
+  padding: 0 5px 0 5px;
+  /* reduced by 1 to make room for border */
+
+  background-color: #3c3cad;
+}
+/* End Hovered Calendar Style */
+/* Active Calendar Style */
+.dark .dijitCalendarNextYearActive,
+.dark .dijitCalendarNextYear:active .dark .dijitCalendarPreviousYearActive,
+.dark .dijitCalendarPreviousYear:active {
+  border: solid 1px #000050;
+  padding: 0 5px 0 5px;
+  /* reduced by 1 to make room for border */
+
+  background-color: #5959c8;
+}
+.dark .dijitCalendarActiveDate .dijitCalendarDateLabel,
+.dark .dijitCalendarEnabledDate:active .dijitCalendarDateLabel {
+  background-color: #5959c8;
+  border: solid 1px #000020;
+  -webkit-transition-duration: 0.1s;
+  -moz-transition-duration: 0.1s;
+  transition-duration: 0.1s;
+}
+.dj_ie6 .dark .dijitCalendarActiveDate .dijitCalendarDateLabel {
+  background-image: none;
+}
+/* End Active Calendar Style */
+/* Selected Calendar Style */
+.dark .dijitCalendarSelectedDate .dijitCalendarDateLabel {
+  color: #f0f0f0;
+  background-color: #3333bc;
+  border-color: #000050;
+}
+/* End Selected Calendar Style */
+/* Disabled Calendar Style*/
+.dark .dijitCalendarDisabledDate .dijitCalendarDateLabel {
+  color: #adadef;
+  text-decoration: line-through;
+}
+/* End Disabled Calendar Style */
+/* Styling for month DropDownButton */
+.dark .dijitCalendar .dijitDropDownButton {
+  margin: 0;
+}
+.dark .dijitCalendar .dijitButtonText {
+  padding: 1px 0 3px;
+  margin-right: -4px;
+}
+.dark .dijitCalendar .dijitDropDownButton .dijitButtonNode {
+  padding: 0 3px 0 2px;
+  border: solid 1px #303050;
+  -webkit-box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  -moz-box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  background-color: transparent;
+  background-image: none;
+}
+.dark .dijitCalendar .dijitDropDownButtonHover .dijitButtonNode,
+.dark .dijitCalendar .dijitDropDownButton:hover .dijitButtonNode {
+  background-color: #3c3cad;
+  border: solid 1px #000020;
+}
+/* Styling for month drop down list */
+.dark .dijitCalendarMonthMenu {
+  border-color: #000050;
+  background-color: #000020;
+  text-align: center;
+  background-image: none;
+}
+.dark .dijitCalendarMonthMenu .dijitCalendarMonthLabel {
+  border-top: solid 1px #000020;
+  /* intentionally invisible until hover */
+
+  border-bottom: solid 1px #000020;
+  padding: 2px 0;
+}
+.dark .dijitCalendarMonthMenu .dijitCalendarMonthLabelHover,
+.dark .dijitCalendarMonthMenu .dijitCalendarMonthLabel:hover {
+  border-color: #000050;
+  border-width: 1px 0;
+  background-color: #3333bc;
+  background-image: -moz-linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0));
+  background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0));
+  background-image: -o-linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0));
+  background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0));
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr= #ffffff , endColorstr= #3333bc );
+}

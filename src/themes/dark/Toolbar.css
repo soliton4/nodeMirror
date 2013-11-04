@@ -1,0 +1,211 @@
+/* Toolbar 
+ * 
+ * Styling Toolbar means styling the toolbar container and the widget inside toolbar  (dijitToolbar)
+ * 
+ * 1. toolbar (default styling): 
+ * 		.dijitToolbar - styles for outer container
+ *
+ * 2. widget inside toolbar
+ * 		.dijitToolbar .dijitButtonNode   - Button widget
+ * 					  .dijitComboButton  - ComboButton widget
+ * 					  .dijitDropDownButton  - DropDownButton widget
+ * 					  .dijitToggleButton  - ToggleButton widget
+ * 		
+ * 3. hovered widget inside toolbar (ie, mouse hover on the widget inside)
+ * 			.dijitToolbar .dijitButtonNodeHover  - styles for hovered Button widget
+ * 
+ * 4. actived widget inside toolbar (ie, mouse down on the widget inside)
+ * 			.dijitToolbar .dijitButtonNodeActive  - mouse down on Button widget
+ */
+.dark .dijitToolbar {
+  border-bottom: 1px solid #303050;
+  background-color: #2020a0;
+  background-image: url("images/standardGradient.png");
+  background-repeat: repeat-x;
+  background-image: -moz-linear-gradient(rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+  background-image: -webkit-linear-gradient(rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+  background-image: -o-linear-gradient(rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+  background-image: linear-gradient(rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+  _background-image: none;
+  padding: 2px 0 2px 4px;
+  zoom: 1;
+}
+.dark .dijitToolbar label {
+  padding: 0 3px 0 6px;
+}
+/** override.dark/form/Button.css, and also ComboBox down arrow **/
+.dark .dijitToolbar .dijitButton .dijitButtonNode,
+.dark .dijitToolbar .dijitDropDownButton .dijitButtonNode,
+.dark .dijitToolbar .dijitComboButton .dijitButtonNode,
+.dark .dijitToolbar .dijitToggleButton .dijitButtonNode,
+.dark .dijitToolbar .dijitComboBox .dijitButtonNode {
+  border-width: 0;
+  /* on hover/active, border-->1px, padding-->1px */
+
+  padding: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  -webkit-transition-property: background-color;
+  -moz-transition-property: background-color;
+  transition-property: background-color;
+  -webkit-transition-duration: 0.3s;
+  -moz-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+  background-color: rgba(171, 214, 255, 0);
+  background-image: none;
+  /* cancel gradient for normal buttons, we don't want any gradient besides toolbar's on non-hovered buttons */
+
+}
+.dj_ie .dark .dijitToolbar .dijitButton .dijitButtonNode,
+.dj_ie .dark .dijitToolbar .dijitDropDownButton .dijitButtonNode,
+.dj_ie .dark .dijitToolbar .dijitComboButton .dijitButtonNode,
+.dj_ie .dark .dijitToolbar .dijitToggleButton .dijitButtonNode,
+.dj_ie .dark .dijitToolbar .dijitComboBox .dijitButtonNode {
+  background-color: transparent;
+  /* for IE, which doesn't understand rgba(...) */
+
+}
+/* hover status */
+.dj_ie .dark .dijitToolbar .dijitButtonHover .dijitButtonNode,
+.dj_ie .dark .dijitToolbar .dijitDropDownButtonHover .dijitButtonNode,
+.dj_ie .dark .dijitToolbar .dijitComboButton .dijitButtonNodeHover,
+.dj_ie .dark .dijitToolbar .dijitComboButton .dijitDownArrowButtonHover,
+.dj_ie .dark .dijitToolbar .dijitToggleButtonHover .dijitButtonNode {
+  /* button should still turn blue on hover, so need to override .dj_ie rules above */
+
+  background-color: #3333bc;
+}
+/* active status */
+.dj_ie .dark .dijitToolbar .dijitButtonActive .dijitButtonNode,
+.dj_ie .dark .dijitToolbar .dijitDropDownButtonActive .dijitButtonNode,
+.dj_ie .dark .dijitToolbar .dijitComboButtonActive .dijitButtonNode,
+.dj_ie .dark .dijitToolbar .dijitToggleButtonActive .dijitButtonNode {
+  /* button should still turn blue on press, so need to override .dj_ie rules above */
+
+  background-color: #3333bc;
+}
+.dark .dijitToolbar .dijitComboButton .dijitStretch {
+  /* no rounded border on side adjacent to arrow */
+
+  -moz-border-radius: 2px 0 0 2px;
+  border-radius: 2px 0 0 2px;
+}
+.dark .dijitToolbar .dijitComboButton .dijitArrowButton {
+  /* no rounded border on side adjacent to button */
+
+  -moz-border-radius: 0 2px 2px 0;
+  border-radius: 0 2px 2px 0;
+}
+.dark .dijitToolbar .dijitComboBox .dijitButtonNode {
+  padding: 0;
+}
+/* hover status */
+.dark .dijitToolbar .dijitButtonHover .dijitButtonNode,
+.dark .dijitToolbar .dijitDropDownButtonHover .dijitButtonNode,
+.dark .dijitToolbar .dijitToggleButtonHover .dijitButtonNode,
+.dark .dijitToolbar .dijitComboButtonHover .dijitButtonNode {
+  border-width: 1px;
+  background-color: #3333bc;
+  background-image: url("images/standardGradient.png");
+  background-repeat: repeat-x;
+  background-image: -moz-linear-gradient(rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+  background-image: -webkit-linear-gradient(rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+  background-image: -o-linear-gradient(rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+  background-image: linear-gradient(rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+  _background-image: none;
+  padding: 1px;
+}
+.dark .dijitToolbar .dijitComboButtonHover .dijitButtonNode,
+.dark .dijitToolbar .dijitComboButtonHover .dijitDownArrowButton {
+  background-color: #357ac4;
+}
+.dark .dijitToolbar .dijitComboButtonHover .dijitButtonNodeHover,
+.dark .dijitToolbar .dijitComboButtonHover .dijitDownArrowButtonHover {
+  background-color: #3333bc;
+}
+/* active status */
+.dark .dijitToolbar .dijitButtonActive .dijitButtonNode,
+.dark .dijitToolbar .dijitDropDownButtonActive .dijitButtonNode,
+.dark .dijitToolbar .dijitToggleButtonActive .dijitButtonNode {
+  border-width: 1px;
+  background-color: #5959c8;
+  background-image: url("images/activeGradient.png");
+  background-repeat: repeat-x;
+  background-image: -moz-linear-gradient(rgba(190, 190, 190, 0.98) 0px, rgba(255, 255, 255, 0.65) 3px, rgba(255, 255, 255, 0) 100%);
+  background-image: -webkit-linear-gradient(rgba(190, 190, 190, 0.98) 0px, rgba(255, 255, 255, 0.65) 3px, rgba(255, 255, 255, 0) 100%);
+  background-image: -o-linear-gradient(rgba(190, 190, 190, 0.98) 0px, rgba(255, 255, 255, 0.65) 3px, rgba(255, 255, 255, 0) 100%);
+  background-image: linear-gradient(rgba(190, 190, 190, 0.98) 0px, rgba(255, 255, 255, 0.65) 3px, rgba(255, 255, 255, 0) 100%);
+  _background-image: none;
+  padding: 1px;
+}
+.dark .dijitToolbar .dijitComboButtonActive {
+  -webkit-transition-duration: 0.2s;
+  -moz-transition-duration: 0.2s;
+  transition-duration: 0.2s;
+  border-width: 1px;
+  padding: 0;
+}
+.dark .dijitToolbar .dijitComboButtonActive .dijitButtonNode,
+.dark .dijitToolbar .dijitComboButtonActive .dijitDownArrowButton {
+  background-color: #357ac4;
+  padding: 2px;
+}
+.dark .dijitToolbar .dijitComboButtonActive .dijitButtonNodeActive {
+  background-color: #5959c8;
+  background-image: url("images/activeGradient.png");
+  background-repeat: repeat-x;
+  background-image: -moz-linear-gradient(rgba(190, 190, 190, 0.98) 0px, rgba(255, 255, 255, 0.65) 3px, rgba(255, 255, 255, 0) 100%);
+  background-image: -webkit-linear-gradient(rgba(190, 190, 190, 0.98) 0px, rgba(255, 255, 255, 0.65) 3px, rgba(255, 255, 255, 0) 100%);
+  background-image: -o-linear-gradient(rgba(190, 190, 190, 0.98) 0px, rgba(255, 255, 255, 0.65) 3px, rgba(255, 255, 255, 0) 100%);
+  background-image: linear-gradient(rgba(190, 190, 190, 0.98) 0px, rgba(255, 255, 255, 0.65) 3px, rgba(255, 255, 255, 0) 100%);
+  _background-image: none;
+}
+.dark .dijitToolbar .dijitComboButtonActive .dijitDownArrowButtonActive {
+  background-color: #5959c8;
+  background-image: url("images/activeGradient.png");
+  background-repeat: repeat-x;
+  background-image: -moz-linear-gradient(rgba(190, 190, 190, 0.98) 0px, rgba(255, 255, 255, 0.65) 3px, rgba(255, 255, 255, 0) 100%);
+  background-image: -webkit-linear-gradient(rgba(190, 190, 190, 0.98) 0px, rgba(255, 255, 255, 0.65) 3px, rgba(255, 255, 255, 0) 100%);
+  background-image: -o-linear-gradient(rgba(190, 190, 190, 0.98) 0px, rgba(255, 255, 255, 0.65) 3px, rgba(255, 255, 255, 0) 100%);
+  background-image: linear-gradient(rgba(190, 190, 190, 0.98) 0px, rgba(255, 255, 255, 0.65) 3px, rgba(255, 255, 255, 0) 100%);
+  _background-image: none;
+}
+/* Avoid double border between button and arrow */
+.dark .dijitToolbar .dijitComboButtonHover .dijitDownArrowButton,
+.dark .dijitToolbar .dijitComboButtonActive .dijitDownArrowButton {
+  border-left-width: 0;
+}
+.dark .dijitToolbar .dijitComboButtonHover .dijitDownArrowButton {
+  padding-left: 2px;
+  /* since there's no left border, don't reduce from 2px --> 1px */
+
+}
+/* toggle button checked status */
+.dark .dijitToolbar .dijitToggleButtonChecked .dijitButtonNode {
+  margin: 0;
+  /* remove margin and add a border */
+
+  border-width: 1px;
+  border-style: solid;
+  background-image: none;
+  border-color: #000050;
+  background-color: #000020;
+  padding: 1px;
+}
+.dark .dijitToolbarSeparator {
+  /* separator icon in the editor sprite */
+
+  background: url("../../icons/images/editorIconsEnabled.png");
+}
+/* Toolbar inside of disabled Editor */
+.dark .dijitDisabled .dijitToolbar {
+  background: none;
+  background-color: #2020a0;
+  border-bottom: 1px solid #606060;
+}
+.dark .dijitToolbar .dijitComboBoxDisabled .dijitArrowButtonInner {
+  background-position: 0 50%;
+}

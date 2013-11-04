@@ -1,0 +1,156 @@
+/* NumberSpinner - namespace "dijitSpinner"
+ * 
+ * Styling NumberSpinner mainly includes:
+ * 
+ * 1. Arrows
+ * 		Outer containers: .dijitSpinnerButtonContainer|.dijitSpinnerButtonInner  - for border, padding and position
+ * 		Arrows: .dijitArrowButton|.dijitUpArrowButton.|dijitDownArrowButton
+ * 		Inner container: .dijitArrowButtonInner - for border, padding, width|height and background image
+ * 
+ * 2. Hover state
+ * 		.dijitUpArrowButtonHover|.dijitDownArrowButtonHover .*  - for background color|image
+ * 
+ * 3. Active state
+ * 		.dijitUpArrowButtonActive|.dijitDownArrowButtonActive .*  - for border, padding, margin and background color|image
+ * 
+ * 4. Focused state
+ * 		.dijitSpinnerFocused .* - for background color|image
+ * 
+ * 5. Disabled state
+ * 		.dijitSpinnerDisabled .* - for background color|image
+ */
+.dark .dijitSpinnerButtonContainer {
+  overflow: hidden;
+  position: relative;
+  width: auto;
+  padding: 0 2px;
+}
+.dark .dijitSpinnerButtonContainer .dijitSpinnerButtonInner {
+  border-width: 1px 0;
+  /* reserve space to match the.dark combobox button border with border and not padding to make IE happier */
+
+  border-style: solid none;
+}
+/* button */
+.dark .dijitSpinner .dijitArrowButton {
+  width: auto;
+  background-color: #2020a0;
+  background-image: url("../images/standardGradient.png");
+  background-repeat: repeat-x;
+  background-image: -moz-linear-gradient(rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+  background-image: -webkit-linear-gradient(rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+  background-image: -o-linear-gradient(rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+  background-image: linear-gradient(rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+  _background-image: none;
+  overflow: hidden;
+}
+.dj_iequirks .dark .dijitSpinner .dijitArrowButton {
+  overflow: visible;
+  /* 0 height w/o this */
+
+}
+.dark .dijitSpinner .dijitSpinnerButtonInner {
+  width: 15px;
+}
+/* up & down button icons */
+.dark .dijitSpinner .dijitArrowButtonInner {
+  border: solid 1px #000020;
+  border-bottom-width: 0;
+  /* 2 top borders = 1 top+bottom border in ComboBox */
+
+  background-image: url("../form/images/commonFormArrows.png");
+  background-repeat: no-repeat;
+  height: 100%;
+  width: 15px;
+  padding-left: 1px;
+  padding-right: 1px;
+  /* for up arrow */
+
+  background-position: -139px center;
+  /* override button.css (TODO: move to Common.css since ComboBox needs this too) */
+
+  display: block;
+  margin: -1px 0 -1px 0;
+  /* compensate for inner border */
+
+}
+.dj_iequirks .dark .dijitSpinner .dijitArrowButtonInner,
+.dj_ie6 .dark .dijitSpinner .dijitArrowButtonInner,
+.dj_ie7 .dark .dijitSpinner .dijitArrowButtonInner,
+.dj_ie8 .dark .dijitSpinner .dijitArrowButtonInner {
+  margin-top: 0;
+  /* since its bottom aligned */
+
+}
+.dj_iequirks .dark .dijitSpinner .dijitArrowButtonInner {
+  width: 19px;
+}
+.dark .dijitSpinner .dijitDownArrowButton .dijitArrowButtonInner {
+  background-position: -34px;
+}
+.dark .dijitSpinner .dijitArrowButtonInner .dijitInputField {
+  padding: 0;
+}
+/** hover & focused status **/
+.dark .dijitUpArrowButtonActive,
+.dark .dijitDownArrowButtonActive {
+  background-color: #3333bc;
+}
+.dark .dijitSpinner .dijitUpArrowButtonHover,
+.dark .dijitSpinner .dijitDownArrowButtonHover,
+.dark .dijitSpinnerFocused .dijitArrowButton {
+  background-color: #3333bc;
+}
+.dark .dijitSpinner .dijitUpArrowButtonHover .dijitArrowButtonInner {
+  background-position: -174px;
+}
+.dark .dijitSpinner .dijitDownArrowButtonHover .dijitArrowButtonInner {
+  background-position: -69px;
+}
+.dark .dijitSpinnerFocused {
+  background-color: #000020;
+  background-image: none;
+}
+/* mouse down status */
+.dark .dijitSpinner .dijitDownArrowButtonActive,
+.dark .dijitSpinner .dijitUpArrowButtonActive {
+  background-color: #7dbefa;
+  background-image: url("../images/activeGradient.png");
+  background-repeat: repeat-x;
+  background-image: -moz-linear-gradient(rgba(190, 190, 190, 0.98) 0px, rgba(255, 255, 255, 0.65) 3px, rgba(255, 255, 255, 0) 100%);
+  background-image: -webkit-linear-gradient(rgba(190, 190, 190, 0.98) 0px, rgba(255, 255, 255, 0.65) 3px, rgba(255, 255, 255, 0) 100%);
+  background-image: -o-linear-gradient(rgba(190, 190, 190, 0.98) 0px, rgba(255, 255, 255, 0.65) 3px, rgba(255, 255, 255, 0) 100%);
+  background-image: linear-gradient(rgba(190, 190, 190, 0.98) 0px, rgba(255, 255, 255, 0.65) 3px, rgba(255, 255, 255, 0) 100%);
+  _background-image: none;
+}
+.dark .dijitSpinner .dijitUpArrowButtonActive .dijitArrowButtonInner,
+.dark .dijitSpinner .dijitDownArrowButtonActive .dijitArrowButtonInner {
+  /* hide inner border while button is depressed */
+
+  border: 0;
+  padding: 1px;
+  margin-right: 2px;
+  margin-bottom: 1px;
+}
+.dark .dijitSpinner .dijitUpArrowButtonActive .dijitArrowButtonInner {
+  background-position: -173px;
+}
+.dark .dijitSpinner .dijitDownArrowButtonActive .dijitArrowButtonInner {
+  background-position: -68px;
+}
+/* disabled */
+.dark .dijitSpinnerDisabled .dijitArrowButtonInner {
+  background-color: #2020a0;
+}
+.dark .dijitSpinnerDisabled .dijitUpArrowButton .dijitArrowButtonInner {
+  background-position: -104px;
+}
+.dark .dijitSpinnerDisabled .dijitDownArrowButton .dijitArrowButtonInner {
+  background-position: 1px;
+}
+/** hacks for browsers **/
+/* for IE 7, when div is enlarged, 
+ * should be no empty space between dijitInputLayoutContainer and dijitSpinner*/
+.dj_ie7 .dark .dijitSpinner {
+  overflow: visible;
+}
