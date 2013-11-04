@@ -1,0 +1,146 @@
+/* Tree 
+ * 
+ * Styling Tree mostly means styling the TreeRow (dijitTreeRow)
+ * There are 4 basic states to style:
+ * 
+ * Tree Row:
+ * 1. tree row (default styling): 
+ * 		.dijitTreeRow - styles for each row of the tree
+ *
+ * 2. hovered tree row (mouse hover on a tree row)
+ * 		.dijitTreeRowHover - styles when mouse over on one row
+ * 
+ * 3. active tree row (mouse down on a tree row)
+ * 		.dijitTreeRowActive - styles when mouse down on one row
+ * 
+ * 4. selected tree row
+ * 		dijitTreeRowSelected - style when the row has been selected
+ * 
+ * Tree Expando:
+ * 	    dijitTreeExpando - the expando at the left of the text of each tree row
+ * 
+ * Drag and Drop on TreeNodes: (insert line on dijitTreeContent node so it'll aligned w/ target element)
+ * 		.dijitTreeNode .dojoDndItemBefore/.dojoDndItemAfter - use border style simulate a separate line
+ */
+.dark .dijitTreeNode {
+  zoom: 1;
+  /* force layout on IE (TODO: may not be needed anymore) */
+
+}
+.dark .dijitTreeIsRoot {
+  background-image: none;
+}
+/* Styling for basic tree node (unhovered, unselected)
+ * Also use this styling when dropping between items on the tree (in other words, don't
+ * use hover effect)
+ */
+.dark .dijitTreeRow,
+.dark .dijitTreeNode .dojoDndItemBefore,
+.dark .dijitTreeNode .dojoDndItemAfter {
+  /* so insert line shows up on IE when dropping after a target element */
+
+  padding: 4px 0 2px 0;
+  background-color: none;
+  background-color: transparent;
+  background-color: rgba(171, 214, 255, 0);
+  background-position: 0 0;
+  background-repeat: repeat-x;
+  border: solid 0 transparent;
+  color: #f0f0f0;
+  -webkit-transition-property: background-color, border-color;
+  -moz-transition-property: background-color, border-color;
+  transition-property: background-color, border-color;
+  -webkit-transition-duration: 0.25s;
+  -moz-transition-duration: 0.25s;
+  transition-duration: 0.25s;
+  -webkit-transition-timing-function: ease-out;
+  -moz-transition-timing-function: ease-out;
+  transition-timing-function: ease-out;
+}
+.dark .dijitTreeRowSelected {
+  background-color: #404090;
+  background-image: url("images/standardGradient.png");
+  background-repeat: repeat-x;
+  background-image: -moz-linear-gradient(rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+  background-image: -webkit-linear-gradient(rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+  background-image: -o-linear-gradient(rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+  background-image: linear-gradient(rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+  _background-image: none;
+  padding: 3px 0 1px;
+  border-color: #000050;
+  border-width: 1px 0;
+  color: #f0f0f0;
+}
+.dark .dijitTreeRowHover {
+  background-color: #3333bc;
+  background-image: url("images/standardGradient.png");
+  background-repeat: repeat-x;
+  background-image: -moz-linear-gradient(rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+  background-image: -webkit-linear-gradient(rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+  background-image: -o-linear-gradient(rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+  background-image: linear-gradient(rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+  _background-image: none;
+  padding: 3px 0 1px;
+  border-color: #000050;
+  border-width: 1px 0;
+  color: #f0f0f0;
+  -webkit-transition-duration: 0.25s;
+  -moz-transition-duration: 0.25s;
+  transition-duration: 0.25s;
+}
+.dark .dijitTreeRowActive {
+  background-color: #5959c8;
+  background-image: url("images/activeGradient.png");
+  background-repeat: repeat-x;
+  background-image: -moz-linear-gradient(rgba(190, 190, 190, 0.98) 0px, rgba(255, 255, 255, 0.65) 3px, rgba(255, 255, 255, 0) 100%);
+  background-image: -webkit-linear-gradient(rgba(190, 190, 190, 0.98) 0px, rgba(255, 255, 255, 0.65) 3px, rgba(255, 255, 255, 0) 100%);
+  background-image: -o-linear-gradient(rgba(190, 190, 190, 0.98) 0px, rgba(255, 255, 255, 0.65) 3px, rgba(255, 255, 255, 0) 100%);
+  background-image: linear-gradient(rgba(190, 190, 190, 0.98) 0px, rgba(255, 255, 255, 0.65) 3px, rgba(255, 255, 255, 0) 100%);
+  _background-image: none;
+  padding: 3px 0 1px;
+  border-color: #000050;
+  border-width: 1px 0;
+  color: #f0f0f0;
+}
+.dark .dijitTreeRowFocused {
+  background-repeat: repeat;
+}
+/* expando (open/closed) icon */
+.dark .dijitTreeExpando {
+  background-image: url("images/treeExpandImages.png");
+  width: 16px;
+  height: 16px;
+  background-position: -35px 0;
+  /* for dijitTreeExpandoOpened */
+
+}
+.dj_ie6 .dark .dijitTreeExpando {
+  background-image: url("images/treeExpandImages8bit.png");
+}
+.dark .dijitTreeRowHover .dijitTreeExpandoOpened {
+  background-position: -53px 0;
+}
+.dark .dijitTreeExpandoClosed {
+  background-position: 1px 0;
+}
+.dark .dijitTreeRowHover .dijitTreeExpandoClosed {
+  background-position: -17px 0;
+}
+.dark .dijitTreeExpandoLeaf,
+.dj_ie6 .dark .dijitTreeExpandoLeaf {
+  background-image: none;
+}
+.dark .dijitTreeExpandoLoading {
+  background-image: url("images/loadingAnimation.gif");
+}
+/* Drag and Drop on TreeNodes
+ * Put insert line on dijitTreeContent node so it's aligned w/
+ * (ie, indented equally with) target element, even
+ * though dijitTreeRowNode is the actual "drag object"
+ */
+.dark .dijitTreeNode .dojoDndItemBefore .dijitTreeContent {
+  border-top: 2px solid #000050;
+}
+.dark .dijitTreeNode .dojoDndItemAfter .dijitTreeContent {
+  border-bottom: 2px solid #000050;
+}

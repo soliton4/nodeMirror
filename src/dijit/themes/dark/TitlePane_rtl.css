@@ -1,0 +1,5 @@
+/* TitlePane */
+.dark .dijitTitlePaneRtl .dijitClosed .dijitArrowNode,
+.dark .dijitFieldsetRtl .dijitFieldsetTitleClosed .dijitArrowNode {
+  background-position: -7px 0;
+}
