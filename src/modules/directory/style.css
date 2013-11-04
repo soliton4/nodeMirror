@@ -61,7 +61,7 @@
   border-style: solid;
   border-color: transparent;
   border-width: 1px;
-  border-radius: 5px;
+  border-radius: 6px;
   display: inline-block;
   width: 20px;
   overflow: hidden;
@@ -69,7 +69,9 @@
   min-height: 70px;
   vertical-align: top;
   /*background-color: lightblue;*/
-  margin-bottom: 8px;
+  margin-top: 1px;
+  margin-bottom: 7px;
+  padding: 1px;
 }
 .directory .list .outer2:hover {
   background-color: #abd6ff;
@@ -119,4 +121,66 @@
   height: 0px;
   overflow: hidden;
   direction: ltr;
+}
+.dark .directory .list .dgrid-row:hover {
+  border-color: #202050;
+}
+.dark .directory .dgrid-row {
+  background-color: #000000;
+  cursor: default;
+}
+.dark .directory .dgrid-row:hover {
+  border-color: #202050;
+}
+.dark .directory .dgrid-row.directory {
+  background-color: #000050;
+}
+.dark .directory .dgrid-row.directory:hover {
+  border-color: #000050;
+}
+.dark .directory .dgrid-row.text {
+  background-color: #606000;
+}
+.dark .directory .dgrid-row.text:hover {
+  border-color: #606000;
+}
+.dark .directory .dgrid-row .javascript,
+.dark .directory .dgrid-row .json {
+  background-color: #705000;
+}
+.dark .directory .dgrid-row .javascript:hover,
+.dark .directory .dgrid-row .json:hover {
+  border-color: #705000;
+}
+.dark .directory .dgrid-row.octet-stream {
+  background-color: #202020;
+}
+.dark .directory .dgrid-row.octet-stream:hover {
+  border-color: #202020;
+}
+.dark .directory .dgrid-row:hover {
+  background-color: #404090;
+}
+.dark .directory .list .dgrid-row:hover {
+  color: white;
+}
+.dark .directory .list .dgrid-row.directory {
+  background-color: #000000;
+  color: white;
+}
+.dark .directory .list .dgrid-row.directory:hover {
+  border-color: black;
+}
+.dark .directory .list .dgrid-content {
+  background-color: #202050;
+}
+.dark .directory .list .outer2:hover {
+  background-color: #050590;
+  color: #F0F0F0;
+  background-image: linear-gradient(right, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+  background-image: -o-linear-gradient(right, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+  background-image: -moz-linear-gradient(right, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+  background-image: -webkit-linear-gradient(right, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+  background-image: -ms-linear-gradient(right, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+  background-image: -webkit-gradient(linear, right top, left top, color-stop(0, rgba(0, 0, 0, 0.7)), color-stop(1, rgba(0, 0, 0, 0)));
 }

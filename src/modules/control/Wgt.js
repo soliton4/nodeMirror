@@ -11,6 +11,7 @@ define([
   , "dojo/dom-class"
   , "dojo/dom-geometry"
   , "dojo/dom-construct"
+  , "dijit/form/Select"
 ], function(
   declare
   , Tree
@@ -24,6 +25,7 @@ define([
   , domClass
   , domGeometry
   , domConstruct
+  , Select
 ){
   var musicWgt;
   
@@ -119,6 +121,24 @@ define([
         }
       });
       this.playMusicBtn.placeAt(this.domNode);
+      
+      this.guiStyleSelect = new Select({
+        options: [{
+          label: "classic"
+          , value: "claro"
+        }, {
+          label: "dark (beta)"
+          , value: "dark"
+        }]
+        , onChange: function(){
+          array.forEach(this.options, function(option){
+            domClass.remove(document.body, option.value);
+          });
+          domClass.add(document.body, this.get("value"));
+        }
+      });
+      this.guiStyleSelect.placeAt(this.domNode);
+      domClass.add(document.body, "claro");
     }
     
     , startup: function(){
