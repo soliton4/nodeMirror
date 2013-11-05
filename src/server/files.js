@@ -30,6 +30,8 @@ define([
     , ".pegjs": "application/peg.js" 
     , ".less": "text/x-less"
     , ".coffee": "text/x-coffeescript"
+    , ".cuf": "text/x-fortran"
+    , ".cu": "text/x-c"
   };
 
   var forceTextExtensions = {
@@ -37,6 +39,8 @@ define([
     , ".pegjs": "application/peg.js" 
     , ".less": "text/x-less"
     , ".coffee": "text/x-coffeescript"
+    , ".cuf": "text/x-fortran"
+    , ".cu": "text/x-c"
   };
   
   var files;
