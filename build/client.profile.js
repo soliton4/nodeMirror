@@ -135,6 +135,7 @@ var profile = (function(){
                 , "codemirror/addon/selection/active-line"
                 , "codemirror/addon/display/placeholder"
                 , "codemirror/addon/lint/all"
+                , "sol/wgt/Turn"
                 ]
               , boot: true
               , customBase: true
