@@ -38,6 +38,7 @@ define([
       , "debug": true
       , "restart": true
       , "seeunicorns": true
+      , "music": true
     }
     , saveable: {
     }

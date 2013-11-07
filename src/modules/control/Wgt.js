@@ -12,6 +12,7 @@ define([
   , "dojo/dom-geometry"
   , "dojo/dom-construct"
   , "dijit/form/Select"
+  , "main/config"
 ], function(
   declare
   , Tree
@@ -26,6 +27,7 @@ define([
   , domGeometry
   , domConstruct
   , Select
+  , config
 ){
   var musicWgt;
   
@@ -120,7 +122,12 @@ define([
           });
         }
       });
-      this.playMusicBtn.placeAt(this.domNode);
+      config.get("music").then(function(music){
+        if (music === false){
+          return;
+        };
+        self.playMusicBtn.placeAt(self.domNode);
+      });
       
       this.guiStyleSelect = new Select({
         options: [{
