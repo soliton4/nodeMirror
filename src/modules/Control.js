@@ -34,16 +34,22 @@ define([
     , provideSideBarWidgetPs: function(){
       var def = new Deferred();
       var self = this;
-      if (self.wgt){
-        def.resolve(self.wgt);
-      }else{
-        require(["main/clientOnly!modules/control/Wgt"], function(Wgt){
-          self.wgt = new Wgt({
-            module: self
-          });
+      config.get("control").then(function(control){
+        if (control === false){
+          def.reject();
+          return;
+        };
+        if (self.wgt){
           def.resolve(self.wgt);
-        });
-      };
+        }else{
+          require(["main/clientOnly!modules/control/Wgt"], function(Wgt){
+            self.wgt = new Wgt({
+              module: self
+            });
+            def.resolve(self.wgt);
+          });
+        };
+      });
       return def;
     }
     

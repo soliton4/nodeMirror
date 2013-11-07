@@ -34,6 +34,7 @@ define([
     
     , clientConfig: {
       "terminal": true
+      , "control": true
       , "debug": true
       , "restart": true
       , "seeunicorns": true
