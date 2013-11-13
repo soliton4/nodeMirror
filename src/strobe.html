@@ -1,0 +1,33 @@
+<html>
+  <head>
+    <script>
+      var s = true;
+      /*      setInterval(function(){
+        if (s){
+          document.bgColor = "#000000";
+        }else{
+          document.bgColor = "#FFFFFF";
+        };
+        s = !s;
+      }, 50);*/
+      var i = 0;
+      setInterval(function(){
+        ++i;
+        if (i == 1){
+          document.bgColor = "#FFFFFF";
+          return;
+        };
+        if (i == 2){
+          document.bgColor = "#000000";
+          return;
+        };
+        if (i == 10){
+          i = 0;
+        };
+      }, 20);
+    </script>
+  </head>
+  <body>
+    
+  </body>
+</html>

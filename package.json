@@ -1,6 +1,6 @@
 {
   "name": "node-mirror",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "author": {
     "name": "Matthias Behrens",
     "email": "matthias.behrens@gmail.com"
@@ -26,11 +26,11 @@
     "extend": "*"
   },  
   "keywords": [
-    "editor"
+    "IDE"
     , "terminal"
+    , "editor"
     , "development"
     , "CodeMirror"
-    , "IDE"
     , "nodemirror"
     , "html editor"
     , "javascript editor"

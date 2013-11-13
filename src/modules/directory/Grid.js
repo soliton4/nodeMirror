@@ -13,6 +13,7 @@ define([
   , "dojo/dom-geometry"
   , "sol/convenient/SceduleExec"
   , "dojo/_base/array"
+  , "dgrid/extensions/ColumnResizer"
 ], function(
   declare
   , Grid
@@ -28,9 +29,10 @@ define([
   , domGeo
   , SceduleExec
   , array
+  , ColumnResizer
 ){
   return declare([
-        Grid, DijitRegistry, Selection
+    Grid, DijitRegistry, Selection, ColumnResizer
   ], {
     content: {} // will be provided
     , region: "center"
@@ -40,25 +42,29 @@ define([
     , constructor: function(){
       this.columns = {
         id: {
-            label: "Name"
+          label: "Name"
+          , minwidth: 100
             , get: function(object){
                 return fileName.single(object.id);
             }
         },
         contentType: {
-            label: "Content Type"
-            , get: function(object){
-              if (object.contentType == "inode/directory"){
-                return "dir";
-              }
-              return object.contentType;
+          label: "Content Type"
+          , width: 240
+          , get: function(object){
+            if (object.contentType == "inode/directory"){
+              return "dir";
             }
+            return object.contentType;
+          }
         },
         size: {
           label: "Size"
+          , width: 100
         },
         mtime: {
           label: "modified"
+          , width: 220
           , get: function(object){
             return object.mtime;
             /*if (object.mtime){

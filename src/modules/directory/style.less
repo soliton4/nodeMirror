@@ -1,3 +1,11 @@
+@textColor: #FFFF00;
+@jsColor: #FF9000;
+@octetColor: #D0D0D0;
+@imageColor: #00FFA0;
+
+@classicBaseColor: #F0F0F0;
+@darkBaseColor: #000000;
+
 .directory {
   
   .list{
@@ -7,11 +15,11 @@
   }
   
   .dgrid-row {
-    background-color: #F0F0F0;
+    background-color: @classicBaseColor;
     cursor: default;
   } 
   .dgrid-row:hover {
-    border-color: #F0F0F0;
+    border-color: @classicBaseColor;
   }
 
   .dgrid-row.directory  {
@@ -22,31 +30,33 @@
   }
 
   .dgrid-row.text  {
-    background-color: #F0F0E0;
-  } 
-  .dgrid-row.text:hover {
-    border-color: #F0F0E0;
+    background-color: mix(@classicBaseColor, @textColor, 90%);
+    &:hover {
+      border-color: mix(@classicBaseColor, @textColor, 90%);
+    }
   }
 
-  .dgrid-row {
-    .javascript, .json {
-      background-color: #F0E0D0;
-      &:hover {
-        border-color: #F0E0D0;
-      }
+  .dgrid-row.javascript, .dgrid-row.json {
+    background-color: mix(@classicBaseColor, @jsColor, 90%);
+    &:hover {
+      border-color: mix(@classicBaseColor, @jsColor, 90%);
     }
   }
 
   .dgrid-row.octet-stream  {
-    background-color: #D0D0D0;
+    background-color: mix(@classicBaseColor, @octetColor, 90%);
+    &:hover {
+      border-color: mix(@classicBaseColor, @octetColor, 90%);
+    }
   } 
-  .dgrid-row-odd.octet-stream {
-  //  background-color: #C0C0C0;
-  } 
-  .dgrid-row.octet-stream:hover {
-    border-color: #D0D0D0;
-  }
   
+  .dgrid-row.image  {
+    background-color: mix(@classicBaseColor, @imageColor, 90%);
+    &:hover {
+      border-color: mix(@classicBaseColor, @imageColor, 90%);
+    }
+  } 
+
   .dgrid-row:hover {
     background-color: #abd6ff;
   }
@@ -67,7 +77,7 @@
     }
     
     .dgrid-content {
-      background-color: #D0D0D1;
+      background-color: #E0E0E1;
     }
     
     .dgrid-scroller {
@@ -160,19 +170,35 @@
 .dark{
   .directory {
     
+    .dgrid-cell{
+      border-color: #000000;
+    }
+    .dgrid{
+      border-color: #000000;
+    }
+    .dgrid-header{
+      background-color: #000020;
+      .dgrid-sort-arrow{
+        background-color: #FF9020;
+      }
+    }
+    
     
   .list{
     .dgrid-row:hover {
       border-color: #202050;
-    };
+    }
+      
   }
   
+    
+    
   .dgrid-row {
-    background-color: #000000;
+    background-color: @darkBaseColor;
     cursor: default;
   } 
   .dgrid-row:hover {
-    border-color: #202050;
+    border-color: @darkBaseColor;
   }
 
   .dgrid-row.directory  {
@@ -181,33 +207,52 @@
   .dgrid-row.directory:hover {
     border-color: #000050;
   }
+  /*.dgrid-row.directory  {
+    background-color: #E0E0F0;
+  } 
+  .dgrid-row.directory:hover {
+    border-color: #E0E0F0;
+  }*/
 
   .dgrid-row.text  {
-    background-color: #606000;
-  } 
-  .dgrid-row.text:hover {
-    border-color: #606000;
+    background-color: mix(@darkBaseColor, @textColor, 70%);
+    &:hover {
+      border-color: mix(@darkBaseColor, @textColor, 70%);
+    }
   }
 
-  .dgrid-row {
-    .javascript, .json {
-      background-color: #705000;
-      &:hover {
-        border-color: #705000;
-      }
+  .dgrid-row.javascript, .dgrid-row.json {
+    background-color: mix(@darkBaseColor, @jsColor, 70%);
+    &:hover {
+      border-color: mix(@darkBaseColor, @jsColor, 70%);
     }
   }
 
   .dgrid-row.octet-stream  {
-    background-color: #202020;
+    background-color: mix(@darkBaseColor, @octetColor, 70%);
+    &:hover {
+      border-color: mix(@darkBaseColor, @octetColor, 70%);
+    }
   } 
-  .dgrid-row.octet-stream:hover {
-    border-color: #202020;
-  }
-  
+    
+  .dgrid-row.image  {
+    background-color: mix(@imageBaseColor, @imageColor, 90%);
+    &:hover {
+      border-color: mix(@imageBaseColor, @imageColor, 90%);
+    }
+  } 
+    
+    
+    
+    
   .dgrid-row:hover {
     background-color: #404090;
   }
+    
+    
+    
+    
+    
   
   .list {
     
@@ -216,20 +261,20 @@
     }
       
     .dgrid-row.directory  {
-      background-color: #000000;
-      color: white;
+      background-color: #A0A0F0;
+      color: black;
     }
     .dgrid-row.directory:hover {
-      border-color: black;
+      border-color: #A0A0F0;
     }
     
     
     .dgrid-content {
-      background-color: #202050;
+      background-color: #101040;
     }
       
     .outer2:hover {
-      background-color: #050590;
+      background-color: #4040B0;
         color: #F0F0F0;
     //border-color: #759dc0;
     //background-image: linear-gradient(left, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);

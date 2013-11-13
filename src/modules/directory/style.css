@@ -2,11 +2,11 @@
   border-color: #759dc0;
 }
 .directory .dgrid-row {
-  background-color: #F0F0F0;
+  background-color: #f0f0f0;
   cursor: default;
 }
 .directory .dgrid-row:hover {
-  border-color: #F0F0F0;
+  border-color: #f0f0f0;
 }
 .directory .dgrid-row.directory {
   background-color: #E0E0F0;
@@ -15,24 +15,30 @@
   border-color: #E0E0F0;
 }
 .directory .dgrid-row.text {
-  background-color: #F0F0E0;
+  background-color: #f2f2d8;
 }
 .directory .dgrid-row.text:hover {
-  border-color: #F0F0E0;
+  border-color: #f2f2d8;
 }
-.directory .dgrid-row .javascript,
-.directory .dgrid-row .json {
-  background-color: #F0E0D0;
+.directory .dgrid-row.javascript,
+.directory .dgrid-row.json {
+  background-color: #f2e6d8;
 }
-.directory .dgrid-row .javascript:hover,
-.directory .dgrid-row .json:hover {
-  border-color: #F0E0D0;
+.directory .dgrid-row.javascript:hover,
+.directory .dgrid-row.json:hover {
+  border-color: #f2e6d8;
 }
 .directory .dgrid-row.octet-stream {
-  background-color: #D0D0D0;
+  background-color: #ededed;
 }
 .directory .dgrid-row.octet-stream:hover {
-  border-color: #D0D0D0;
+  border-color: #ededed;
+}
+.directory .dgrid-row.image {
+  background-color: #d8f2e8;
+}
+.directory .dgrid-row.image:hover {
+  border-color: #d8f2e8;
 }
 .directory .dgrid-row:hover {
   background-color: #abd6ff;
@@ -49,7 +55,7 @@
   background-image: none;
 }
 .directory .list .dgrid-content {
-  background-color: #D0D0D1;
+  background-color: #E0E0E1;
 }
 .directory .list .dgrid-scroller {
   direction: rtl;
@@ -122,6 +128,26 @@
   overflow: hidden;
   direction: ltr;
 }
+.dark .directory {
+  /*.dgrid-row.directory  {
+    background-color: #E0E0F0;
+  } 
+  .dgrid-row.directory:hover {
+    border-color: #E0E0F0;
+  }*/
+}
+.dark .directory .dgrid-cell {
+  border-color: #000000;
+}
+.dark .directory .dgrid {
+  border-color: #000000;
+}
+.dark .directory .dgrid-header {
+  background-color: #000020;
+}
+.dark .directory .dgrid-header .dgrid-sort-arrow {
+  background-color: #FF9020;
+}
 .dark .directory .list .dgrid-row:hover {
   border-color: #202050;
 }
@@ -130,7 +156,7 @@
   cursor: default;
 }
 .dark .directory .dgrid-row:hover {
-  border-color: #202050;
+  border-color: #000000;
 }
 .dark .directory .dgrid-row.directory {
   background-color: #000050;
@@ -139,24 +165,30 @@
   border-color: #000050;
 }
 .dark .directory .dgrid-row.text {
-  background-color: #606000;
+  background-color: #4d4d00;
 }
 .dark .directory .dgrid-row.text:hover {
-  border-color: #606000;
+  border-color: #4d4d00;
 }
-.dark .directory .dgrid-row .javascript,
-.dark .directory .dgrid-row .json {
-  background-color: #705000;
+.dark .directory .dgrid-row.javascript,
+.dark .directory .dgrid-row.json {
+  background-color: #4d2b00;
 }
-.dark .directory .dgrid-row .javascript:hover,
-.dark .directory .dgrid-row .json:hover {
-  border-color: #705000;
+.dark .directory .dgrid-row.javascript:hover,
+.dark .directory .dgrid-row.json:hover {
+  border-color: #4d2b00;
 }
 .dark .directory .dgrid-row.octet-stream {
-  background-color: #202020;
+  background-color: #3e3e3e;
 }
 .dark .directory .dgrid-row.octet-stream:hover {
-  border-color: #202020;
+  border-color: #3e3e3e;
+}
+.dark .directory .dgrid-row.image {
+  background-color: #004d30;
+}
+.dark .directory .dgrid-row.image:hover {
+  border-color: #004d30;
 }
 .dark .directory .dgrid-row:hover {
   background-color: #404090;
@@ -165,17 +197,17 @@
   color: white;
 }
 .dark .directory .list .dgrid-row.directory {
-  background-color: #000000;
-  color: white;
+  background-color: #A0A0F0;
+  color: black;
 }
 .dark .directory .list .dgrid-row.directory:hover {
-  border-color: black;
+  border-color: #A0A0F0;
 }
 .dark .directory .list .dgrid-content {
-  background-color: #202050;
+  background-color: #101040;
 }
 .dark .directory .list .outer2:hover {
-  background-color: #050590;
+  background-color: #4040B0;
   color: #F0F0F0;
   background-image: linear-gradient(right, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
   background-image: -o-linear-gradient(right, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);

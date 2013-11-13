@@ -133,6 +133,12 @@ for making this a great IDE
   - more CodeMirror feature integrations
   
   
+## contemporaty  
+  
+  - 0.1.8 has a new folder view. actually its 2 views now: list and details. the list view is a css hack. i was wondering if there are any issues with it on modern browsers. if so, pls report them.  
+  also pls give feedback if you like the color coding. i believe representing files as icons is a deadend. i tried to make the filetype intuitive by color coding different types. tell me what you think.
+  
+  
 ## Contributions welcome!
   
   i am a good coder but my gui designs are poor.  

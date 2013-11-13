@@ -136,6 +136,8 @@ var profile = (function(){
                 , "codemirror/addon/display/placeholder"
                 , "codemirror/addon/lint/all"
                 , "sol/wgt/Turn"
+                , "dgrid/TouchScroll"
+                , "dgrid/util/touch"
                 ]
               , boot: true
               , customBase: true
