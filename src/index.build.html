@@ -3,18 +3,20 @@
     <title>NodeMirror</title>
     
     <!-- socket.io -->
-      <script src="/socket.io/socket.io.js"></script>
-    
+      <script src="{{{relativeStr}}}socket.io/socket.io.js"></script>
+      
     <!-- dojo -->
       <!-- config -->
         <script>
           // The module to "bootstrap"
           var loadModule = "client/client";
-          
+          window._nodeMirrorGlobal = {
+            webpath: "{{{relativeStr}}}"
+          };
           
           // Configuration Object for Dojo Loader:
     	  dojoConfig = {
-            baseUrl: "/", // Where we will put our packages
+            baseUrl: "{{{relativeStr}}}", // Where we will put our packages
             async: 1, // We want to make sure we are using the "modern" loader
             // While it is possible to use config-tlmSiblingOfDojo to tell the
             // loader that your packages share the same root path as the loader,
@@ -56,10 +58,10 @@
 	    </script>
       
       <!-- loader -->
-	    <script src="client/dojo/dojo.js"></script>
+        <script src="{{{relativeStr}}}client/dojo/dojo.js"></script>
     
     <!-- all styles -->
-	  <link rel="stylesheet" type="text/css" href="style/style.css">
+      <link rel="stylesheet" type="text/css" href="{{{relativeStr}}}style/style.css">
   </head>
   <body>
     <div id="startupscreen">
