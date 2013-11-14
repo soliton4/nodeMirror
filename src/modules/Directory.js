@@ -63,28 +63,14 @@ define([
       
       var fileName = this.getFileName(par.id);
       
-      /*files.childrenDef(fileName).then(function(ar){
-        var result = {
-          children: []
-        };
-        solPromise.allDone(array.map(ar, function(child){
-          var entry = {
-            type: "file"
-            , id: nameTranslator.reduceName(child)
-          };
-          result.children.push(entry);
-          return files.contentTypeDef(child).then(function(contentType){
-             entry.contentType = contentType;
-          });
-        })).then(function(){
-          def.resolve(result);
-        });
-      });*/
-      
       var result = {
         children: []
       };
       files.childrenDef(fileName).then(function(ar){
+        if (!ar || !ar.length){
+          def.resolve(result);
+          return;
+        };
         files.contentTypesDef(ar).then(function(typesAr){
           result.children = array.map(typesAr, function(f){
             var r = {
