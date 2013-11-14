@@ -13,6 +13,7 @@ define([
   , "sol/fileName"
   , "main/clientOnly!sol/wgt/TextBox"
   , "main/clientOnly!client/globals"
+  , "main/config"
 ], function(
   declare
   , domConstruct
@@ -25,6 +26,7 @@ define([
   , fileName
   , TextBox
   , globals
+  , config
 ){
   return declare([
   ], {
@@ -237,12 +239,15 @@ define([
     }
     
     , download: function(){
-      iframe.send({
-        url: "/download",
-        handleAs: "html",
-        content: {
-          id: this.par.id
-        }
+      var self = this;
+      config.get("webpath").then(function(webpath){
+        iframe.send({
+          url: webpath + "download",
+          handleAs: "html",
+          content: {
+            id: self.par.id
+          }
+        });
       });
     }
     
