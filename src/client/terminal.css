@@ -9,7 +9,7 @@
   */  
 
 .terminalTab .seeunicorns {
-  background-image: url("/image/luna1.png");
+  background-image: url("../image/luna1.png");
 }
 
 .terminalTab .seeunicorns .terminal {

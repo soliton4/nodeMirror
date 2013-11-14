@@ -3,11 +3,13 @@ define([
   , "dojo/_base/config"
   , "dojo/_base/lang"
   , "dojo/has"
+  , "sol/string"
 ], function(
   declare
   , dojoConfig
   , lang
   , has
+  , solString
 ){
   if (has("server-modules")){
     return {
@@ -22,6 +24,7 @@ define([
           var rcInstance = rc(id, {
             port: 3000
             , theme: "monokai"
+            , webpath: "/"
           }, function(err, config){
             if (err){
               console.log(err);
@@ -34,6 +37,16 @@ define([
             };
             if (process.platform == "win32"){
               defaultConfig.restart = false;
+            };
+            if (!defaultConfig.webpath){
+              defaultConfig.webpath = "/";
+            }else{
+              if(!solString.startsWith(defaultConfig.webpath, "/")){
+                defaultConfig.webpath = "/" + defaultConfig.webpath;
+              };
+              if(!solString.endsWith(defaultConfig.webpath, "/")){
+                defaultConfig.webpath = defaultConfig.webpath + "/";
+              };
             };
             load(defaultConfig);
           });

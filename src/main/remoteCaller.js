@@ -31,21 +31,20 @@ define([
       var def = new Deferred();
       //console.log("loading request");
       require(["dojo/request/xhr"], function(xhr){
-        xhr("/apicall"
-          , {
-            data: json.stringify(data)
-			, method: "PUT"
-			, handleAs: "json"
-            , headers: {
-              "Content-Type": "application/json"
-              //, "Content-Encoding": "ISO-8859-1"
-              //, "X-Method-Override": "FANCY-GET"
-            }			
-        }).then(function(p){ 
-          def.resolve(p.result); 
-        }, function(p){ 
-          def.reject(p); 
-        });
+        var webpath = window._nodeMirrorGlobal.webpath; // we need this as global, because the config itself uses apicall
+          xhr(webpath + "apicall"
+            , {
+              data: json.stringify(data)
+            , method: "PUT"
+            , handleAs: "json"
+              , headers: {
+                "Content-Type": "application/json"
+              }			
+          }).then(function(p){ 
+            def.resolve(p.result); 
+          }, function(p){ 
+            def.reject(p); 
+          });
       });
       
       return def;

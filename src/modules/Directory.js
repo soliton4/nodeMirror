@@ -242,7 +242,7 @@ define([
           self.resize();
           setTimeout(function(){
             self.grid.doRender();
-          }, 0);
+          }, 20);
         }, 0);
         if (viewMode == "details"){
           this.viewButton.set("viewMode", "list");

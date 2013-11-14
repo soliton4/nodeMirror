@@ -39,6 +39,7 @@ define([
       , "restart": true
       , "seeunicorns": true
       , "music": true
+      , "webpath": "/"
     }
     , saveable: {
     }

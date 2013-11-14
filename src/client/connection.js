@@ -14,10 +14,12 @@ define([
   , array
 ){
   
-  var ioUrl = window.location.origin;
+  var webpath = window._nodeMirrorGlobal.webpath;
+  var ioUrl = window.location.origin; // + webpath;
   
   var opts = {
     'force new connection': true
+    , resource: webpath.substr(1) + "socket.io"
     /*connect: function(){
       console.log("-connect");
     }
@@ -48,7 +50,7 @@ define([
   
   var initSocket;
   var reconnect = function(){
-    xhr("/reconnect"
+    xhr(webpath + "reconnect"
           , {
 			method: "PUT"
             , data: json.stringify({

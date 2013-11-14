@@ -37,10 +37,11 @@ define([
     content: {} // will be provided
     , region: "center"
     , showHeader: false
-    , viewMode: "details"
+    , viewMode: "list"
     
     , constructor: function(){
-      this.columns = {
+      
+      this._columnDefinition = {
         id: {
           label: "Name"
           , minwidth: 100
@@ -77,8 +78,11 @@ define([
           }
         }
       };
+      /*if (this.viewMode == "details"){
+        this.columns = this._columnDefinition;
+      };*/
       var self = this;
-      this.correctSize = SceduleExec(function(){
+      /*this.correctSize = SceduleExec(function(){
         var box = domGeo.getMarginBox(self.bodyNode);
         domGeo.setMarginBox(self.bodyNode, {
           h: box.w
@@ -86,7 +90,7 @@ define([
         });
       }, {
         delay: 1000
-      });
+      });*/
     }
     , buildRendering: function(){
       this.inherited(arguments);
@@ -147,8 +151,13 @@ define([
         return;
       };
       if (viewMode == "list"){
+        this.set("columns", undefined);
         this.set("showHeader", false);
+        if (this.headerNode){
+          domConstruct.empty(this.headerNode);
+        };
       }else{
+        this.set("columns", this._columnDefinition);
         this.set("showHeader", true);
       };
       this._set("viewMode", viewMode);
@@ -162,11 +171,11 @@ define([
       };
     }
     
-    /*, resize: function(){
+    , resize: function(){
+      //debugger;
       var ret = this.inherited(arguments);
-      //this.correctSize.exec();
       return ret;
-    }*/
+    }
     
     , selectionMode: "single"
     , startup: function(){

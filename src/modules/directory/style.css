@@ -54,7 +54,7 @@
 .directory .list .dgrid-row {
   background-image: none;
 }
-.directory .list .dgrid-content {
+.directory .list .dgrid-scroller {
   background-color: #E0E0E1;
 }
 .directory .list .dgrid-scroller {
@@ -128,14 +128,6 @@
   overflow: hidden;
   direction: ltr;
 }
-.dark .directory {
-  /*.dgrid-row.directory  {
-    background-color: #E0E0F0;
-  } 
-  .dgrid-row.directory:hover {
-    border-color: #E0E0F0;
-  }*/
-}
 .dark .directory .dgrid-cell {
   border-color: #000000;
 }
@@ -185,10 +177,10 @@
   border-color: #3e3e3e;
 }
 .dark .directory .dgrid-row.image {
-  background-color: #004d30;
+  background-color: #001910;
 }
 .dark .directory .dgrid-row.image:hover {
-  border-color: #004d30;
+  border-color: #001910;
 }
 .dark .directory .dgrid-row:hover {
   background-color: #404090;
@@ -203,7 +195,7 @@
 .dark .directory .list .dgrid-row.directory:hover {
   border-color: #A0A0F0;
 }
-.dark .directory .list .dgrid-content {
+.dark .directory .list .dgrid-scroller {
   background-color: #101040;
 }
 .dark .directory .list .outer2:hover {

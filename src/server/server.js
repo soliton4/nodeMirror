@@ -59,6 +59,8 @@ define([
     , connection
   ){
     
+    var relativeStr = nodeMirrorConfig.webpath;
+    
     console.log('Current directory: ' + process.cwd());
     
     //console.log(nodeMirrorConfig);
@@ -92,7 +94,7 @@ define([
     
     mirror.use(express.bodyParser());
     
-    mirror.put('/apicall', function(req, res){
+    mirror.put(relativeStr + 'apicall', function(req, res){
       try{
         remoteCaller.serverCall(req.body).then(function(par){
           res.send({ result: par });
@@ -103,13 +105,13 @@ define([
       };
     });
     
-    mirror.put("/reconnect", function(req, res){
+    mirror.put(relativeStr + "reconnect", function(req, res){
       //console.log("----------------- recon request");
       res.setHeader('Content-Type', "application/json");
       res.send({ reconnected: true });
     });
     
-    mirror.get('/download', function(req, res){
+    mirror.get(relativeStr + 'download', function(req, res){
       console.log("download:" + req.query.id);
       var filenameStr = nameTranslator.fileName(req.query.id);
       console.log(filenameStr);
@@ -144,33 +146,42 @@ define([
       });
     });
 
-    
     /*jshint sub:true*/
-    mirror.use(express["static"](nodeMirrorConfig["static"]));
-  
-    mirror.get('/', function(req, res){
+    mirror.get(relativeStr, function(req, res){
       res.setHeader('Content-Type', "text/html");
       fs.readFile(nodeMirrorConfig["static"] + "/index.html", function(err, data){
         if (err){
           res.end(err);
           return;
         };
-        res.end(data);
+        var s = data.toString();
+        s = s.replace(/{{{relativeStr}}}/g, relativeStr);
+        res.end(s);
       });
     });
+
+    
+    mirror.use(relativeStr, express["static"](nodeMirrorConfig["static"]));
+  
     
     
     
     
     server.listen(nodeMirrorConfig.port);
     
-    var io = socketIo.listen(server);
-    io.set("log level", 0);
+    var mainio = socketIo.listen(server);
     
-    sessionSockets = new sessionIo(io, sessionStore, cookieParser);
+    mainio.set("log level", 0);
+    mainio.set("resource", relativeStr + "socket.io");
+    
+    //var io = mainio.of(relativeStr);
+    
+    sessionSockets = new sessionIo(mainio, sessionStore, cookieParser);
     
     var pty;
-    sessionSockets.on('connection', function (err, socket, session) {
+    sessionSockets.on('connection', function (err, mainsocket, session) {
+      //var socket = mainsocket.of(relativeStr);
+      var socket = mainsocket;
       //console.log("----------------- socket con request");
       if (err){
         console.log("-------------------------------------------------- connection error");
@@ -187,125 +198,6 @@ define([
       //terminalServer.newConnection(socket);
       return;
       
-        //console.log("-------------------------------------------------- new con");
-      var terminals = {};
-      var nextTerminalId = 0;
-      
-      //console.log(session);
-      //your regular socket.io code goes here
-      //and you can still use your io object
-      socket.on("openterminal", function(par, respond){
-        if (nodeMirrorConfig.terminal === false){
-          respond({
-          });
-          return;
-        };
-        console.log("opening terminal");
-        var termid = "terminal" + nextTerminalId;
-        nextTerminalId++;
-        
-        respond({
-          termid: termid
-        });
-        
-        if (par.mode == "dbg"){
-          var dbgSock = new net.Socket();
-          
-          dbgSock.connect(5858, function(par1, par2){
-            console.log("listener evt");
-            //console.log(par1);
-          });
-          var dbgProt = new debugProtocol();
-          dbgProt.on("break", function(par){
-            socket.emit(termid, {
-              type: "break"
-              , body: par
-            });
-          });
-          dbgSock.on("data", function(data){
-            dbgProt.write(data);
-          });
-          socket.emit(termid + "_meta", {
-            event: "ready"
-          });
-          
-          socket.on(termid, function(msg, callBack){
-            if (msg.type == "source"){
-              dbgProt.getSource({id: msg.id}).then(function(parRes){
-                console.log(parRes);
-                callBack(parRes);
-              });
-            };
-            if (msg.type == "continue"){
-              dbgProt.cont({step: msg.step}).then(function(parRes){
-                console.log(parRes);
-                callBack(parRes);
-              });
-            };
-          });
-          dbgProt.on("data", function(par){
-            console.log("writing:");
-            console.log(par);
-            console.log("------------------------");
-            dbgSock.write(par);
-          });
-          //type: "source"
-          //, id: source.id
-          
-          return;
-        };
-        
-        
-        
-        
-        var def = new Deferred();
-        
-        if (pty){
-          def.resolve(pty);
-        }else{
-          npm.load({
-            name: "pty.js"
-            , onInstall: function(){
-              socket.emit(termid + "_meta", {
-                event: "install"
-              });
-            }
-            , onError: function(e){
-              socket.emit(termid + "_meta", {
-                event: "installerror"
-              });
-              def.reject();
-            }
-            , onLoad: function(module){
-              terminal.setPty(module);
-              def.resolve(module);
-            }
-          });
-        };
-        
-        def.then(function(parPty){
-          pty = parPty;
-          
-          terminal.newTerminal(function(term){
-            term.onData = function(data){
-              socket.emit(termid, data);
-            };
-            socket.on(termid, function(data){
-              term.write(data);
-            });
-            socket.on(termid + "_resize", function(size){
-              try{
-                term.resize(size.x, size.y);
-              }catch(e){
-                console.log(e);
-              }
-            });
-            socket.emit(termid + "_meta", {
-              event: "ready"
-            });
-          });
-        });
-      });
     });
   });
-}); // thats far to many brackets
+}); 

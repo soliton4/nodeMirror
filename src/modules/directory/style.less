@@ -6,6 +6,8 @@
 @classicBaseColor: #F0F0F0;
 @darkBaseColor: #000000;
 
+
+
 .directory {
   
   .list{
@@ -76,7 +78,7 @@
       background-image: none;
     }
     
-    .dgrid-content {
+    .dgrid-scroller {
       background-color: #E0E0E1;
     }
     
@@ -167,6 +169,7 @@
       }
   }
 }
+
 .dark{
   .directory {
     
@@ -184,14 +187,12 @@
     }
     
     
-  .list{
-    .dgrid-row:hover {
-      border-color: #202050;
+    .list{
+      .dgrid-row:hover {
+        border-color: #202050;
+      }
     }
-      
-  }
   
-    
     
   .dgrid-row {
     background-color: @darkBaseColor;
@@ -207,27 +208,21 @@
   .dgrid-row.directory:hover {
     border-color: #000050;
   }
-  /*.dgrid-row.directory  {
-    background-color: #E0E0F0;
-  } 
-  .dgrid-row.directory:hover {
-    border-color: #E0E0F0;
-  }*/
-
+  
   .dgrid-row.text  {
     background-color: mix(@darkBaseColor, @textColor, 70%);
     &:hover {
       border-color: mix(@darkBaseColor, @textColor, 70%);
     }
   }
-
+  
   .dgrid-row.javascript, .dgrid-row.json {
     background-color: mix(@darkBaseColor, @jsColor, 70%);
     &:hover {
       border-color: mix(@darkBaseColor, @jsColor, 70%);
     }
   }
-
+  
   .dgrid-row.octet-stream  {
     background-color: mix(@darkBaseColor, @octetColor, 70%);
     &:hover {
@@ -236,12 +231,11 @@
   } 
     
   .dgrid-row.image  {
-    background-color: mix(@imageBaseColor, @imageColor, 90%);
+    background-color: mix(@darkBaseColor, @imageColor, 90%);
     &:hover {
-      border-color: mix(@imageBaseColor, @imageColor, 90%);
+      border-color: mix(@darkBaseColor, @imageColor, 90%);
     }
   } 
-    
     
     
     
@@ -251,10 +245,8 @@
     
     
     
-    
-    
   
-  .list {
+    .list {
     
     .dgrid-row:hover  {
       color: white;
@@ -269,7 +261,7 @@
     }
     
     
-    .dgrid-content {
+    .dgrid-scroller {
       background-color: #101040;
     }
       
@@ -290,7 +282,7 @@
         left top,
         color-stop(0, rgba(0,0,0,0.7)),
         color-stop(1, rgba(0,0,0,0))
-    );      
+    )
       }
     }
   }
