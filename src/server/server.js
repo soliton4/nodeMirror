@@ -33,7 +33,6 @@ define([
     , "sol/fileName"
     , "main/contentIO"
     , "main/nodeControl"
-    , "dojo/node!easy-zip"
     , "main/config"
     , "sol/node/npm"
     , "dojo/node!net"
@@ -41,6 +40,7 @@ define([
     , "dojo/node!../../lib/terminal.js"
     , "term/server"
     , "main/connection"
+    , "dojo/node!adm-zip"
   ], function(
     remoteCaller
     , treeItems
@@ -49,7 +49,6 @@ define([
     , fileName
     , ContentIO    // is not used here but must be loaded!!!
     , nodeControl  // is not used here but must be loaded!!!
-    , easyZip
     , nodeMirrorConfig
     , npm
     , net
@@ -57,6 +56,7 @@ define([
     , terminal
     , terminalServer
     , connection
+    , AdmZip
   ){
     
     var relativeStr = nodeMirrorConfig.webpath;
@@ -68,7 +68,7 @@ define([
     
     //console.log(nodeMirrorConfig);
     
-    EasyZip = easyZip.EasyZip;
+    //EasyZip = easyZip.EasyZip;
     
     var mirror = express();
     
@@ -119,15 +119,19 @@ define([
         console.log(parContentType);
         if (parContentType == "inode/directory"){
           // creating archives
-          var zip = new EasyZip();
+          //var zip = new EasyZip();
           
           // add local file
-          zip.zipFolder(filenameStr, function(){
+          /*zip.zipFolder(filenameStr, function(){
             //res.setHeader('Content-Length', data.length);
             res.setHeader('Content-Disposition', "attachment; filename=\"" + fileName.single(filenameStr) + ".zip\"");
             zip.writeToResponse(res, fileName.single(filenameStr) + ".zip");
             res.end();
-          });
+          });*/
+          var zip = new AdmZip();
+          zip.addLocalFolder(filenameStr);
+          res.setHeader('Content-Disposition', "attachment; filename=\"" + fileName.single(filenameStr) + ".zip\"");
+          res.end(zip.toBuffer());
           
         }else{
           res.setHeader('Content-Type', parContentType);

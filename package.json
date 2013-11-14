@@ -1,6 +1,6 @@
 {
   "name": "node-mirror",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "author": {
     "name": "Matthias Behrens",
     "email": "matthias.behrens@gmail.com"
@@ -16,7 +16,7 @@
     "mime": "*",
     "mime-magic": "*",
     "socket.io": "*",
-    "easy-zip": "*",
+    "adm-zip": "*",
     "optimist": "*",
     "runtime-configuration": "*",
     "less": "*",

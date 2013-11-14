@@ -14,6 +14,7 @@ define([
   , "main/clientOnly!sol/wgt/TextBox"
   , "main/clientOnly!client/globals"
   , "main/config"
+  , "dojo/io-query"
 ], function(
   declare
   , domConstruct
@@ -27,6 +28,7 @@ define([
   , TextBox
   , globals
   , config
+  , ioQuery
 ){
   return declare([
   ], {
@@ -241,13 +243,24 @@ define([
     , download: function(){
       var self = this;
       config.get("webpath").then(function(webpath){
-        iframe.send({
+        var ifr = domConstruct.create("iframe", {
+          src: webpath + "download?" + ioQuery.objectToQuery({
+            id: self.par.id
+          })
+          , style: {
+            width: "0px"
+            , height: "0px"
+            , display: "none"
+          }
+        });
+        domConstruct.place(ifr, self.menu._buttons.downLoadButton.domNode);
+        /*iframe.send({
           url: webpath + "download",
           handleAs: "html",
           content: {
             id: self.par.id
           }
-        });
+        });*/
       });
     }
     
