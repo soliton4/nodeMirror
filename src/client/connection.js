@@ -90,7 +90,7 @@ define([
     var fun = function(parWhat){
       //console.log(parWhat);
       try{
-        socket.disconnect('unauthorized');
+        socket.socket.options.reconnect = false;
         socket.disconnect();
         socket.socket.disconnect();
       }catch(e){

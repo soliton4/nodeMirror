@@ -14,6 +14,8 @@ define([
   , "sol/convenient/SceduleExec"
   , "dojo/_base/array"
   , "dgrid/extensions/ColumnResizer"
+  , "sol/scroll"
+  , "dojo/dom-style"
 ], function(
   declare
   , Grid
@@ -30,7 +32,11 @@ define([
   , SceduleExec
   , array
   , ColumnResizer
+  , scroll
+  , domStyle
 ){
+  var dimensions;
+  
   return declare([
     Grid, DijitRegistry, Selection, ColumnResizer
   ], {
@@ -40,6 +46,10 @@ define([
     , viewMode: "list"
     
     , constructor: function(){
+      
+      if (!dimensions){
+        dimensions = scroll.dimensions();
+      };
       
       this._columnDefinition = {
         id: {
@@ -156,9 +166,19 @@ define([
         if (this.headerNode){
           domConstruct.empty(this.headerNode);
         };
+        domStyle.set(this.bodyNode, {
+          left: "-" + dimensions.w + "px"
+          , right: "0px"
+          , width: "auto"
+        });
       }else{
         this.set("columns", this._columnDefinition);
         this.set("showHeader", true);
+        domStyle.set(this.bodyNode, {
+          left: "0px"
+          , right: "0px"
+          , width: "auto"
+        });
       };
       this._set("viewMode", viewMode);
       this._addViewClass();

@@ -163,6 +163,9 @@ define([
         , matchBrackets: true
         , gutters: ["CodeMirror-lint-markers", "CodeMirror-linenumbers", "CodeMirror-foldgutter"]
         , placeholder: "empty File..."
+        , extraKeys: {
+          "Ctrl-S": lang.hitch(this, "saveContentPs")
+        }
       }));
       this.addChild(this.mirror);
       this.mirror.on("change", lang.hitch(this, function(){

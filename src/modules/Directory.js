@@ -167,6 +167,14 @@ define([
       }));
       this.menu.addChild(this.newButton);
       
+      this.searchButton = this.ownObj(new Button({
+        label: "search"
+        , showLabel: true
+        , onClick: lang.hitch(this, "search")
+        , region: "left"
+      }));
+      this.menu.addChild(this.searchButton);
+      
       var self = this;
       require(["dijit/Menu", "dijit/MenuItem", "dijit/form/ComboButton", "dojo/domReady!"],
         function(Menu, MenuItem, ComboButton){
@@ -192,6 +200,8 @@ define([
             }
           });
           self.menu.addChild(self.viewButton);
+          
+          
       });
       
       
@@ -244,6 +254,10 @@ define([
       this._set("content", parContent);
       this.grid.set("content", parContent);
       this.grid.doRender();
+    }
+    
+    , search: function(){
+      
     }
     
     , createNew: function(parDir){

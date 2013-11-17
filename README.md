@@ -36,7 +36,7 @@ Ever asked yourself which Editor you should choose? This is trying to answer tha
  - .less tester / .less online help / save your .less file immediately as .css file  
  - awesome hexeditor  
  - integrated pegjs parser debugger  
- - download directories as zip files (alpha)   
+ - download directories as zip files  
  - Terminals (!)  
  - more ...  
   

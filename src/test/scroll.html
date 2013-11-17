@@ -1,0 +1,34 @@
+<html>
+  <head>
+    <style>
+      .d1 {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background-color: blue;
+      }
+      .d2 {
+        background-color: yellow;
+        overflow: scroll;
+      }
+      .d3 {
+        background-color: red;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="l1" class="d1">
+      <div id="l2" class="d2">
+        <div id="l3" class="d3">
+          test
+        </div>
+      </div>
+    </div>
+    <script>
+      var d = document.getElementById("l3");
+      alert(d.offsetWidth);
+      alert(d.offsetHeight);
+    </script>
+  </body>
+</html>

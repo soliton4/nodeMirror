@@ -63,7 +63,7 @@ define([
           };
           var resultAr = [];
           solPromise.allDone(array.map(parFiles, function(file){
-            filename = parFileName + "/" + file;
+            var filename = parFileName + "/" + file;
             return files.isDirDef(filename).then(function(filename){
               resultAr.push(filename);
             }); //function(){ resultAr.push(filename); });
