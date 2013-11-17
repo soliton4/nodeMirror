@@ -1,5 +1,8 @@
 @import url('../dijit/themes/claro/claro.css');
 @import url('../dijit/themes/dark/claro.css');
+@import url('../dijit/themes/tundra/tundra.css');
+@import url('../dijit/themes/soria/soria.css');
+@import url('../dijit/themes/nihilo/nihilo.css');
 @import url('../dojox/editor/plugins/resources/css/Save.css');
 @import url('../dgrid/css/skins/claro.css');
 @import url('../codemirror/codemirror.css');

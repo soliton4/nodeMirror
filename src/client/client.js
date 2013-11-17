@@ -70,6 +70,10 @@ define([
   mainBc.placeAt(document.body);
   mainBc.startup();
   
+  topic.subscribe("client/mainBc/resize", function(par){
+    mainBc.resize(par);
+  });
+  
   
   // modules -----------------------------------------------------
   var modules = moduleLoader.getModules();

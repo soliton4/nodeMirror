@@ -113,7 +113,7 @@ define([
         return;
       };
       this.refresh();
-      this.renderArray(this.content.children);
+      //this.renderArray(this.content.children);
       this.resize();
     }
     

@@ -13,6 +13,7 @@ define([
   , "dojo/dom-construct"
   , "dijit/form/Select"
   , "main/config"
+  , "dojo/topic"
 ], function(
   declare
   , Tree
@@ -28,6 +29,7 @@ define([
   , domConstruct
   , Select
   , config
+  , topic
 ){
   var musicWgt;
   
@@ -128,24 +130,42 @@ define([
         };
         self.playMusicBtn.placeAt(self.domNode);
       });
-      
-      this.guiStyleSelect = new Select({
-        options: [{
-          label: "classic"
-          , value: "claro"
-        }, {
-          label: "dark (beta)"
-          , value: "dark"
-        }]
-        , onChange: function(){
-          array.forEach(this.options, function(option){
-            domClass.remove(document.body, option.value);
-          });
-          domClass.add(document.body, this.get("value"));
-        }
+      //debugger;
+      config.get("theme").then(function(theme){
+        self.guiStyleSelect = new Select({
+          value: theme || "claro"
+          , options: [{
+            label: "classic"
+            , value: "claro"
+          }, {
+            label: "dark (beta)"
+            , value: "dark"
+          }, {
+            label: "soria"
+            , value: "soria"
+          }, {
+            label: "tundra"
+            , value: "tundra"
+          }, {
+            label: "nihilo"
+            , value: "nihilo"
+          }]
+          , onChange: function(){
+            array.forEach(this.options, function(option){
+              domClass.remove(document.body, option.value);
+            });
+            domClass.add(document.body, this.get("value"));
+            config.set("theme", this.get("value"));
+            topic.publish("client/mainBc/resize");
+          }
+          , startup: function(){
+            //this.inherited(arguments);
+            this.onChange();
+          }
+        });
+        self.guiStyleSelect.placeAt(self.domNode);
+        domClass.add(document.body, "claro");
       });
-      this.guiStyleSelect.placeAt(this.domNode);
-      domClass.add(document.body, "claro");
     }
     
     , startup: function(){

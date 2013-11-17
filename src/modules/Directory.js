@@ -33,7 +33,7 @@ define([
   
   return declare([BaseBorderContainer], {
     
-    remoteFunctions: lang.mixin({}, Base.remoteFunctions, { createFilePs: true} )
+    remoteFunctions: lang.mixin({}, Base.remoteFunctions, { createFilePs: true } )
     
     , reloadButton: true
     , downloadButton: true
@@ -57,7 +57,7 @@ define([
       };
       return def;
     }
-      
+    
     , getContentPs: function(par){
       var def = this.def();
       
@@ -257,7 +257,13 @@ define([
     }
     
     , search: function(){
-      
+      var self = this;
+      require(["main/moduleLoader!client"], function(moduleLoader){
+        var search = moduleLoader.getModule("modules/Search");
+        search.openSearchTab({
+          dir: self.par.id
+        });
+      });
     }
     
     , createNew: function(parDir){

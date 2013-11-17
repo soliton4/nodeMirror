@@ -13,6 +13,7 @@ define([
   , "sol/scroll"
   , "dojo/dom-style"
   , "dojox/layout/TableContainer"
+  , "dijit/form/TextBox"
 ], function(
   declare
   , domConstruct
@@ -28,6 +29,7 @@ define([
   , scroll
   , domStyle
   , TableContainer
+  , TextBox
 ){
   
   return declare([
@@ -41,6 +43,24 @@ define([
     }
     , buildRendering: function(){
       this.inherited(arguments);
+      
+      this.folder = this.ownObj(new TextBox({
+        label: "folder"
+        , value: this.dir
+      }));
+      this.addChild(this.folder);
+      
+      this.phrase = this.ownObj(new TextBox({
+        label: "phrase"
+      }));
+      this.addChild(this.phrase);
+    }
+    
+    , _getSearchAttr: function(){
+      return {
+        dir: this.folder.get("value")
+        , 
+      };
     }
     
     , resize: function(){

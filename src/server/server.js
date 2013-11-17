@@ -204,15 +204,5 @@ define([
       
     });
     
-    require(["sol/node/fileWalker"], function(fileWalker){
-      var x = 0;
-      fileWalker.walk(process.cwd(), {fileFun: function(par){
-        //console.log(par.filename);
-        ++x;
-      }}).then(function(){
-        console.log("done " + x);
-      });
-    });
-    
   });
 }); 

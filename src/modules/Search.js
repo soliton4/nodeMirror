@@ -7,9 +7,10 @@ define([
   , "dojo/_base/lang"
   , "sol/string"
   , "main/config"
-  , "main/serverOnly!sol/node/npm"
-  , "main/serverOnly!dojo/node!../../../lib/terminal.js"
   , "main/connection"
+  , "main/clientOnly!./search/Wgt"
+  , "modules/base/Base"
+  , "main/nameTranslator"
 
 ], function(
   declare
@@ -20,20 +21,51 @@ define([
   , lang
   , solString
   , config
-  , npm
-  , terminal
   , connection
+  , SearchWgt
+  , Base
+  , nameTranslator
+  
 ){
   
-  var pty;
-  
-  var _handleConnection;
-  
-  var Search = declare([], {
+  var Search = declare([Base], {
     //, keepBuildRendering: true
+    remoteFunctions: lang.mixin({}, Base.remoteFunctions, { find: true} )
     
-    constructor: function(){
+    , constructor: function(){
       var self = this;
+    }
+    
+    , openSearchTab: function(par){
+      var tabs = moduleLoader.getModule("modules/ContentTabs");
+      
+      var tab = new SearchWgt(lang.mixin({
+        module: this
+      }, par));
+      tabs.addChild(tab);
+      tabs.selectChild(tab);
+    }
+    
+    , find: function(search){
+      var def = new Deferred();
+      console.log(search);
+      
+      require([
+        "sol/node/fileWalker"
+      ], function(
+        fileWalker
+      ){
+        var res = [];
+        fileWalker.walk(nameTranslator.fileName(search.dir), {fileFun: function(par){
+          res.push({
+            filename: nameTranslator.reduceName(par.filename)
+          });
+        }}).then(function(){
+          def.resolve(res);
+        });
+      });
+      
+      return def.promise;
     }
     
   });
@@ -43,7 +75,7 @@ define([
   }else{
   };
   
-  return Terminal;
+  return Search;
   
 });
 

@@ -5,6 +5,8 @@ define([], function(){
     "modules/SideBar"
   , "modules/ContentTabs"
     
+  , "modules/Search"
+    
   , "modules/Files"
     
   , "modules/Binary"

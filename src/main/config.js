@@ -40,8 +40,10 @@ define([
       , "seeunicorns": true
       , "music": true
       , "webpath": "/"
+      , "theme": "claro"
     }
     , saveable: {
+      "theme": "claro"
     }
     
     , constructor: function(){
