@@ -2,7 +2,8 @@ define([], function(){
   
   return [
   //  "modules/Default"
-    "modules/SideBar"
+    "modules/Gui"
+  , "modules/SideBar"
   , "modules/ContentTabs"
     
   , "modules/Search"

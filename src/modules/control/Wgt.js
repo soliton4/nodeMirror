@@ -164,7 +164,33 @@ define([
           }
         });
         self.guiStyleSelect.placeAt(self.domNode);
-        domClass.add(document.body, "claro");
+      });
+      
+      config.get("tabposition").then(function(tabposition){
+        self.tabpositionSelect = new Select({
+          value: tabposition || "top"
+          , options: [{
+            label: "top"
+            , value: "top"
+          }, {
+            label: "bottom"
+            , value: "bottom"
+          }, {
+            label: "right"
+            , value: "right"
+          }, {
+            label: "left"
+            , value: "left"
+          }]
+          , onChange: function(){
+            config.set("tabposition", this.get("value"));
+            moduleLoader.getModule("modules/ContentTabs").set("tabPosition", this.get("value"));
+          }
+          , startup: function(){
+            this.onChange();
+          }
+        });
+        self.tabpositionSelect.placeAt(self.domNode);
       });
     }
     

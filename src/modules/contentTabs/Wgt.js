@@ -11,6 +11,7 @@ define([
   , "dijit/layout/TabContainer"
   , "dijit/layout/ContentPane"
   , "main/moduleLoader!client"
+  , "dojo/topic"
 ], function(
   declare
   , Deferred
@@ -24,6 +25,7 @@ define([
   , TabContainer
   , ContentPane
   , moduleLoader
+  , topic
 ){
   
   
@@ -36,6 +38,11 @@ define([
     , buildRendering: function(){
       var ret = this.inherited(arguments);
       var self = this;
+      
+      topic.subscribe("client/tabs/position", function(position){
+        
+        //self.set("tabPosition", position);
+      });
       
       return ret;
     }

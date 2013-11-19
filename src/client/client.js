@@ -60,33 +60,6 @@ define([
   , array
 ){
   
-  domClass.add(document.body, "nodeMirror");
-  domClass.add(document.body, "claro");
-  var mainBc = new BorderContainer({
-    "class": "mainBc"
-    , gutters: false
-    , liveSplitters: true
-  });
-  mainBc.placeAt(document.body);
-  mainBc.startup();
-  
-  topic.subscribe("client/mainBc/resize", function(par){
-    mainBc.resize(par);
-  });
-  
-  
-  // modules -----------------------------------------------------
-  var modules = moduleLoader.getModules();
-  array.forEach(modules, function(module){
-    if (module.provideMainWidgetPs){
-      module.provideMainWidgetPs().then(function(wgt){
-        mainBc.addChild(wgt);
-      });
-    };
-  });
-  
-  
-  
   var tabs;
   var openIds = {};
   
@@ -208,55 +181,7 @@ define([
   });
   
   
-  var restartBtn = new Button({
-    label: "Restart"
-    , onClick: function(){
-      nodeControl.restartDef();
-    }
-  });
-  config.get("restart").then(function(useRestart){
-    if (useRestart === false){
-      return;
-    };
-    //treeMenu.addChild(restartBtn);
-  });
-  
-  var terminalBtn = new Button({
-    label: "Terminal"
-    , onClick: function(){
-      globals.openExtra(new TerminalContent({}));
-    }
-  });
-  config.get("terminal").then(function(useTerminal){
-    if (useTerminal === false){
-      return;
-    };
-    //treeMenu.addChild(terminalBtn);
-  });
-  
-  var debugBtn = new Button({
-    label: "Dbg"
-    , onClick: function(){
-      globals.openExtra(new DebugWgt({
-        mode: "dbg"
-      }));
-    }
-  });
-  config.get("debug").then(function(useDebug){
-    if (useDebug === false){
-      return;
-    };
-    //treeMenu.addChild(debugBtn);
-  });
-  
-  
   tabs = moduleLoader.getModule("modules/ContentTabs");
   
-  // rendering bug;
-  setTimeout(lang.hitch(mainBc, "resize"), 100);
-  setTimeout(function(){
-    mainBc.resize();
-    domConstruct.destroy(dom.byId("startupscreen"));
-  }, 500);
   
 });
