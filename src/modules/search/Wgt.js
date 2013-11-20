@@ -7,6 +7,7 @@ define([
   , "./Menu"
   , "dijit/MenuBar"
   , "dijit/form/Button"
+  , "dijit/MenuItem"
 ], function(
   declare
   , BorderContainer
@@ -16,6 +17,7 @@ define([
   , SearchMenu
   , MenuBar
   , Button
+  , MenuItem
 ){
   
   
@@ -38,7 +40,7 @@ define([
       }));
       this.addChild(this.menuBar);
       
-      this.menuBar.addChild(new Button({
+      this.menuBar.addChild(new MenuItem({
         label: "find"
         , onClick: function(){
           self.find();
@@ -54,8 +56,11 @@ define([
     }
     
     , find: function(){
+      var self = this;
       var search = this.menu.get("search");
-      this.module.find(search);
+      this.module.find(search).then(function(res){
+        self.grid.renderArray(res);
+      });
     }
     
     //, focus: function(){

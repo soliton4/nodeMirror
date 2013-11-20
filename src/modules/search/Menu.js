@@ -59,7 +59,7 @@ define([
     , _getSearchAttr: function(){
       return {
         dir: this.folder.get("value")
-        , 
+        , phrase: this.phrase.get("value")
       };
     }
     

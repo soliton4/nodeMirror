@@ -11,6 +11,7 @@ define([
   , "main/clientOnly!./search/Wgt"
   , "modules/base/Base"
   , "main/nameTranslator"
+  , "sol/promise/Counter"
 
 ], function(
   declare
@@ -25,6 +26,7 @@ define([
   , SearchWgt
   , Base
   , nameTranslator
+  , Counter
   
 ){
   
@@ -52,16 +54,30 @@ define([
       
       require([
         "sol/node/fileWalker"
+        , "dojo/node!fs"
       ], function(
         fileWalker
+        , fs
       ){
+        
+        var counter = new Counter();
         var res = [];
         fileWalker.walk(nameTranslator.fileName(search.dir), {fileFun: function(par){
-          res.push({
-            filename: nameTranslator.reduceName(par.filename)
+          counter.inc();
+          fs.readFile(par.filename, {
+            encoding: "utf8"
+          }, function(err, str){
+            if (!err && str.indexOf(search.phrase) !== -1){
+              res.push({
+                id: nameTranslator.reduceName(par.filename)
+              });
+            };
+            counter.dec();
           });
         }}).then(function(){
-          def.resolve(res);
+          counter.then(function(){
+            def.resolve(res);
+          });
         });
       });
       
