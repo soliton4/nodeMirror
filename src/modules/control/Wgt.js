@@ -14,6 +14,7 @@ define([
   , "dijit/form/Select"
   , "main/config"
   , "dojo/topic"
+  , "dojox/layout/TableContainer"
 ], function(
   declare
   , Tree
@@ -30,6 +31,7 @@ define([
   , Select
   , config
   , topic
+  , TableContainer
 ){
   var musicWgt;
   
@@ -130,10 +132,15 @@ define([
         };
         self.playMusicBtn.placeAt(self.domNode);
       });
+      
+      self.table = new TableContainer({});
+      self.table.placeAt(self.domNode);
+      
       //debugger;
       config.get("theme").then(function(theme){
         self.guiStyleSelect = new Select({
-          value: theme || "claro"
+          label: "Theme"
+          , value: theme || "claro"
           , options: [{
             label: "classic"
             , value: "claro"
@@ -163,12 +170,13 @@ define([
             this.onChange();
           }
         });
-        self.guiStyleSelect.placeAt(self.domNode);
+        self.table.addChild(self.guiStyleSelect);
       });
       
       config.get("tabposition").then(function(tabposition){
         self.tabpositionSelect = new Select({
-          value: tabposition || "top"
+          label: "Tab Position"
+          , value: tabposition || "top"
           , options: [{
             label: "top"
             , value: "top"
@@ -190,7 +198,7 @@ define([
             this.onChange();
           }
         });
-        self.tabpositionSelect.placeAt(self.domNode);
+        self.table.addChild(self.tabpositionSelect);
       });
     }
     
