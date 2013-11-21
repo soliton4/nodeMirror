@@ -8,10 +8,13 @@
 .directory .list .scrollBar {
   right: auto;
   left: 0px;
-  opacity: 0.8;
+  opacity: 0.4;
 }
 .directory .list .scrollBar.scroll {
   display: block;
+}
+.directory .list .scrollBar.scroll:hover {
+  opacity: 0.8;
 }
 .directory .dgrid-row {
   background-color: #f0f0f0;

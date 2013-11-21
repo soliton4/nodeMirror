@@ -34,6 +34,7 @@ define([
           t: self.scrollNode.scrollTop
           , l: self.scrollNode.scrollLeft
         };
+        self._posStart = domGeo.getMarginBox(self.grabNode);
         self.set("draging", true);
         self._moveHandler = on(document.body, "mousemove", function(e){
           self.updateMove(e);
@@ -57,7 +58,7 @@ define([
         , y: e.pageY - this._dragStart.y
       };
       this.deltaCorrection(delta);
-      var grabTop = this._scrollStart.t + delta.y;
+      var grabTop = this._posStart.t + delta.y;
       domGeo.setMarginBox(this.grabNode, {
         t: grabTop
       });
