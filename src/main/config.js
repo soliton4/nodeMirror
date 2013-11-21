@@ -41,9 +41,11 @@ define([
       , "music": true
       , "webpath": "/"
       , "theme": "claro"
+      , "tabposition": "top"
     }
     , saveable: {
       "theme": "claro"
+    , "tabposition": "top"
     }
     
     , constructor: function(){

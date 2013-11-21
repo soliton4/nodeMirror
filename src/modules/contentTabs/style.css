@@ -1,0 +1,11 @@
+.contentTabs .dijitTabContainerRight-tabs .dijitClosable.dijitTab,
+.contentTabs .dijitTabContainerLeft-tabs .dijitClosable.dijitTab {
+  padding-right: 10px;
+  min-width: 50px;
+}
+.contentTabs .dijitTabContainerRight-tabs .dijitTabCloseButton,
+.contentTabs .dijitTabContainerLeft-tabs .dijitTabCloseButton {
+  position: absolute;
+  right: 3px;
+  top: 2px;
+}

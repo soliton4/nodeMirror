@@ -27,21 +27,9 @@ define([
       var self = this;
       this.childs = [];
       if (!has("server-modules")){
-        require([
-          "main/clientOnly!modules/contentTabs/Wgt"
-          , "main/moduleLoader!client"
-        ], function(
-          Wgt
-          , moduleLoader
-        ){
-          var gui = moduleLoader.getModule("modules/Gui");
-          self.wgt = new Wgt({});
-          gui.addChild(self.wgt);
-          if (self.childs.length){
-            array.forEach(self.childs, function(child){
-              self.wgt.addChild(child);
-            });
-          };
+        config.get("tabposition").then(function(tabposition){
+          self.set("tabPosition", tabposition || "top");
+          self._createWgt();
         });
       }
     }
