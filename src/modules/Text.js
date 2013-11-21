@@ -164,7 +164,7 @@ define([
         , gutters: ["CodeMirror-lint-markers", "CodeMirror-linenumbers", "CodeMirror-foldgutter"]
         , placeholder: "empty File..."
         , extraKeys: {
-          "Ctrl-S": lang.hitch(this, "saveContentPs")
+          "Ctrl-S": lang.hitch(this, "savePs")
         }
       }));
       this.addChild(this.mirror);
