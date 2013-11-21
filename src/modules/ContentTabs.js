@@ -49,47 +49,65 @@ define([
     , set: function(name, value){
       var self = this;
       if (name == "tabPosition"){
+        this.tabPosition = value;
+        if (!this.wgt){
+          return;
+        };
         if (value == this.wgt.get("tabPosition")){
           return;
         };
-        require([
-          "main/clientOnly!modules/contentTabs/Wgt"
-          , "main/moduleLoader!client"
-        ], function(
-          Wgt
-          , moduleLoader
-        ){
-          var gui = moduleLoader.getModule("modules/Gui");
-          var oldWgt = self.wgt;
-          self.wgt = new Wgt({
-            tabPosition: value
-          });
-          if (self.childs.length){
-            array.forEach(self.childs, function(child){
-              self.wgt.addChild(child);
-            });
-          };
+        this._getChilds();
+        var oldWgt = this.wgt;
+        this._createWgt().then(function(){
           if (oldWgt){
             oldWgt.destroy();
           };
-          gui.addChild(self.wgt);
         });
       };
     }
     
-    /*, provideMainWidgetPs: function(){
+    , _createWgt: function(){
+      if (has("server-modules")){
+        return;
+      };
       var def = new Deferred();
       var self = this;
-      if (self.wgt){
-        def.resolve(self.wgt);
-      }else{
-        require(["main/clientOnly!modules/contentTabs/Wgt"], function(Wgt){
-          self.wgt = new Wgt({});
-          def.resolve(self.wgt);
+      require([
+        "main/clientOnly!modules/contentTabs/Wgt"
+        , "main/moduleLoader!client"
+      ], function(
+        Wgt
+        , moduleLoader
+      ){
+        var gui = moduleLoader.getModule("modules/Gui");
+        self.wgt = new Wgt({
+          tabPosition: self.tabPosition
         });
+        gui.addChild(self.wgt);
+        self._setChilds();
+        def.resolve();
+      });
+      return def.promise;
+    }
+    
+    , _setChilds: function(){
+      var self = this;
+      if (self.childs.length){
+        array.forEach(self.childs, function(child){
+          self.wgt.addChild(child);
+        });
+        if (this.activeChild){
+          self.wgt.selectChild(this.activeChild);
+        };
       };
-      return def;
-    }*/
+    }
+    , _getChilds: function(){
+      if (this.wgt){
+        this.childs = this.wgt.getChildren();
+        this.activeChild = this.wgt.selectedChildWidget;
+      };
+    }
+    
     
     , addChild: function(wgt){
       this.childs.push(wgt);
@@ -112,6 +130,7 @@ define([
       if (this.wgt){
         this.wgt.selectChild(wgt);
       };
+      this.activeChild = wgt;
     }
     , getIndexOfChild: function(wgt){
       return array.indexOf(this.childs, wgt);
