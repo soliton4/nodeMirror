@@ -1,5 +1,17 @@
+@import url('../../sol/wgt/scrollBar.css');
+.directory .scrollBar {
+  display: none;
+}
 .directory .list .dgrid-row:hover {
   border-color: #759dc0;
+}
+.directory .list .scrollBar {
+  right: auto;
+  left: 0px;
+  opacity: 0.8;
+}
+.directory .list .scrollBar.scroll {
+  display: block;
 }
 .directory .dgrid-row {
   background-color: #f0f0f0;

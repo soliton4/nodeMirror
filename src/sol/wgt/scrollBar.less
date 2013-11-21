@@ -1,11 +1,27 @@
 .solWgt.scrollBar{
   position: absolute;
+  background-color: gray;
   &.vertical{
     top: 0px;
     bottom: 0px;
+    right: 0px;
+    width: 10px;
+    .grabNode {
+      width: 10px;
+    }
   }
-  &.vertical{
-    top: 0px;
+  &.horizontal{
+    left: 0px;
+    right: 0px;
     bottom: 0px;
+    height: 10px;
+    .grabNode {
+      height: 10px;
+    }
+  }
+  .grabNode {
+    position: absolute;
+    border-radius: 5px;
+    background-color: white;
   }
 }

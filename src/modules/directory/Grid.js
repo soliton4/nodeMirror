@@ -16,6 +16,7 @@ define([
   , "dgrid/extensions/ColumnResizer"
   , "sol/scroll"
   , "dojo/dom-style"
+  , "sol/wgt/ScrollBar"
 ], function(
   declare
   , Grid
@@ -34,6 +35,7 @@ define([
   , ColumnResizer
   , scroll
   , domStyle
+  , ScrollBar
 ){
   var dimensions;
   
@@ -105,7 +107,20 @@ define([
     , buildRendering: function(){
       this.inherited(arguments);
       this._addViewClass();
+      this.scrollBar = new ScrollBar({
+        direction: "vertical"
+        , scrollNode: this.bodyNode
+        , deltaCorrection: function(delta){
+          delta.y = delta.x;
+        }
+      });
+      this.scrollBar.placeAt(this.domNode);
     }
+    , destroy: function(){
+      this.scrollBar.destroy();
+      this.inherited(arguments);
+    }
+    
     , renderRow: function(object){
       var node;
       if (this.viewMode != "list"){
@@ -157,9 +172,11 @@ define([
     }
     
     , _setViewMode: function(viewMode){
-      if (this.viewMode == viewMode){
+      if (this.viewMode == viewMode && this._viewSetCalled){
         return;
       };
+      this._viewSetCalled = true;
+      
       if (viewMode == "list"){
         this.set("columns", undefined);
         this.set("showHeader", false);
@@ -194,6 +211,7 @@ define([
     , resize: function(){
       //debugger;
       var ret = this.inherited(arguments);
+      this.scrollBar.update();
       return ret;
     }
     
@@ -214,6 +232,10 @@ define([
         // row.id == the identity of the item represented by the row
         // row.data == the item represented by the row
       }));
+      this.set("viewMode", this.viewMode);
+      
+      this.scrollBar.update();
+
     }
     
     , doRender: function(){

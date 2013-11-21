@@ -6,14 +6,26 @@
 @classicBaseColor: #F0F0F0;
 @darkBaseColor: #000000;
 
-
+@import url('../../sol/wgt/scrollBar.css');
 
 .directory {
+  
+  .scrollBar{
+    display: none;
+  }
   
   .list{
     .dgrid-row:hover {
       border-color: #759dc0;
     };
+    .scrollBar{
+      right: auto;
+      left: 0px;
+      opacity: 0.8;
+      &.scroll{
+        display: block;
+      }
+    }
   }
   
   .dgrid-row {
