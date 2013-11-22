@@ -53,6 +53,9 @@ define([
             terminal: term
           });
           tabs.addChild(tab);
+          tab.on("close", function(){
+            delete self.tabs[term.termid];
+          });
           tabs.selectChild(tab);
           self.tabs[term.termid] = tab;
           self._addTerm(term.termid);
@@ -63,6 +66,9 @@ define([
             terminal: term
           });
           tabs.addChild(tab);
+          tab.on("close", function(){
+            delete self.tabs[item.id];
+          });
           tabs.selectChild(tab);
           self.tabs[item.id] = tab;
         });

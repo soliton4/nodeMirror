@@ -61,6 +61,7 @@ define([
     , _setParAttr: function(par){
       this._set("par", par);
       this.set("originalTitle", fileName.single(par.id));
+      this.set("tooltip", par.id);
       if (this.idWgt){
         this.idWgt.set("value", par.id);
       };

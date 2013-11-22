@@ -6,6 +6,8 @@ define([
   , "dojo/_base/array"
   , "sol/wgt/Try"
   , "sol/wgt/Text"
+  , "sol/convenient/SceduleExec"
+  , "dojo/_base/lang"
 ], function(
   declare
   , Terminal
@@ -14,6 +16,8 @@ define([
   , array
   , Try
   , Text
+  , SceduleExec
+  , lang
 ){
   
   var charBox;
@@ -42,6 +46,9 @@ define([
   
   return declare([_WidgetBase, resizeMixin], {
     buildRendering: function(){
+      this.sceduleEmitResize = this.ownObj(new SceduleExec(lang.hitch(this,"emitResize"),{
+        delay: 100
+      }));
       this.inherited(arguments);
       this.terminal = new Terminal({
         cols: 80,
@@ -107,7 +114,8 @@ define([
     }
     , resize: function(){
       this.inherited(arguments);
-      this.emitResize();
+      //this.emitResize();
+      this.sceduleEmitResize.exec();
     }
   });
 });

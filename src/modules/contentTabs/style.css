@@ -9,3 +9,49 @@
   right: 3px;
   top: 2px;
 }
+.contentTabs .dijitTabController .dijitTab .fadeNode {
+  display: none;
+}
+.contentTabs .dijitTabController .dijitTab.terminalTabButton {
+  background-color: black;
+  color: yellow !important;
+  background-image: none;
+}
+.contentTabs .dijitTabController .dijitTab.fading .fadeNode {
+  display: block;
+  position: absolute;
+  z-index: -10;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  opacity: 0;
+  background-image: -moz-linear-gradient(left, rgba(0, 0, 0, 0.1) 0%, rgba(127, 127, 127, 0.1) 30%, rgba(127, 127, 127, 0.4) 60%, rgba(192, 192, 192, 0.3) 100%);
+  background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 0.1) 0%, rgba(127, 127, 127, 0.1) 30%, rgba(127, 127, 127, 0.4) 60%, rgba(192, 192, 192, 0.3) 100%);
+  background-image: -o-linear-gradient(left, rgba(0, 0, 0, 0.1) 0%, rgba(127, 127, 127, 0.1) 30%, rgba(127, 127, 127, 0.4) 60%, rgba(192, 192, 192, 0.3) 100%);
+  background-image: linear-gradient(left, rgba(0, 0, 0, 0.1) 0%, rgba(127, 127, 127, 0.1) 30%, rgba(127, 127, 127, 0.4) 60%, rgba(192, 192, 192, 0.3) 100%);
+}
+.contentTabs .dijitTabController .dijitTab.fading:hover .fadeNode {
+  left: auto;
+  width: 0px;
+}
+.contentTabs .dijitTabController .dijitTab.fading.dirty .fadeNode {
+  background-image: -moz-linear-gradient(left, rgba(255, 255, 255, 0.1) 0%, rgba(192, 128, 128, 0.1) 30%, rgba(192, 0, 0, 0.3) 60%, rgba(255, 0, 0, 0.2) 100%);
+  background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0.1) 0%, rgba(192, 128, 128, 0.1) 30%, rgba(192, 0, 0, 0.3) 60%, rgba(255, 0, 0, 0.2) 100%);
+  background-image: -o-linear-gradient(left, rgba(255, 255, 255, 0.1) 0%, rgba(192, 128, 128, 0.1) 30%, rgba(192, 0, 0, 0.3) 60%, rgba(255, 0, 0, 0.2) 100%);
+  background-image: linear-gradient(left, rgba(255, 255, 255, 0.1) 0%, rgba(192, 128, 128, 0.1) 30%, rgba(192, 0, 0, 0.3) 60%, rgba(255, 0, 0, 0.2) 100%);
+}
+.contentTabs .dijitTabController.dijitScrollingTabController .dijitTab.fading .fadeNode {
+  background-image: -moz-linear-gradient(left, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0) 100%);
+  background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0) 100%);
+  background-image: -o-linear-gradient(left, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0) 100%);
+  background-image: linear-gradient(left, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0) 100%);
+  background-color: rgba(127, 127, 127, 0.4);
+}
+.contentTabs .dijitTabController.dijitScrollingTabController .dijitTab.fading:hover .fadeNode {
+  left: auto;
+  width: 0px;
+}
+.contentTabs .dijitTabController.dijitScrollingTabController .dijitTab.fading.dirty .fadeNode {
+  background-color: rgba(192, 127, 127, 0.3);
+}

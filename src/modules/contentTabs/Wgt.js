@@ -39,10 +39,6 @@ define([
       var ret = this.inherited(arguments);
       var self = this;
       
-      topic.subscribe("client/tabs/position", function(position){
-        
-        //self.set("tabPosition", position);
-      });
       
       return ret;
     }

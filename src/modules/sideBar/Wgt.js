@@ -11,6 +11,8 @@ define([
   , "dijit/layout/TabContainer"
   , "dijit/layout/ContentPane"
   , "main/moduleLoader!client"
+  , "dojo/dom-class"
+  , "dojo/dom-style"
 ], function(
   declare
   , Deferred
@@ -24,6 +26,8 @@ define([
   , TabContainer
   , ContentPane
   , moduleLoader
+  , domClass
+  , domStyle
 ){
   
   
@@ -35,6 +39,23 @@ define([
     , nested: true
     
     //, keepBuildRendering: true
+    
+    , hide: function(){
+      domClass.add(this.domNode, "hidden");
+      if (this._splitterWidget){
+        domStyle.set(this._splitterWidget.domNode, {
+          display: "none"
+        });
+      };
+    }
+    , unhide: function(){
+      domClass.remove(this.domNode, "hidden");
+      if (this._splitterWidget){
+        domStyle.set(this._splitterWidget.domNode, {
+          display: "block"
+        });
+      };
+    }
     
     , buildRendering: function(){
       var ret = this.inherited(arguments);

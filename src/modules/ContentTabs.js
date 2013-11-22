@@ -8,6 +8,7 @@ define([
   , "sol/string"
   , "main/config"
   , "modules/base/Base"
+  
 ], function(
   declare
   , Deferred
@@ -50,6 +51,10 @@ define([
           if (oldWgt){
             oldWgt.destroy();
           };
+          /*self.wgt.resize();
+          if (self.wgt.selectedChildWidget && self.wgt.selectedChildWidget.resize){
+            self.wgt.selectedChildWidget.resize();
+          };*/
         });
       };
     }
@@ -63,13 +68,20 @@ define([
       require([
         "main/clientOnly!modules/contentTabs/Wgt"
         , "main/moduleLoader!client"
+        , "modules/contentTabs/TabController"
+        , "modules/contentTabs/ScrollingTabController"
+
       ], function(
         Wgt
         , moduleLoader
+        , TabController
+        , ScrollingTabController
       ){
         var gui = moduleLoader.getModule("modules/Gui");
         self.wgt = new Wgt({
           tabPosition: self.tabPosition
+          , controllerWidget: (self.tabPosition == "top" || self.tabPosition == "bottom") && !self.nested ?
+							ScrollingTabController : TabController
         });
         gui.addChild(self.wgt);
         self._setChilds();

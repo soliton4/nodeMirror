@@ -1,6 +1,29 @@
 .mainWidget.sideBar {
-  width: 220px;
+  width: 240px;
   margin: 0px;
   padding: 0px;
   border: 0px;
+}
+.mainWidget.sideBar .dijitTabController .dijitTab:first-child {
+  margin-left: 25px;
+}
+.mainWidget.sideBar.hidden {
+  display: none;
+}
+.mainWidget.sideBarStub {
+  width: 0px;
+  margin: 0px;
+  padding: 0px;
+  border: 0px;
+  overflow: visible;
+  z-index: 1000;
+}
+.mainWidget.sideBarStub .openBtn {
+  position: absolute;
+  top: -4px;
+  left: -12px;
+  opacity: 0.3;
+}
+.mainWidget.sideBarStub .openBtn:hover {
+  opacity: 0.9;
 }
