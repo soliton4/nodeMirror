@@ -1,5 +1,13 @@
 @import "../../dijit/themes/claro/variables";
 
+.claro {
+  .contentTabs {
+    .dijitTabController {
+      background-color: #E0E8E8;
+    }
+  }
+}
+
 .contentTabs {
   .dijitTabContainerRight-tabs, .dijitTabContainerLeft-tabs {
     .dijitClosable.dijitTab{
@@ -16,7 +24,6 @@
   }
   
   .dijitTabController {
-    
     
     .dijitTab {
       //.linear-gradient(left, rgba(127, 127, 127,1) 0%, rgba(127, 127, 127,1) 40%, rgba(127, 127, 127,0) 100%);
@@ -48,7 +55,7 @@
         left: 0px;
         right: 0px;
         opacity: 0;
-        .linear-gradient(left, rgba(0, 0, 0, 0.1) 0%, rgba(127, 127, 127, 0.1) 30%, rgba(127, 127, 127, 0.4) 60%, rgba(192, 192, 192, 0.3) 100%);
+        .linear-gradient(left, rgba(127, 127, 127, 0.1) 0%, rgba(127, 127, 127, 0.1) 30%, rgba(127, 127, 127, 0.5) 60%, rgba(192, 192, 192, 0.3) 100%);
       }
       &:hover{
         .fadeNode{
@@ -78,7 +85,7 @@
         }
         &.dirty{
           .fadeNode{
-            background-color: rgba(192, 127, 127, 0.3);
+            background-color: rgba(192, 96, 96, 0.5);
           }
         }
       }

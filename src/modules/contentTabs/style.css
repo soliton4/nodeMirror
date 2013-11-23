@@ -1,3 +1,6 @@
+.claro .contentTabs .dijitTabController {
+  background-color: #E0E8E8;
+}
 .contentTabs .dijitTabContainerRight-tabs .dijitClosable.dijitTab,
 .contentTabs .dijitTabContainerLeft-tabs .dijitClosable.dijitTab {
   padding-right: 10px;
@@ -30,10 +33,10 @@
   left: 0px;
   right: 0px;
   opacity: 0;
-  background-image: -moz-linear-gradient(left, rgba(0, 0, 0, 0.1) 0%, rgba(127, 127, 127, 0.1) 30%, rgba(127, 127, 127, 0.4) 60%, rgba(192, 192, 192, 0.3) 100%);
-  background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 0.1) 0%, rgba(127, 127, 127, 0.1) 30%, rgba(127, 127, 127, 0.4) 60%, rgba(192, 192, 192, 0.3) 100%);
-  background-image: -o-linear-gradient(left, rgba(0, 0, 0, 0.1) 0%, rgba(127, 127, 127, 0.1) 30%, rgba(127, 127, 127, 0.4) 60%, rgba(192, 192, 192, 0.3) 100%);
-  background-image: linear-gradient(left, rgba(0, 0, 0, 0.1) 0%, rgba(127, 127, 127, 0.1) 30%, rgba(127, 127, 127, 0.4) 60%, rgba(192, 192, 192, 0.3) 100%);
+  background-image: -moz-linear-gradient(left, rgba(127, 127, 127, 0.1) 0%, rgba(127, 127, 127, 0.1) 30%, rgba(127, 127, 127, 0.5) 60%, rgba(192, 192, 192, 0.3) 100%);
+  background-image: -webkit-linear-gradient(left, rgba(127, 127, 127, 0.1) 0%, rgba(127, 127, 127, 0.1) 30%, rgba(127, 127, 127, 0.5) 60%, rgba(192, 192, 192, 0.3) 100%);
+  background-image: -o-linear-gradient(left, rgba(127, 127, 127, 0.1) 0%, rgba(127, 127, 127, 0.1) 30%, rgba(127, 127, 127, 0.5) 60%, rgba(192, 192, 192, 0.3) 100%);
+  background-image: linear-gradient(left, rgba(127, 127, 127, 0.1) 0%, rgba(127, 127, 127, 0.1) 30%, rgba(127, 127, 127, 0.5) 60%, rgba(192, 192, 192, 0.3) 100%);
 }
 .contentTabs .dijitTabController .dijitTab.fading:hover .fadeNode {
   left: auto;
@@ -57,5 +60,5 @@
   width: 0px;
 }
 .contentTabs .dijitTabController.dijitScrollingTabController .dijitTab.fading.dirty .fadeNode {
-  background-color: rgba(192, 127, 127, 0.3);
+  background-color: rgba(192, 96, 96, 0.5);
 }

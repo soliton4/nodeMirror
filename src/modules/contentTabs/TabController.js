@@ -37,20 +37,28 @@ define([
           domStyle.set(this.fadeNode, {
             opacity: 0
           });
+          this.doAnimation = this.ownObj(new DelayedExec({
+            delay: 60000 * 5 // 5 min
+          }, lang.hitch(this, function(){
+            console.log("called it");
+            this.createAnimation();
+          })));
+		},
+      
+      createAnimation: function(){
+        if (this.anim && this.anim.Stop){
+          this.anim.Stop();
+        };
           this.anim = this.ownObj(fx.animateProperty({
             node: this.fadeNode,
             duration: 60000 * 15 // 15 min (total 20 min)
-            , rate: 500
+            , rate: 1500
             , properties: {
               opacity: {start: 0, end: 1}
             }
           }));
-          this.doAnimation = this.ownObj(new DelayedExec({
-            delay: 60000 * 5 // 5 min
-          }, lang.hitch(this, function(){
-            this.anim.play();
-          })));
-		},
+        this.anim.play();
+      },
         
 		startup: function(){
 			this.inherited(arguments);
@@ -66,15 +74,15 @@ define([
         if (parValue){
           domClass.remove(this.domNode, "fading");
           domClass.remove(this.domNode, "dirty");
-          this.anim.stop();
+          if (this.anim && this.anim.Stop){
+            this.anim.Stop();
+          };
+          console.log("cancel");
           this.doAnimation.cancel();
           domStyle.set(this.fadeNode, {
             opacity: 0
           });
         }else{
-          domStyle.set(this.fadeNode, {
-            opacity: 0
-          });
           domClass.add(this.domNode, "fading");
           //debugger;
           if (this.page.get("dirty")){
