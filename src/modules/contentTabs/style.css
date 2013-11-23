@@ -17,6 +17,10 @@
   color: yellow !important;
   background-image: none;
 }
+.contentTabs .dijitTabController .dijitTab.terminalTabButton.dijitTabChecked {
+  background-color: #404080;
+  color: white !important;
+}
 .contentTabs .dijitTabController .dijitTab.fading .fadeNode {
   display: block;
   position: absolute;

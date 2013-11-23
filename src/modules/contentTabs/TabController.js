@@ -9,6 +9,7 @@ define([
   , "dojo/_base/fx"
   , "dojo/dom-style"
   , "sol/convenient/SceduleExec"
+  , "sol/convenient/Delayed"
 ], function(
   declare
   , dom
@@ -20,6 +21,7 @@ define([
   , fx
   , domStyle
   , SceduleExec
+  , DelayedExec
 ){
   
 
@@ -43,11 +45,11 @@ define([
               opacity: {start: 0, end: 1}
             }
           }));
-          this.doAnimation = this.ownObj(new SceduleExec(lang.hitch(this, function(){
-            this.anim.play();
-          }), {
+          this.doAnimation = this.ownObj(new DelayedExec({
             delay: 60000 * 5 // 5 min
-          }));
+          }, lang.hitch(this, function(){
+            this.anim.play();
+          })));
 		},
         
 		startup: function(){
@@ -70,6 +72,9 @@ define([
             opacity: 0
           });
         }else{
+          domStyle.set(this.fadeNode, {
+            opacity: 0
+          });
           domClass.add(this.domNode, "fading");
           //debugger;
           if (this.page.get("dirty")){

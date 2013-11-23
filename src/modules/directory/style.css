@@ -108,6 +108,8 @@
   top: 0px;
   left: 0px;
   direction: ltr;
+  max-width: 250px;
+  max-height: 250px;
 }
 .directory .list .rotator {
   /*position: relative;*/
@@ -134,6 +136,8 @@
   left: 0px;
   margin: 2px;
   min-width: 70px;
+  max-width: 250px;
+  max-height: 250px;
   white-space: nowrap;
 }
 .directory .list .expander .text {

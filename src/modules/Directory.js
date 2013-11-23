@@ -256,6 +256,12 @@ define([
       this.grid.doRender();
     }
     
+    , _setOriginalTitleAttr: function(par){
+      this._set("originalTitle", par);
+      this._set("title", par + "/");
+    }
+
+    
     , search: function(){
       var self = this;
       require(["main/moduleLoader!client"], function(moduleLoader){

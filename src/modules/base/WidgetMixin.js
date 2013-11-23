@@ -15,6 +15,7 @@ define([
   , "main/clientOnly!client/globals"
   , "main/config"
   , "dojo/io-query"
+  , "modules/contentTabs/tabMixin"
 ], function(
   declare
   , domConstruct
@@ -29,8 +30,10 @@ define([
   , globals
   , config
   , ioQuery
+  , tabMixin
 ){
   return declare([
+    tabMixin
   ], {
     
     def: function(){ return new Deferred(); } // makes things a little easier to type
@@ -60,7 +63,8 @@ define([
     
     , _setParAttr: function(par){
       this._set("par", par);
-      this.set("originalTitle", fileName.single(par.id));
+      var singleFileName = fileName.single(par.id);
+      this.set("originalTitle", singleFileName);
       this.set("tooltip", par.id);
       if (this.idWgt){
         this.idWgt.set("value", par.id);
@@ -69,16 +73,13 @@ define([
     
     , _setOriginalTitleAttr: function(par){
       this._set("originalTitle", par);
-      this._doTitle();
+      //this._doTitle();
+      this.set("title", par);
     }
     
-    , _doTitle: function(){
+    /*, _doTitle: function(){
       this.set("title", this.get("dirtyTitle"));
-    }
-    
-    , _setTitleAttr: function(parTitle){
-      this._set("title", parTitle); // to skip the dom node mapping
-    }
+    }*/
     
     , _getDirtyTitleAttr: function(){
       var t = "" + this.get("originalTitle");
@@ -88,10 +89,10 @@ define([
       return t + (this.get("dirty") ? " *" : "");
     }
     
-    , _setDirtyAttr: function(parDirty){
+    /*, _setDirtyAttr: function(parDirty){
       this._set("dirty", parDirty);
       this._doTitle();
-    }
+    }*/
     
     
     , createMenu: function(){

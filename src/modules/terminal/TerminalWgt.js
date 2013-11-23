@@ -8,6 +8,7 @@ define([
   , "sol/wgt/Text"
   , "sol/convenient/SceduleExec"
   , "dojo/_base/lang"
+  , "./MouseWgt"
 ], function(
   declare
   , Terminal
@@ -18,6 +19,7 @@ define([
   , Text
   , SceduleExec
   , lang
+  , MouseWgt
 ){
   
   var charBox;
@@ -45,17 +47,21 @@ define([
   
   
   return declare([_WidgetBase, resizeMixin], {
-    buildRendering: function(){
+    "class": "terminalWidget"
+    , buildRendering: function(){
       this.sceduleEmitResize = this.ownObj(new SceduleExec(lang.hitch(this,"emitResize"),{
         delay: 100
       }));
       this.inherited(arguments);
+      
+      
       this.terminal = new Terminal({
         cols: 80,
         rows: 30,
         useStyle: true,
-        screenKeys: true
+        screenKeys: true,
       });
+      
       
       /*term.on('data', function(data) {
         socket.emit('data', data);
@@ -66,9 +72,15 @@ define([
       });*/
 
       this.terminal.open(this.domNode);
+
+      /*this.mouseWgt = this.ownObj(new MouseWgt({
+        width: getCharBox().w
+        , height: getCharBox().h
+      }));
+      this.mouseWgt.placeAt(this.domNode);
       
-      //term.write('\x1b[31mWelcome to term.js!\x1b[m\r\n');      
-      
+      this.terminal.mouseWgt = this.mouseWgt;*/
+
       this.resizeHandler = [];
     }
     , focus: function(){

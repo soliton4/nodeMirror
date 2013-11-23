@@ -1,20 +1,4 @@
-var helperDefine = function(parRequire, parFactory){
-  if (typeof define == "function"){
-    // amd part
-    define(parRequire, parFactory);
-  }else{
-    // commonjs part
-    var parAr = [];
-    var i = 0;
-    for (i = 0; i < parRequire.length; ++i){
-      parAr.push(require(parRequire[i]));
-    };
-    module.exports = parFactory.apply(undefined, parAr);
-  };
-};
-helperDefine([], function(){
-  
-  /**
+/**
  * term.js - an xterm emulator
  * Copyright (c) 2012-2013, Christopher Jeffrey (MIT License)
  * https://github.com/chjj/term.js
@@ -668,23 +652,6 @@ Terminal.insertStyle = function(document, bg, fg) {
     + '  background: ' + fg + ';\n'
     + '}\n';
 
-  // var out = '';
-  // each(Terminal.colors, function(color, i) {
-  //   if (i === 256) {
-  //     i = 'default';
-  //     out += '\n.term-bg-color-' + i + ' { background-color: ' + color + '; }';
-  //     return;
-  //   }
-  //   if (i === 257) {
-  //     i = 'default';
-  //     out += '\n.term-fg-color-' + i + ' { color: ' + color + '; }';
-  //     return;
-  //   }
-  //   out += '\n.term-bg-color-' + i + ' { background-color: ' + color + '; }';
-  //   out += '\n.term-fg-color-' + i + ' { color: ' + color + '; }';
-  // });
-  // style.innerHTML += out + '\n';
-
   head.insertBefore(style, head.firstChild);
 };
 
@@ -1071,19 +1038,10 @@ Terminal.prototype.bindMouse = function() {
     if (y < 0) y = 0;
     if (y > self.rows) y = self.rows;
 
-    //debugger;
-    if (self.mouseWgt){
-      self.mouseWgt.set("pos", {
-        x: x
-      , y: y
-      });
-    }
-
     // xterm sends raw bytes and
     // starts at 32 (SP) for each.
     x += 32;
     y += 32;
-    
 
     return {
       x: x,
@@ -1193,8 +1151,8 @@ Terminal.prototype.refresh = function(start, end) {
     , width
     , data
     , attr
-    , bg
-    , fg
+    , fgColor
+    , bgColor
     , flags
     , row
     , parent;
@@ -1246,8 +1204,8 @@ Terminal.prototype.refresh = function(start, end) {
           } else {
             out += '<span style="';
 
-            bg = data & 0x1ff;
-            fg = (data >> 9) & 0x1ff;
+            bgColor = data & 0x1ff;
+            fgColor = (data >> 9) & 0x1ff;
             flags = data >> 18;
 
             // bold
@@ -1256,7 +1214,7 @@ Terminal.prototype.refresh = function(start, end) {
                 out += 'font-weight:bold;';
               }
               // See: XTerm*boldColors
-              if (fg < 8) fg += 8;
+              if (fgColor < 8) fgColor += 8;
             }
 
             // underline
@@ -1276,11 +1234,11 @@ Terminal.prototype.refresh = function(start, end) {
 
             // inverse
             if (flags & 8) {
-              bg = (data >> 9) & 0x1ff;
-              fg = data & 0x1ff;
+              bgColor = (data >> 9) & 0x1ff;
+              fgColor = data & 0x1ff;
               // Should inverse just be before the
               // above boldColors effect instead?
-              if ((flags & 1) && fg < 8) fg += 8;
+              if ((flags & 1) && fgColor < 8) fgColor += 8;
             }
 
             // invisible
@@ -1288,21 +1246,15 @@ Terminal.prototype.refresh = function(start, end) {
               out += 'visibility:hidden;';
             }
 
-            // out += '" class="'
-            //   + 'term-bg-color-' + (bg === 256 ? 'default' : bg)
-            //   + ' '
-            //   + 'term-fg-color-' + (fg === 257 ? 'default' : fg)
-            //   + '">';
-
-            if (bg !== 256) {
+            if (bgColor !== 256) {
               out += 'background-color:'
-                + this.colors[bg]
+                + this.colors[bgColor]
                 + ';';
             }
 
-            if (fg !== 257) {
+            if (fgColor !== 257) {
               out += 'color:'
-                + this.colors[fg]
+                + this.colors[fgColor]
                 + ';';
             }
 
@@ -5022,7 +4974,7 @@ Terminal.prototype.keySelect = function(ev, key) {
     return;
   }
 
-  if (key === 'k' || key === '\x1b[A') {
+  if (key === 'k') {
     var y = this.ydisp + this.y;
     this.y--;
     if (this.y < 0) {
@@ -5037,7 +4989,7 @@ Terminal.prototype.keySelect = function(ev, key) {
     return;
   }
 
-  if (key === 'j' || key === '\x1b[B') {
+  if (key === 'j') {
     var y = this.ydisp + this.y;
     this.y++;
     if (this.y >= this.rows) {
@@ -5052,7 +5004,7 @@ Terminal.prototype.keySelect = function(ev, key) {
     return;
   }
 
-  if (key === 'h' || key === '\x1b[D') {
+  if (key === 'h') {
     var x = this.x;
     this.x--;
     if (this.x < 0) {
@@ -5066,7 +5018,7 @@ Terminal.prototype.keySelect = function(ev, key) {
     return;
   }
 
-  if (key === 'l' || key === '\x1b[C') {
+  if (key === 'l') {
     var x = this.x;
     this.x++;
     if (this.x >= this.cols) {
@@ -5772,8 +5724,3 @@ if (typeof module !== 'undefined') {
 }).call(function() {
   return this || (typeof window !== 'undefined' ? window : global);
 }());
-
-  
-  
-  return Terminal;
-});

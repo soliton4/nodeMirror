@@ -126,6 +126,11 @@ define([
         this.wgt.removeChild(wgt);
       };
     }
+    , resize: function(){
+      if (this.wgt){
+        this.wgt.resize();
+      };
+    }
     , selectChild: function(wgt){
       if (this.wgt){
         this.wgt.selectChild(wgt);
