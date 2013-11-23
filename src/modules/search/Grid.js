@@ -45,12 +45,20 @@ define([
     , showHeader: false
     
     , constructor: function(){
-      
+      this.columns = {
+        id: {
+          label: "Name"
+          , minwidth: 100
+          , get: function(object){
+            return fileName.single(object.id);
+          }
+        }
+      };
     }
     , buildRendering: function(){
       this.inherited(arguments);
     }
-    , renderRow: function(object){
+    /*, renderRow: function(object){
       var node;
         
         var div = domConstruct.create("div", {
@@ -85,7 +93,7 @@ define([
         
         node = div;
       return node;
-    }
+    }*/
     
     , resize: function(){
       //debugger;

@@ -8,6 +8,7 @@ define([
   , "dijit/MenuBar"
   , "dijit/form/Button"
   , "dijit/MenuItem"
+  , "modules/contentTabs/tabMixin"
 ], function(
   declare
   , BorderContainer
@@ -18,12 +19,13 @@ define([
   , MenuBar
   , Button
   , MenuItem
+  , tabMixin
 ){
   
   
-  return declare([BorderContainer], {
+  return declare([BorderContainer, tabMixin], {
     
-    title: "search"
+    title: "<search>"
     
     , buildRendering: function(){
       this.inherited(arguments);

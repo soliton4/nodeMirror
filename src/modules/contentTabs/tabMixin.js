@@ -4,12 +4,14 @@ define([
   , "dojo/dom-class"
   , "sol/wgt/mixin/noDomTitle"
   , "dojo/_base/lang"
+  , "dojox/html/entities"
 ], function(
   declare
   , config
   , domClass
   , noDomTitleMixin
   , lang
+  , entities
 ){
   var contentTabs;
   require([
@@ -31,7 +33,7 @@ define([
     }
     
     , _doTitle: function(){
-      this._set("title", this._simpleTitle + this._getDirtyPart());
+      this._set("title", entities.encode(this._simpleTitle + this._getDirtyPart()));
       if (contentTabs){
         contentTabs.resize();
       };
