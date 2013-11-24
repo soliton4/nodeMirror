@@ -173,12 +173,12 @@ define([
           this.set("dirty", true);
         };
       }));
-      codeMirrorSettings.on("settings", function(settings){
+      this.ownObj(codeMirrorSettings.on("settings", function(settings){
         var s;
         for (s in settings){
           self.mirror.set(s, settings[s]);
         };
-      });
+      }));
       
       this.syntaxBtn = this.ownObj(new ToggleButton({
         onChange: lang.hitch(this, function(){

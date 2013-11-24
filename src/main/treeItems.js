@@ -36,38 +36,69 @@ define([
     , getRootDef: function(){
        return treeItems.getItemDef("");
     }
-    , getItemDef: function(parId){
+    , getItemDef: function(parId, includeFiles){
       //console.log(parId);
       var def = new Deferred();
       var item = {
         id: parId
       , name: parId === "" ? fileName.single(config.dir) : fileName.single(parId)
       };
-      files.dirsDef(nameTranslator.fileName(parId)).then(function(ar){
-        item.hasChildren = !!ar;
-        //console.log("resolve:" + parId);
-        def.resolve(item);
-      });
+      if (includeFiles){
+        files.childrenDef(nameTranslator.fileName(parId)).then(function(ar){
+          item.hasChildren = !!(ar);
+          def.resolve(item);
+        });
+        
+      }else{
+        files.dirsDef(nameTranslator.fileName(parId)).then(function(ar){
+          item.hasChildren = !!(ar);
+          //console.log("resolve:" + parId);
+          def.resolve(item);
+        });
+      };
       return def;
     }
     
-    , getChildrenDef: function(parId){
+    , getChildrenDef: function(parId, includeFiles){
       var def = new Deferred();
-      files.dirsDef(config.dir + parId).then(function(ar){
-        if (!ar){
-          def.resolve();
-          console.log("???");
-          return;
-        };
-        var resultAr = [];
-        //console.log(ar);
-        solPromise.allDone(array.map(ar, function(parFileName){
-          //console.log(parFileName);
-          return treeItems.getItemDef(nameTranslator.reduceName(parFileName)).then(lang.hitch(resultAr, "push"));
-        })).then(function(){
-          def.resolve(resultAr);
-        }, function(){ console.log("error");});
-      });
+      if (includeFiles){
+        files.childrenDef(config.dir + parId).then(function(ar){
+          if (!ar){
+            def.resolve();
+            console.log("???");
+            return;
+          };
+          var resultAr = [];
+          //console.log(ar);
+          solPromise.allDone(array.map(ar, function(parFileName){
+            //console.log(parFileName);
+            return treeItems.getItemDef(
+              nameTranslator.reduceName(parFileName), 
+              includeFiles
+            ).then(
+              lang.hitch(resultAr, "push")
+            );
+          })).then(function(){
+            def.resolve(resultAr);
+          }, function(){ console.log("error");});
+        });
+      }else{
+        files.dirsDef(config.dir + parId).then(function(ar){
+          if (!ar){
+            def.resolve();
+            console.log("???");
+            return;
+          };
+          var resultAr = [];
+          //console.log(ar);
+          solPromise.allDone(array.map(ar, function(parFileName){
+            //console.log(parFileName);
+            return treeItems.getItemDef(nameTranslator.reduceName(parFileName)).then(lang.hitch(resultAr, "push"));
+          })).then(function(){
+            def.resolve(resultAr);
+          }, function(){ console.log("error");});
+        });
+      };
       return def;
     }
     

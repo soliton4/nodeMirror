@@ -1,14 +1,18 @@
 define([
   "dojo/_base/declare"
   , "main/treeItems"
+  , "main/config"
 ], function(
   declare
   , treeItems
+  , config
 ){
   return declare([
   ], {
     getRoot: function(thenFun, errFun){
-      treeItems.getRootDef().then(thenFun, errFun);
+      config.get("treefiles").then(function(treefiles){
+        treeItems.getRootDef(treefiles).then(thenFun, errFun);
+      });
 	}
 	, getLabel: function(parItem){
       return parItem.name;
@@ -20,7 +24,9 @@ define([
       return parItem.id;
 	}
 	, getChildren: function(parItem, thenFun, errFun){
-      treeItems.getChildrenDef(parItem.id).then(thenFun, errFun);
+      config.get("treefiles").then(function(treefiles){
+        treeItems.getChildrenDef(parItem.id, treefiles).then(thenFun, errFun);
+      });
 	}
   });
 });

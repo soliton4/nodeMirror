@@ -8,6 +8,12 @@
     <!-- dojo -->
       <!-- config -->
         <script>
+          window.onerror = function (msg, url, line) {
+            alert("Caught[via window.onerror]: '" + msg + "' from " + url + ":" + line);
+            console.log("Caught[via window.onerror]: '" + msg + "' from " + url + ":" + line);
+            debugger;
+            //return true; // same as preventDefault
+          };
           // The module to "bootstrap"
           var loadModule = "client/client";
           window._nodeMirrorGlobal = {

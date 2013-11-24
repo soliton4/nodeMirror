@@ -41,5 +41,11 @@ define([
       return def;
     }
     
+    , refreshTree: function(){
+      if (this.wgt){
+        this.wgt.refresh();
+      };
+    }
+    
   });
 });

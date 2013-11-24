@@ -25,11 +25,11 @@ define([
 ){
   
 
-	var TabButton = declare(LayoutTabController.TabButton, {
+  var TabButton = declare(LayoutTabController.TabButton, {
 
 
-		buildRendering: function(){
-			this.inherited(arguments);
+    buildRendering: function(){
+      this.inherited(arguments);
           this.fadeNode = domConstruct.create("div", {
             "class": "fadeNode"
           });
@@ -46,13 +46,13 @@ define([
 		},
       
       createAnimation: function(){
-        if (this.anim && this.anim.Stop){
-          this.anim.Stop();
+        if (this.anim){
+          this.anim.stop();
         };
           this.anim = this.ownObj(fx.animateProperty({
             node: this.fadeNode,
-            duration: 60000 * 15 // 15 min (total 20 min)
-            , rate: 1500
+            duration: 60000 * 25 // 25 min (total 30 min)
+            , rate: 2500
             , properties: {
               opacity: {start: 0, end: 1}
             }
@@ -74,8 +74,8 @@ define([
         if (parValue){
           domClass.remove(this.domNode, "fading");
           domClass.remove(this.domNode, "dirty");
-          if (this.anim && this.anim.Stop){
-            this.anim.Stop();
+          if (this.anim){
+            this.anim.stop();
           };
           console.log("cancel");
           this.doAnimation.cancel();
@@ -103,7 +103,7 @@ define([
 
 		// buttonWidget: Constructor
 		//		The tab widget to create to correspond to each page
-		buttonWidget: TabButton,
+		buttonWidget: TabButton
 
 
 	});

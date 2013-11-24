@@ -11,6 +11,7 @@
 @import url('../modules/style.css');
 @import url('../client/terminal.css');
 @import url('../debug/style.css');
+@import url('../dgrid/css/dgrid.css');
 /* save button */
 /* dgrid */
 /* CodeMirror */

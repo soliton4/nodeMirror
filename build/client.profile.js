@@ -57,7 +57,17 @@ var profile = (function(){
         }, {
           name: "debug"
         , location: "debug"
+        }, {
+          name: "image"
+        , location: "image"
         }],
+      
+      plugins: {
+        "main/serverOnly": "build/plugins/serverOnly"
+        , "main/clientOnly": "build/plugins/clientOnly"
+        //, "xstyle/css": "xstyle/build/amd-css"
+      },
+      
         staticHasFeatures: {
           "dom": 1
           , "host-browser": 1
@@ -76,7 +86,7 @@ var profile = (function(){
         },
         layers: {
             "dojo/dojo": {
-                include: [ 
+              include: [ 
                   "dojo/dojo"
                 , "client/client"
                 , "dgrid/Grid"
@@ -104,6 +114,9 @@ var profile = (function(){
                 , "modules/binary/HexGrid"
                 , "modules/directory/Grid"
                 , "modules/directory/NewDlg"
+                , "modules/Search"
+                , "modules/search/Wgt"
+                , "modules/Gui"
                 , "modules/Peg"
                 , "modules/peg.js/Parser"
                  ,"sol/wgt/CodeMirror"
@@ -138,7 +151,13 @@ var profile = (function(){
                 , "sol/wgt/Turn"
                 , "dgrid/TouchScroll"
                 , "dgrid/util/touch"
-                ]
+                , "dojo/topic"
+                , "modules/sideBar/Stub"
+                , "modules/contentTabs/TabController"
+                , "modules/contentTabs/ScrollingTabController"
+                , "dijit/form/ComboButton"
+                , "modules/binary/HexGrid"
+              ]
               , boot: true
               , customBase: true
             }

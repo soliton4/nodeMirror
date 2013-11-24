@@ -4,8 +4,24 @@ mkdir ../release
 
 rm ../release/nodeMirror -R
 
+echo ---------------------------------------------------------------------------
+echo server build
+echo ---------------------------------------------------------------------------
+
+cp ../src/build/plugins/* ../src/util/build/plugins/
+
 ../src/util/buildscripts/build.sh profile=server.profile.js 
+
+echo ---------------------------------------------------------------------------
+echo client build
+echo ---------------------------------------------------------------------------
+
 ../src/util/buildscripts/build.sh profile=client.profile.js 
+
+echo ---------------------------------------------------------------------------
+echo copy
+echo ---------------------------------------------------------------------------
+
 
 mkdir ../release/nodeMirror
 
@@ -40,8 +56,9 @@ cp -R ../release/client/dgrid/css ../release/nodeMirror/src/dgrid/
 mkdir ../release/nodeMirror/src/dijit
 cp -R ../release/client/dijit/nls ../release/nodeMirror/src/dijit/
 cp -R ../release/client/dijit/icons ../release/nodeMirror/src/dijit/
-mkdir ../release/nodeMirror/src/dijit/themes
-cp -R ../release/client/dijit/themes/claro ../release/nodeMirror/src/dijit/themes/
+# mkdir ../release/nodeMirror/src/dijit/themes
+# cp -R ../release/client/dijit/themes/claro ../release/nodeMirror/src/dijit/themes/
+cp -R ../release/client/dijit/themes ../release/nodeMirror/src/dijit/
 
 mkdir ../release/nodeMirror/src/dojo
 cp -R ../src/dojo/nls ../release/nodeMirror/src/dojo/

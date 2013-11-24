@@ -25,62 +25,12 @@ define([
 ){
   
 
-	/*var TabButton = declare(LayoutTabController.TabButton, {
-
-
-		buildRendering: function(){
-			this.inherited(arguments);
-          this.fadeNode = domConstruct.create("div", {
-            "class": "fadeNode"
-          });
-          domConstruct.place(this.fadeNode, this.domNode);
-          domStyle.set(this.fadeNode, {
-            opacity: 0
-          });
-          this.anim = this.ownObj(fx.animateProperty({
-            node: this.fadeNode,
-            duration: 60000 * 15
-            , properties: {
-              opacity: {start: 0, end: 1}
-            }
-          }));
-          this.doAnimation = this.ownObj(new SceduleExec(lang.hitch(this, function(){
-            this.anim.play();
-          }), {
-            delay: 60000 * 5
-          }));
-		},
-
-		startup: function(){
-			this.inherited(arguments);
-		}
-      
-      , onChange: function(parValue){
-        if (parValue){
-          domClass.remove(this.domNode, "fading");
-          this.anim.stop();
-          this.doAnimation.cancel();
-          domStyle.set(this.fadeNode, {
-            opacity: 0
-          });
-        }else{
-          domClass.add(this.domNode, "fading");
-          this.doAnimation.exec();
-        }
-        domStyle.set(this.fadeNode, {
-          opacity: 0
-        });
-      }
-
-	});*/
-
-
 	var ScrollingTabController = declare(LayoutScrollingTabController, {
 
 
 		// buttonWidget: Constructor
 		//		The tab widget to create to correspond to each page
-		buttonWidget: TabController.TabButton,
+		buttonWidget: TabController.TabButton
 
 
 	});

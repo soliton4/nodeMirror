@@ -8,9 +8,9 @@ define([
   , "sol/string"
   , "main/config"
   , "modules/base/Base"
-  , "dojo/dom-class"
+  , "main/clientOnly!dojo/dom-class"
   , "main/clientOnly!dijit/layout/BorderContainer"
-  , "dojo/topic"
+  , "main/clientOnly!dojo/topic"
 ], function(
   declare
   , Deferred

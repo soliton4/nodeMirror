@@ -42,10 +42,12 @@ define([
       , "webpath": "/"
       , "theme": "claro"
       , "tabposition": "top"
+      , "treefiles": false
     }
     , saveable: {
-      "theme": "claro"
-    , "tabposition": "top"
+      "theme": true
+    , "tabposition": true
+    , "treefiles": true
     }
     
     , constructor: function(){
@@ -112,7 +114,7 @@ define([
     , clientSetConfig: function(parName, parValue){
       console.log("doing it");
       var def = new Deferred();
-      if (this.clientConfig[parName] || codeMirrorSaveable(parName)){
+      if (this.clientConfig[parName] !== undefined || codeMirrorSaveable(parName)){
         this.set2(parName, parValue);
       };
       def.resolve();

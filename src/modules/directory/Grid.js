@@ -58,7 +58,10 @@ define([
           label: "Name"
           , minwidth: 100
             , get: function(object){
-                return fileName.single(object.id);
+              if (object.contentType == "inode/directory"){
+                return fileName.single(object.id) + "/";
+              };
+              return fileName.single(object.id);
             }
         },
         contentType: {
@@ -127,6 +130,10 @@ define([
         node = this.inherited(arguments);
       }else{
         
+        var fileNameStr = fileName.single(object.id);
+        if (object.contentType == "inode/directory"){
+          fileNameStr += "/";
+        };
         
         var div = domConstruct.create("div", {
           "class": "outer2"
@@ -142,7 +149,7 @@ define([
         });
         domConstruct.place(text, expander);
         
-        var nameNode = document.createTextNode(fileName.single(object.id));
+        var nameNode = document.createTextNode(fileNameStr);
         domConstruct.place(nameNode, text);
         
         var rotator = domConstruct.create("div", {
@@ -155,7 +162,7 @@ define([
         });
         domConstruct.place(inner1, rotator);
         
-        var nameNode2 = document.createTextNode(fileName.single(object.id));
+        var nameNode2 = document.createTextNode(fileNameStr);
         domConstruct.place(nameNode2, inner1);
         
         node = div;

@@ -68,8 +68,8 @@ define([
       require([
         "main/clientOnly!modules/contentTabs/Wgt"
         , "main/moduleLoader!client"
-        , "modules/contentTabs/TabController"
-        , "modules/contentTabs/ScrollingTabController"
+        , "main/clientOnly!modules/contentTabs/TabController"
+        , "main/clientOnly!modules/contentTabs/ScrollingTabController"
 
       ], function(
         Wgt

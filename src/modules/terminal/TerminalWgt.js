@@ -59,7 +59,7 @@ define([
         cols: 80,
         rows: 30,
         useStyle: true,
-        screenKeys: true,
+        screenKeys: true
       });
       
       

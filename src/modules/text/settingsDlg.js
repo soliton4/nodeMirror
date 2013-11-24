@@ -184,7 +184,9 @@ define([
       }, 0);
     }
     , destroy: function(){
-      debugger;
+      //debugger; // this should not happen !!!
+      // i shall not be destroyed !
+      return;
     }
     
   });

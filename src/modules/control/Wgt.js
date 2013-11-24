@@ -15,6 +15,7 @@ define([
   , "main/config"
   , "dojo/topic"
   , "dojox/layout/TableContainer"
+  , "dijit/form/CheckBox"
 ], function(
   declare
   , Tree
@@ -32,6 +33,7 @@ define([
   , config
   , topic
   , TableContainer
+  , CheckBox
 ){
   var musicWgt;
   
@@ -114,7 +116,7 @@ define([
               }
             });
           };
-          tabs.getIndexOfChild(self.musicTab).then(function(idx){
+          var idx = tabs.getIndexOfChild(self.musicTab);
             if (idx == -1){
               tabs.addChild(self.musicTab);
             };
@@ -123,7 +125,7 @@ define([
             }catch(e){
               // dont care
             };
-          });
+          
         }
       });
       config.get("music").then(function(music){
@@ -200,6 +202,20 @@ define([
         });
         self.table.addChild(self.tabpositionSelect);
       });
+
+    
+      config.get("treefiles").then(function(treefiles){
+        self.treeFilesChk = new CheckBox({
+          label: "Files in Tree"
+          , checked: treefiles || false
+          , onChange: function(){
+            config.set("treefiles", this.get("checked"));
+            moduleLoader.getModule("modules/Files").refreshTree();
+          }
+        });
+        self.table.addChild(self.treeFilesChk);
+      });
+    
     }
     
     , startup: function(){

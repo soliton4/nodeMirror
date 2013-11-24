@@ -423,6 +423,12 @@
   background-color: #000090;
   color: white;
 }
+.hexgrid {
+  color: black;
+}
+.hexgrid .dgrid-row .dgrid-cell {
+  color: black;
+}
 .hexgrid .field-lineNr {
   width: 100px;
   font-family: monospace;
@@ -438,6 +444,7 @@
   height: 16px;
   margin-left: 6px;
   border: 1px;
+  border-radius: 2;
   background-color: #FFFFFF;
   padding: 1px;
 }
@@ -472,8 +479,11 @@
 .hexgrid .dgrid-row {
   background-color: #D0D0D0;
 }
-.hexgrid .dgrid-row.dgrid-row-odd {
+.hexgrid .dgrid-row-odd {
   background-color: #C0C0C0;
+}
+.hexgrid .dgrid-row:hover {
+  background-color: #A0A0C0;
 }
 .hexgrid .dgrid-focus.dgrid-row {
   background-color: #E0E0FF;

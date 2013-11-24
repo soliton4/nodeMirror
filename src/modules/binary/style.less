@@ -86,81 +86,95 @@
 }
 
 
-.hexgrid .field-lineNr {
+.hexgrid {
+  color: black;
+
+  .dgrid-row {
+    .dgrid-cell{
+      color: black;
+    }
+  }
+
+.field-lineNr {
   width: 100px;
   font-family: monospace;
   text-align: right;
 }
 
-.hexgrid .hexLine {
+ .hexLine {
   font-family: monospace;
   white-space: pre;
 }
 
 
-.hexgrid .hexLine .byte {
+ .hexLine .byte {
   display: inline-block;
   width: 16px;
   height: 16px;
   margin-left: 6px;
   border: 1px;
-  //border-style: solid;
+  border-radius: 2;
   //border-color: #C0C0C0;
   background-color: #FFFFFF;
   padding: 1px;
 }
 
-.hexgrid .hexLine .byte.edited {
+ .hexLine .byte.edited {
   background-color: @edited;
 }
-.hexgrid .hexLine .char.edited {
+ .hexLine .char.edited {
   background-color: @edited;
 }
 
-.hexgrid .hexLine .byte8 {
+ .hexLine .byte8 {
   margin-left: 16px;
 }
 
-.hexgrid .hexLine .byte15 {
+ .hexLine .byte15 {
   margin-right: 16px;
 }
 
 
-.hexgrid .hexLine .byte .letter {
+ .hexLine .byte .letter {
   display: inline-block;
   width: 8px;
   height: 16px;
 }
 
 
-.hexgrid .hexLine .char {
+ .hexLine .char {
   display: inline-block;
   width: 8px;
   height: 16px;
 }
 
 
-.hexgrid .dgrid-row .dgrid-row-table{
+ .dgrid-row .dgrid-row-table{
   border: 0;
 }
 
-.hexgrid .dgrid-row .dgrid-cell{
+ .dgrid-row .dgrid-cell{
   border: 0;
 }
 
-.hexgrid .dgrid-row {
-  background-color: #D0D0D0;
-}
+  .dgrid-row {
+    background-color: #D0D0D0;
+    &-odd {
+      background-color: #C0C0C0;
+    }
+    &:hover {
+      background-color: #A0A0C0;
+    }
+  }
 
-.hexgrid .dgrid-row.dgrid-row-odd {
-  background-color: #C0C0C0;
-}
 
-//.hexgrid .dgrid-row .dgrid-row-even
+// .dgrid-row .dgrid-row-even
 
-.hexgrid .dgrid-focus.dgrid-row {
+ .dgrid-focus.dgrid-row {
   background-color: #E0E0FF;
 }
-.hexgrid .dgrid-focus.dgrid-row.dgrid-row-odd {
+ .dgrid-focus.dgrid-row.dgrid-row-odd {
   background-color: #E0E0FF;
+}
+
 }

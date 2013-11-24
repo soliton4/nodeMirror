@@ -26,9 +26,9 @@ define([
       var self = this;
       if (!has("server-modules")){
         require([
-          "modules/sideBar/Wgt"
+          "main/clientOnly!modules/sideBar/Wgt"
           , "main/moduleLoader!client"
-          , "modules/sideBar/Stub"
+          , "main/clientOnly!modules/sideBar/Stub"
         ], function(
           Wgt
           , moduleLoader

@@ -8,6 +8,12 @@ var profile = (function(){
         optimize: "closure",
         cssOptimize: "comments",
         stripConsole: "warn",
+      
+      plugins: {
+        "main/serverOnly": "build/plugins/serverOnly"
+        , "main/clientOnly": "build/plugins/clientOnly"
+        //, "xstyle/css": "xstyle/build/amd-css"
+      },
         
         packages:[{
             name: "dojo",
@@ -30,6 +36,18 @@ var profile = (function(){
         },{
             name: "term",
             location: "term"
+        },{
+          name: "codemirror",
+          location: "codemirror" // to avoid error msg
+        },{
+            name: "dgrid",
+            location: "dgrid"  // to avoid error msg
+        },{
+            name: "put-selector",
+            location: "put-selector" // to avoid error msg
+        },{
+            name: "xstyle",
+            location: "xstyle" // to avoid error msg
         }],
         staticHasFeatures: {
           "host-node": 1 // Ensure we "force" the loader into Node.js mode
@@ -68,8 +86,16 @@ var profile = (function(){
                 , "modules/Html"
                 , "modules/Peg"
                 , "modules/JavaScript"
+                , "modules/Search"
+                , "modules/Gui"
                 , "main/codemirror/fake"
                 , "term/server"
+                , "dojo/topic"
+                , "main/treeItems"
+                , "server/files"
+                , "main/contentIO"
+                , "sol/node/debug/Protocol"
+                  , "sol/node/fileWalker"
                 ]
             }
         }
