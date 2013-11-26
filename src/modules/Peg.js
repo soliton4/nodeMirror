@@ -81,13 +81,26 @@ define([
       })); 
       domClass.add(this.reinitParserBtn.domNode, "invisible");
       this.menu.addChild(this.reinitParserBtn);
+      
+      this.getJsBtn = this.ownObj(new Button({
+        onClick: lang.hitch(this, "getJs")
+        , label: "get JavaScript"
+      })); 
+      domClass.add(this.getJsBtn.domNode, "invisible");
+      this.menu.addChild(this.getJsBtn);
+      
       return ret;
+    }
+    
+    , getJs: function(){
+      this.parser.getJs();
     }
     
     , openparser: function(){
       domClass.add(this.parseBtn.domNode, "invisible");
       domClass.remove(this.closeParseBtn.domNode, "invisible");
       domClass.remove(this.reinitParserBtn.domNode, "invisible");
+      domClass.remove(this.getJsBtn.domNode, "invisible");
       //this.menu.resize();
       if (!this.parser){
         this.parser = this.ownObj(new Parser({
@@ -104,6 +117,7 @@ define([
       domClass.remove(this.parseBtn.domNode, "invisible");
       domClass.add(this.closeParseBtn.domNode, "invisible");
       domClass.add(this.reinitParserBtn.domNode, "invisible");
+      domClass.add(this.getJsBtn.domNode, "invisible");
       //this.menu.resize();
       this.removeChild(this.parser);
     }
