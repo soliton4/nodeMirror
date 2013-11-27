@@ -1,6 +1,6 @@
 define([
   "dojo/_base/declare"
-  , "dijit/Tree"
+  , "./Tree"
   , "client/tree/Model"
   , "client/globals"
   , "dijit/layout/BorderContainer"
@@ -29,11 +29,7 @@ define([
     
     , _createTree: function(){
       this.tree = new Tree({
-        onClick: function(item, node, evt){
-          globals.openItem(item);
-        }
-      , model: new Model()
-      , region: "center"
+        region: "center"
       });
       this.addChild(this.tree);
     }

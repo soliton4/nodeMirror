@@ -1,7 +1,6 @@
 define([
 	"dojo/_base/array", // array.filter array.forEach array.map
 	"dojo/aspect",
-	"dojo/_base/connect", // connect.isCopyKey()
 	"dojo/cookie", // cookie
 	"dojo/_base/declare", // declare
 	"dojo/Deferred", // Deferred
@@ -36,7 +35,7 @@ define([
 	"./tree/ForestStoreModel",
 	"./tree/_dndSelector",
 	"dojo/query!css2"	// needed when on.selector() used with a string for the selector
-], function(array, aspect, connect, cookie, declare, Deferred, all,
+], function(array, aspect, cookie, declare, Deferred, all,
 			dom, domClass, domGeometry, domStyle, createError, fxUtils, has, kernel, keys, lang, on, topic, touch, when,
 			a11yclick, focus, registry, manager, _Widget, _TemplatedMixin, _Container, _Contained, _CssStateMixin, _KeyNavMixin,
 			treeNodeTemplate, treeTemplate, TreeStoreModel, ForestStoreModel, _dndSelector){
@@ -279,7 +278,8 @@ define([
 
 			var wipeIn = fxUtils.wipeIn({
 				node: this.containerNode,
-				duration: manager.defaultDuration
+				duration: manager.defaultDuration,
+				rate: 20 // set to default rate
 			});
 
 			// Deferred that fires when expand is complete
@@ -325,7 +325,8 @@ define([
 
 			var wipeOut = fxUtils.wipeOut({
 				node: this.containerNode,
-				duration: manager.defaultDuration
+				duration: manager.defaultDuration,
+				rate: 20 // set to default rate
 			});
 
 			// Deferred that fires when expand is complete
@@ -786,14 +787,14 @@ define([
 				on(this.containerNode, on.selector(".dijitTreeNode", touch.leave), function(evt){
 					self._onNodeMouseLeave(registry.byNode(this), evt);
 				}),
-				on(this.containerNode, a11yclick, function(evt){
-					var node = registry.getEnclosingWidget(evt.target);
-					if(node.isInstanceOf(TreeNode)){
-						self._onClick(node, evt);
-					}
+				on(this.containerNode, on.selector(".dijitTreeRow", a11yclick.press), function(evt){
+					self._onNodePress(registry.getEnclosingWidget(this), evt);
 				}),
-				on(this.containerNode, on.selector(".dijitTreeNode", "dblclick"), function(evt){
-					self._onDblClick(registry.byNode(this), evt);
+				on(this.containerNode, on.selector(".dijitTreeRow", a11yclick), function(evt){
+					self._onClick(registry.getEnclosingWidget(this), evt);
+				}),
+				on(this.containerNode, on.selector(".dijitTreeRow", "dblclick"), function(evt){
+					self._onDblClick(registry.getEnclosingWidget(this), evt);
 				})
 			);
 
@@ -1351,6 +1352,13 @@ define([
 			// summary:
 			//		check whether a dom node is the expandoNode for a particular TreeNode widget
 			return dom.isDescendant(node, widget.expandoNode) || dom.isDescendant(node, widget.expandoNodeText);
+		},
+
+		_onNodePress: function(/*TreeNode*/ nodeWidget, /*Event*/ e){
+			// Touching a node should focus it, even if you touch the expando node or the edges rather than the label.
+			// Especially important to avoid _KeyNavMixin._onContainerFocus() causing the previously focused TreeNode
+			// to get focus
+			nodeWidget.focus();
 		},
 
 		__click: function(/*TreeNode*/ nodeWidget, /*Event*/ e, /*Boolean*/doOpen, /*String*/func){

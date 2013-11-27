@@ -1,0 +1,103 @@
+<html>
+  <head>
+    <title>nodeMirror</title>
+    
+      
+    <!-- dojo -->
+      <!-- config -->
+        <script>
+          window.onerror = function (msg, url, line) {
+            alert("Caught[via window.onerror]: '" + msg + "' from " + url + ":" + line);
+            console.log("Caught[via window.onerror]: '" + msg + "' from " + url + ":" + line);
+            debugger;
+            //return true; // same as preventDefault
+          };
+          
+          // Configuration Object for Dojo Loader:
+    	  dojoConfig = {
+            baseUrl: "/", // Where we will put our packages
+            async: 1 // We want to make sure we are using the "modern" loader
+            // While it is possible to use config-tlmSiblingOfDojo to tell the
+            // loader that your packages share the same root path as the loader,
+            // this really isn't always a good idea and it is better to be
+            // explicit about our package map.
+            , packages: [{
+                name: "dojo",
+              location: "dojopatching/dojo"
+            },{
+                name: "dijit",
+            location: "dojopatching/dijit"
+            },{
+                name: "dojox",
+                location: "dojox"
+            },{
+                name: "sol",
+                location: "sol"
+            },{
+                name: "dgrid",
+                location: "dgrid"
+            }],
+          };
+	    </script>
+      
+      <!-- loader -->
+    <script src="/dojopatching/dojo/dojo.js"></script>
+    <script>
+      require(["dojo/domReady", "dojo/ready", "dojo/_base/fx"], function(ready, load, fx){
+        var ani = fx.animateProperty({
+          node: "anim1"
+          , duration: 3000
+          , properties:{
+            left: {
+              start: 0
+              , end: 1000
+            }
+          }
+          , aniid: "ani1"
+        });
+        var ani2 = fx.animateProperty({
+          node: "anim2"
+          , duration: 3000
+          , rate: 2000
+          , properties:{
+            left: {
+              start: 0
+              , end: 1000
+            }
+          }
+          , aniid: "ani2"
+        });
+        var fun = function(){
+          ani.play();
+          setTimeout(fun, 4000);
+        };
+        fun();
+        var fun2 = function(){
+          ani2.play();
+          setTimeout(fun2, 6000);
+        };
+        fun2();
+      });
+    </script>
+    <style>
+      #anim1, #anim2 {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        background-color: red;
+        top: 10px;
+        left: 10px;
+      }
+      
+      #anim2 {
+        top: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="anim1">
+    </div>
+    <div id="anim2">
+    </div>
+  </body>
+</html>
