@@ -98,6 +98,7 @@ define([
 		_onDropDownMouseDown: function(/*Event*/ e){
 			// summary:
 			//		Callback when the user mousedown/touchstart on the arrow icon.
+
 			if(this.disabled || this.readOnly){
 				return;
 			}
@@ -106,7 +107,12 @@ define([
 			//		1. TimeTextBox etc. can focus the <input> on mousedown
 			//		2. dropDownButtonActive class applied by _CssStateMixin (on button depress)
 			//		3. user defined onMouseDown handler fires
-			e.preventDefault();
+			//
+			// Also, don't call preventDefault() on MSPointerDown event (on IE10) because that prevents the button
+			// from getting focus, and then the focus manager doesn't know what's going on (#17262)
+			if(e.type != "MSPointerDown"){
+				e.preventDefault();
+			}
 
 			this._docHandler = this.own(on(this.ownerDocument, touch.release, lang.hitch(this, "_onDropDownMouseUp")))[0];
 
@@ -129,6 +135,7 @@ define([
 			//		1. mouse down on the select node (probably on the arrow)
 			//		2. move mouse to a menu item while holding down the mouse button
 			//		3. mouse up.  this selects the menu item as though the user had clicked it.
+
 			if(e && this._docHandler){
 				this._docHandler.remove();
 				this._docHandler = null;
@@ -166,9 +173,12 @@ define([
 				}
 			}
 			if(this._opened){
-				if(dropDown.focus && dropDown.autoFocus !== false){
-					// Focus the dropdown widget - do it on a delay so that we
-					// don't steal back focus from the dropdown.
+				// Focus the dropdown widget unless it's a menu (in which case autoFocus is set to false).
+				// Even if it's a menu, we need to focus it if this is a fake mouse event caused by the user typing
+				// SPACE/ENTER while using JAWS.  Jaws converts the SPACE/ENTER key into mousedown/mouseup events.
+				// If this.hovering is false then it's presumably actually a keyboard event.
+				if(dropDown.focus && (dropDown.autoFocus !== false || (e.type == "mouseup" && !this.hovering))){
+					// Do it on a delay so that we don't steal back focus from the dropdown.
 					this._focusDropDownTimer = this.defer(function(){
 						dropDown.focus();
 						delete this._focusDropDownTimer;
@@ -226,6 +236,12 @@ define([
 		},
 
 		destroy: function(){
+			// If dropdown is open, close it, to avoid leaving dijit/focus in a strange state.
+			// Put focus back on me to avoid the focused node getting destroyed, which flummoxes IE.
+			if(this._opened){
+				this.closeDropDown(true);
+			}
+
 			if(this.dropDown){
 				// Destroy the drop down, unless it's already been destroyed.  This can happen because
 				// the drop down is a direct child of <body> even though it's logically my child.
@@ -436,7 +452,7 @@ define([
 
 			if(this._opened){
 				this._popupStateNode.setAttribute("aria-expanded", "false");
-				if(focus){
+				if(focus && this.focus){
 					this.focus();
 				}
 				popup.close(this.dropDown);

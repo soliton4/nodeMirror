@@ -12,8 +12,7 @@ define([
 	"dojo/when",
 	"../registry", // registry.byId
 	"../_WidgetBase",
-	"./_LayoutWidget",
-	"dojo/i18n!../nls/common"
+	"./_LayoutWidget"
 ], function(array, cookie, declare, domClass, domConstruct, has, lang, on, ready, topic, when, registry, _WidgetBase, _LayoutWidget){
 
 	// module:
@@ -149,7 +148,7 @@ define([
 			}
 
 			// remove the title attribute so it doesn't show up when i hover over a node
-			child.domNode.title = "";
+			child.domNode.removeAttribute("title");
 		},
 
 		addChild: function(/*dijit/_WidgetBase*/ child, /*Integer?*/ insertIndex){

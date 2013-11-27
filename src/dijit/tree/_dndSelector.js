@@ -1,16 +1,16 @@
 define([
 	"dojo/_base/array", // array.filter array.forEach array.map
-	"dojo/_base/connect", // connect.isCopyKey
 	"dojo/_base/declare", // declare
 	"dojo/_base/kernel",	// global
 	"dojo/_base/lang", // lang.hitch
+	"dojo/dnd/common",
 	"dojo/dom", // isDescendant
 	"dojo/mouse", // mouse.isLeft
 	"dojo/on",
 	"dojo/touch",
 	"../a11yclick",
 	"./_dndContainer"
-], function(array, connect, declare, kernel, lang, dom, mouse, on, touch, a11yclick, _dndContainer){
+], function(array, declare, kernel, lang, dndCommon, dom, mouse, on, touch, a11yclick, _dndContainer){
 
 	// module:
 	//		dijit/tree/_dndSelector
@@ -158,15 +158,11 @@ define([
 			//		path[s], selectedItem[s], selectedNode[s]
 
 			var selected = this.getSelectedTreeNodes();
-			var paths = [], nodes = [], selects = [];
+			var paths = [], nodes = [];
 			array.forEach(selected, function(node){
-				var ary = node.getTreePath(), model = this.tree.model;
+				var ary = node.getTreePath();
 				nodes.push(node);
 				paths.push(ary);
-				ary = array.map(ary, function(item){
-					return model.getIdentity(item);
-				}, this);
-				selects.push(ary.join("/"))
 			}, this);
 			var items = array.map(nodes,function(node){ return node.item; });
 			this.tree._set("paths", paths);
@@ -203,7 +199,7 @@ define([
 				return;
 			}
 
-			var copy = connect.isCopyKey(e), id = treeNode.id;
+			var copy = dndCommon.getCopyKeyState(e), id = treeNode.id;
 
 			// if shift key is not pressed, and the node is already in the selection,
 			// delay deselection until onmouseup so in the case of DND, deselection
@@ -232,7 +228,7 @@ define([
 			// the deselection logic here, the user can drag an already selected item.
 			if(!this._doDeselect){ return; }
 			this._doDeselect = false;
-			this.userSelect(e.type == "keyup" ? this.tree.focusedChild : this.current, connect.isCopyKey(e), e.shiftKey);
+			this.userSelect(e.type == "keyup" ? this.tree.focusedChild : this.current, dndCommon.getCopyKeyState(e), e.shiftKey);
 		},
 		onMouseMove: function(/*===== e =====*/){
 			// summary:

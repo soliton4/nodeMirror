@@ -9,9 +9,8 @@ define([
 	"dojo/window", // winUtils.scrollIntoView
 	"../_Plugin",
 	"../RichText",
-	"../range",
-	"../../_base/focus"
-], function(declare, domConstruct, keys, lang, on, has, win, winUtils, _Plugin, RichText, rangeapi, baseFocus){
+	"../range"
+], function(declare, domConstruct, keys, lang, on, has, win, winUtils, _Plugin, RichText, rangeapi){
 
 	// module:
 	//		dijit/_editor/plugins/EnterKeyHandling
@@ -122,7 +121,7 @@ define([
 							}
 						}
 					})));
-					if(has("ie") >= 9){
+					if(has("ie") >= 9 && has("ie") <= 10){
 						this.own(on(editor.document, "paste", lang.hitch(this, function(e){
 							setTimeout(lang.hitch(this, function(){
 								// Use the old range/selection code to kick IE 9 into updating
@@ -152,7 +151,7 @@ define([
 			// tags:
 			//		private
 			if(this._checkListLater){
-				if(win.withGlobal(this.editor.window, 'isCollapsed', baseFocus)){	// TODO: stop using withGlobal(), and baseFocus
+				if(this.editor.selection.isCollapsed()){
 					var liparent = this.editor.selection.getAncestorElement('LI');
 					if(!liparent){
 						// circulate the undo detection code by calling RichText::execCommand directly

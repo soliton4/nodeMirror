@@ -420,7 +420,7 @@ define([
 
 		_onFocus: function(){
 			this.validate(true);	// show tooltip if second focus of required tooltip, but no selection
-			this.inherited(arguments);
+			// Note: not calling superclass _onFocus() to avoid _KeyNavMixin::_onFocus() setting tabIndex --> -1
 		},
 
 		_onBlur: function(){

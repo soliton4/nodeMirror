@@ -278,8 +278,7 @@ define([
 
 			var wipeIn = fxUtils.wipeIn({
 				node: this.containerNode,
-				duration: manager.defaultDuration,
-				rate: 20 // set to default rate
+				duration: manager.defaultDuration
 			});
 
 			// Deferred that fires when expand is complete
@@ -325,8 +324,7 @@ define([
 
 			var wipeOut = fxUtils.wipeOut({
 				node: this.containerNode,
-				duration: manager.defaultDuration,
-				rate: 20 // set to default rate
+				duration: manager.defaultDuration
 			});
 
 			// Deferred that fires when expand is complete
