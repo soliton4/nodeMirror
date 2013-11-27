@@ -7,7 +7,7 @@ define([
   , "dojo/_base/array"
   , "dojo/_base/lang"
   , "sol/string"
-  , "main/clientOnly!./peg.js/Parser"
+  , "main/clientOnly!./pegjs/Parser"
   , "main/clientOnly!dijit/form/Button"
   , "main/clientOnly!dojo/dom-class"
 ], function(
