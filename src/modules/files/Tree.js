@@ -1,7 +1,7 @@
 define([
   "dojo/_base/declare"
   , "dijit/Tree"
-  , "client/tree/Model"
+  , "./Model"
   , "client/globals"
 ], function(
   declare

@@ -1,13 +1,11 @@
 define([
   "dojo/_base/declare"
   , "./Tree"
-  , "client/tree/Model"
   , "client/globals"
   , "dijit/layout/BorderContainer"
 ], function(
   declare
   , Tree
-  , Model
   , globals
   , BorderContainer
 ){
@@ -19,7 +17,6 @@ define([
     , gutters: false
     
     , constructor: function(){
-      //this.model = new Model();
 	}
     
     , buildRendering: function(){

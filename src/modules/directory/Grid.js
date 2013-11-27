@@ -17,6 +17,7 @@ define([
   , "sol/scroll"
   , "dojo/dom-style"
   , "sol/wgt/ScrollBar"
+  , "sol/array/memberSort"
 ], function(
   declare
   , Grid
@@ -36,6 +37,7 @@ define([
   , scroll
   , domStyle
   , ScrollBar
+  , memberSort
 ){
   var dimensions;
   
@@ -258,7 +260,9 @@ define([
         return;
       };
       this.refresh();
-      this.renderArray(this.content.children);
+      this.renderArray(memberSort(this.content.children, function(object){
+        return fileName.single(object.id).toLowerCase();
+      }));
       this.resize();
     }
     
