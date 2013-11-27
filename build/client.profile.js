@@ -118,7 +118,7 @@ var profile = (function(){
                 , "modules/search/Wgt"
                 , "modules/Gui"
                 , "modules/Peg"
-                , "modules/peg.js/Parser"
+                , "modules/pegjs/Parser"
                  ,"sol/wgt/CodeMirror"
                  ,"codemirror/theme/all"
                  ,"dijit/form/Select"
