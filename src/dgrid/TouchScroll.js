@@ -127,6 +127,15 @@ function(declare, on, touchUtil, has, put){
 			widget._scrollbarYNode.style[transformProp] = translatePrefix + "0," +
 				(y * curr.parentHeight / curr.scrollHeight) + "px" + translateSuffix;
 		}
+      if (widget.touchScrollCorrection){
+        var par = {
+          x: x
+          , y: y
+        };
+        widget.touchScrollCorrection(par);
+        x = par.x;
+        y = par.y;
+      };
 		
 		// Emit a scroll event that can be captured by handlers, passing along
 		// scroll information in the event itself (since we already have the info,

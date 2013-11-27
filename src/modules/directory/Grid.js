@@ -119,6 +119,14 @@ define([
       });
       this.scrollBar.placeAt(this.domNode);
     }
+    , touchScrollCorrection: function(par){
+      if (this.viewMode == "list"){
+        var y = par.y;
+        par.y = par.x;
+        par.x = y;
+      };
+    }
+    
     , destroy: function(){
       this.scrollBar.destroy();
       this.inherited(arguments);

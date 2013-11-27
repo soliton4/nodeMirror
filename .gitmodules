@@ -13,3 +13,12 @@
 [submodule "generic-js/CodeMirror"]
 	path = generic-js/CodeMirror
 	url = https://github.com/marijnh/CodeMirror
+[submodule "generic-js/csslint"]
+	path = generic-js/csslint
+	url = https://github.com/stubbornella/csslint
+[submodule "generic-js/jsonlint"]
+	path = generic-js/jsonlint
+	url = https://github.com/zaach/jsonlint
+[submodule "generic-js/term.js"]
+	path = generic-js/term.js
+	url = https://github.com/chjj/term.js
