@@ -267,7 +267,7 @@ define([
       require(["main/moduleLoader!client"], function(moduleLoader){
         var search = moduleLoader.getModule("modules/Search");
         search.openSearchTab({
-          dir: self.par.id
+          directory: self.par.id
         });
       });
     }

@@ -33,7 +33,7 @@ define([
       
       this.menu = this.ownObj(new SearchMenu({
         region: "top"
-        , dir: this.dir
+        , dir: this.directory
       }));
       this.addChild(this.menu);
       
@@ -61,6 +61,7 @@ define([
       var self = this;
       var search = this.menu.get("search");
       this.module.find(search).then(function(res){
+        self.grid.refresh();
         self.grid.renderArray(res);
       });
     }
