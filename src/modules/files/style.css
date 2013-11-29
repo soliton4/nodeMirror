@@ -1,0 +1,10 @@
+@import url('tree.css');
+.treeOverFlowWidget {
+  display: none;
+  overflow: hidden;
+  position: absolute;
+  z-index: 1000;
+}
+.treeOverFlowWidget.hoverVisible {
+  display: block;
+}

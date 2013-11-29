@@ -29,6 +29,9 @@ define([
         region: "center"
       });
       this.addChild(this.tree);
+      //if (this.tree.overflowWgt){
+      //  this.addChild(this.tree.overflowWgt);
+      //};
     }
     
     , refresh: function(){

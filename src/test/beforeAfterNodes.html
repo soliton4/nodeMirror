@@ -1,0 +1,33 @@
+<html>
+  <head>
+    <style>
+      .x {
+        /*z-index: 0;*/
+        position: absolute;
+        top: 10px;
+        display: block;
+        left: 20px;
+        background-color: red;
+        z-index: 999;
+        
+      }
+      .x:before{
+        position: absolute;
+        display: block;
+        top: 0px;
+        left: 0px;
+        width: 20px;
+        height: 30px;
+        background-color: yellow;
+        content: "";
+        z-index: -100;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="x">
+      bla bla bla
+      
+    </div>
+  </body>
+</html>

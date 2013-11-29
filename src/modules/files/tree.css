@@ -1,0 +1,42 @@
+.dijitTreeNode .backgroundNode {
+  display: none;
+  z-index: -10;
+}
+.dijitTreeNode .dijitTreeRow .moreNode {
+  display: none;
+}
+.dijitTreeNode .dijitTreeRow.rowNodeIsFloating {
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  z-index: 10;
+}
+.dijitTreeNode .dijitTreeRow.rowNodeIsFloating .moreNode {
+  display: inline-block;
+  margin-left: 10px;
+  position: relative;
+  height: 7px;
+  width: 21px;
+  border: 1px;
+  cursor: default;
+}
+.dijitTreeNode .dijitTreeRow.rowNodeIsFloating .moreNode .moreNodeInner {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+}
+.dijitTreeNode .dijitTreeRow.rowNodeIsFloating .moreNode:hover {
+  border-color: white;
+  border-style: solid;
+}
+.dijitTreeNode .backgroundNode.rowNodeIsFloating {
+  display: block;
+  background-color: #F0F0F0;
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  z-index: 1;
+}
+.dark .dijitTreeNode .backgroundNode.rowNodeIsFloating {
+  background-color: #000040;
+}
