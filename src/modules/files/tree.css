@@ -1,6 +1,7 @@
 .dijitTreeNode .backgroundNode {
   display: none;
   z-index: -10;
+  border-bottom-left-radius: 5px;
 }
 .dijitTreeNode .dijitTreeRow .moreNode {
   display: none;

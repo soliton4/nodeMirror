@@ -70,9 +70,11 @@ define([
       domStyle.set(self.rowNode, {
         zIndex: 2000 - (self.indent * 2) + 1
       });
+      var expandoBox = domGeo.getMarginBox(this.expandoNode);
       domStyle.set(self.backgroundNode, {
         zIndex: 2000 - (self.indent * 2)
         , height: self._rowBox().h + "px"
+        , left: expandoBox.l + expandoBox.w
       });
     }
     , _removeFloatStyle: function(){
@@ -111,6 +113,11 @@ define([
       return this.indent * this._rowBox().h;
     }
     
+    , scrollToTop: function(){
+      var box = domGeo.getMarginBox(this.domNode);
+      this.tree.domNode.scrollTop = box.t - this.getIndentAddition();
+    }
+    
     , expand: function(){
       var res = this.inherited(arguments);
       var self = this;
@@ -145,6 +152,12 @@ define([
     }
     , collapse: function(){
       var res = this.inherited(arguments);
+      if (this._floatStyleAdded){
+        var self = this;
+        res.then(function(){
+          self.scrollToTop();
+        });
+      };
       this._removeFloat();
       return res;
     }
@@ -177,8 +190,8 @@ define([
     
     , _onClick: function(/*TreeNode*/ nodeWidget, /*Event*/ e){
       if (e.target && domClass.contains(e.target, "treeOpenMore")){
-        var box = domGeo.getMarginBox(nodeWidget.domNode);
-        nodeWidget.tree.domNode.scrollTop = box.t - nodeWidget.getIndentAddition();
+        //var box = domGeo.getMarginBox(nodeWidget.domNode);
+        nodeWidget.scrollToTop();//tree.domNode.scrollTop = box.t - nodeWidget.getIndentAddition();
         e.stopPropagation();
         e.preventDefault();
         return;
