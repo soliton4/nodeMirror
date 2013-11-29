@@ -112,9 +112,9 @@ define([
     }
     
     , expand: function(){
-      this.inherited(arguments);
+      var res = this.inherited(arguments);
       var self = this;
-      this._onScroll = on(this.tree.domNode, "scroll", function(){
+      var checkFun = function(){
         if (!self.isExpandable){
           self._removeFloat();
           return;
@@ -138,11 +138,15 @@ define([
         }else{
           self._removeFloatStyle();
         };
-      });
+      };
+      this._onScroll = on(this.tree.domNode, "scroll", checkFun);
+      res.then(checkFun);
+      return res;
     }
     , collapse: function(){
-      this.inherited(arguments);
+      var res = this.inherited(arguments);
       this._removeFloat();
+      return res;
     }
   });
   

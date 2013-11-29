@@ -52,6 +52,7 @@ define([
     
     , update: function(){
       if (this.hoverNode){
+        var addition = 10;
         //var labelBox = domGeo.getMarginBox(this.hoverNode.labelNode);
         var labelPos = domGeo.position(this.hoverNode.labelNode, true);
         var scrollBarPresent = this.treeWgt.domNode.scrollHeight > this.treeWgt.domNode.clientHeight;
@@ -59,14 +60,17 @@ define([
         if (scrollBarPresent){
           limit -= scroll.dimensions().w;
         };
-        if (labelPos.x + labelPos.w > limit){
+        if (labelPos.x + labelPos.w + addition > limit){
           var rowPos = domGeo.position(this.hoverNode.rowNode, true);
+          if (rowPos.x + rowPos.w < labelPos.x + labelPos.w + addition){
+            rowPos.w = labelPos.x + labelPos.w + addition - rowPos.x;
+          };
           var thisLeft = limit;
           domGeo.setMarginBox(this.domNode, {
             h: rowPos.h
             , l: thisLeft
             , t: rowPos.y
-            , w: labelPos.x + labelPos.w - thisLeft + 10
+            , w: labelPos.x + labelPos.w - thisLeft + addition
           });
           domGeo.setMarginBox(this.copyNode, {
             t: 0
