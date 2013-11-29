@@ -16,6 +16,7 @@ define([
   , "main/config"
   , "dojo/io-query"
   , "modules/contentTabs/tabMixin"
+  , "dojo/topic"
 ], function(
   declare
   , domConstruct
@@ -31,6 +32,7 @@ define([
   , config
   , ioQuery
   , tabMixin
+  , topic
 ){
   return declare([
     tabMixin
@@ -41,6 +43,7 @@ define([
     , showMenu: true
     , idLine: true
     , closable: true
+    , openDirButton: true
     
     , constructor: function(){
       this.dirty = false;
@@ -125,6 +128,14 @@ define([
           , label: "download"
         }));
         menu.addChild(menu._buttons.downLoadButton);
+      };
+      
+      if (this.openDirButton){
+        menu._buttons.openDirButton = this.ownObj(new Button({
+          onClick: lang.hitch(this, "openDir")
+          , label: "open Folder"
+        }));
+        menu.addChild(menu._buttons.openDirButton);
       };
       
       if (this.textModeButton){
@@ -263,6 +274,17 @@ define([
             id: self.par.id
           }
         });*/
+      });
+    }
+    , openDir: function(){
+      var dirName = fileName.dir(this.par.id);
+      dirName = dirName.substr(0, dirName.length - 1);
+      
+      topic.publish("client/openid", {
+        item: {
+          id: dirName
+          , type: "file"
+        }
       });
     }
     

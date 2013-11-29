@@ -10,6 +10,7 @@ define([
   , "dojo/dom-class"
   , "dojo/dom-construct"
   , "./OverflowWgt"
+  , "dojo/_base/fx"
 ], function(
   declare
   , Tree
@@ -22,6 +23,7 @@ define([
   , domClass
   , domConstruct
   , OverflowWgt
+  , fx
 ){
   
   
@@ -115,7 +117,7 @@ define([
     
     , scrollToTop: function(){
       var box = domGeo.getMarginBox(this.domNode);
-      this.tree.domNode.scrollTop = box.t - this.getIndentAddition();
+      this.tree.scrollTo(box.t - this.getIndentAddition());
     }
     
     , expand: function(){
@@ -147,16 +149,31 @@ define([
         };
       };
       this._onScroll = on(this.tree.domNode, "scroll", checkFun);
-      res.then(checkFun);
+      this.tree._lastExpand = this;
+      res.then(function(){
+        checkFun();
+        if (self.tree._lastExpand === self){
+          var box1 = domGeo.getMarginBox(self.domNode);
+          if (box1.t + box1.h > self.tree.domNode.scrollTop + self.tree.domNode.clientHeight){
+            var indent = self.getIndentAddition();
+            if (indent + box1.h > self.tree.domNode.clientHeight){
+              self.scrollToTop();
+            }else{
+              self.tree.scrollTo(box1.t + box1.h - self.tree.domNode.clientHeight);
+            };
+          };
+        };
+      });
       return res;
     }
     , collapse: function(){
       var res = this.inherited(arguments);
       if (this._floatStyleAdded){
         var self = this;
-        res.then(function(){
+        self.scrollToTop();
+        /*res.then(function(){
           self.scrollToTop();
-        });
+        });*/
       };
       this._removeFloat();
       return res;
@@ -188,10 +205,23 @@ define([
       };
     }
     
+    , scrollTo: function(parScrollTop){
+      var self = this;
+      if (this._scrollAnimation){
+        this._scrollAnimation.stop();
+      };
+      this._scrollAnimation = new fx.Animation({
+        curve: [this.domNode.scrollTop, parScrollTop]
+        , onAnimate: function(value){
+          self.domNode.scrollTop = value;
+        }
+      });
+      this._scrollAnimation.play();
+    }
+    
     , _onClick: function(/*TreeNode*/ nodeWidget, /*Event*/ e){
       if (e.target && domClass.contains(e.target, "treeOpenMore")){
-        //var box = domGeo.getMarginBox(nodeWidget.domNode);
-        nodeWidget.scrollToTop();//tree.domNode.scrollTop = box.t - nodeWidget.getIndentAddition();
+        nodeWidget.scrollToTop();
         e.stopPropagation();
         e.preventDefault();
         return;
@@ -232,6 +262,12 @@ define([
       //		of just specifying a widget for the label, rather than one that contains
       //		the children too.
       return new TreeNode(args);
+    }
+    , destroy: function(){
+      if (this._scrollAnimation){
+        this._scrollAnimation.stop();
+      };
+      this.inherited(arguments);
     }
     
   });

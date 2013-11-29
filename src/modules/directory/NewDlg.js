@@ -49,7 +49,7 @@ define([
     , postMixInProperties: function(){
       this.inherited(arguments);
       if (this.newDir){
-        this.title = "create new Directory";
+        this.title = "create new Folder";
       };
     }
   });

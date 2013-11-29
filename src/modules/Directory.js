@@ -13,6 +13,10 @@ define([
   , "main/clientOnly!dijit/form/Button"
   , "dojo/_base/lang"
   , "main/clientOnly!sol/wgt/Turn"
+  , "main/clientOnly!dijit/Menu"
+  , "main/clientOnly!dijit/MenuItem"
+  , "main/clientOnly!dijit/form/ComboButton"
+  , "dojo/topic"
 ], function(
   declare
   , Base
@@ -28,6 +32,10 @@ define([
   , Button
   , lang
   , Turn
+  , Menu
+  , MenuItem
+  , ComboButton
+  , topic
 ){
   
   
@@ -39,6 +47,7 @@ define([
     , downloadButton: true
     , "class": "directory"
     , viewMode: "list"
+    , openDirButton: false
     
     // the model decides if it is competent to handle that type
     /* par: {
@@ -151,8 +160,18 @@ define([
     , buildRendering: function(){
       var ret = this.inherited(arguments);
       
+      this.upDirButton = this.ownObj(new Button({
+        label: "up"
+        , showLabel: true
+        , onClick: lang.hitch(this, "goUp")
+        , region: "left"
+        , disabled: (this.par.id && this.par.id.length) ? false : true
+      }));
+      this.menu.addChild(this.upDirButton, 0);
+      
+      
       this.newDirButton = this.ownObj(new Button({
-        label: "new Directory"
+        label: "new Folder"
         , showLabel: true
         , onClick: lang.hitch(this, "createNew", true)
         , region: "left"
@@ -167,7 +186,9 @@ define([
       }));
       this.menu.addChild(this.newButton);
       
+      
       this.searchButton = this.ownObj(new Button({
+        "class": "searchButton",
         label: "search"
         , showLabel: true
         , onClick: lang.hitch(this, "search")
@@ -175,35 +196,32 @@ define([
       }));
       this.menu.addChild(this.searchButton);
       
-      var self = this;
-      require(["dijit/Menu", "dijit/MenuItem", "dijit/form/ComboButton", "dojo/domReady!"],
-        function(Menu, MenuItem, ComboButton){
-          var menu = new Menu({ style: "display: none;"});
-          var menuItem1 = new MenuItem({
-            label: "Details",
-            onClick: function(){ self.set("viewMode", "details"); }
-          });
-          menu.addChild(menuItem1);
-          
-          var menuItem2 = new MenuItem({
-            label: "List",
-            onClick: function(){ self.set("viewMode", "list"); }
-          });
-          menu.addChild(menuItem2);
-          
-          self.viewButton = new ComboButton({
-            label: "Details",
-            dropDown: menu,
-            viewMode: "details",
-            onClick: function(){ 
-              self.set("viewMode", this.viewMode); 
-            }
-          });
-          self.menu.addChild(self.viewButton);
-          
-          
-      });
       
+      var self = this;
+      var menu = new Menu({ style: "display: none;"});
+      var menuItem1 = new MenuItem({
+        label: "Details",
+        onClick: function(){ self.set("viewMode", "details"); }
+      });
+      menu.addChild(menuItem1);
+      
+      var menuItem2 = new MenuItem({
+        label: "List",
+        onClick: function(){ self.set("viewMode", "list"); }
+      });
+      menu.addChild(menuItem2);
+      
+      self.viewButton = new ComboButton({
+        "class": "viewButton",
+        label: "Details",
+        dropDown: menu,
+        viewMode: "details",
+        onClick: function(){ 
+          self.set("viewMode", this.viewMode); 
+        }
+      });
+      self.menu.addChild(self.viewButton);
+          
       
       this.grid = this.ownObj(new Grid({
         content: this.content
@@ -219,6 +237,27 @@ define([
       this.addChild(this.turnWgt);
       
       return ret;
+    }
+    
+    , goUp: function(){
+      
+      var idStr = "";
+      var s = this.par.id.split("/");
+      for (i = 0; i < s.length - 1; ++i){
+        if (i){
+          idStr += "/";
+        };
+        idStr += s[i];
+      };
+      
+      topic.publish("client/openid", {
+        item: {
+          id: idStr
+          , type: "file"
+        }
+        , insteadOf: this
+      });
+      
     }
     
     , _setViewModeAttr: function(viewMode){

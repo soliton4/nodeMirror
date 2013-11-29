@@ -29,15 +29,23 @@ define([
       return charBox;
     };
     var tryWgt = new Try({});
+    var textStr = "";
+    for (var i = 0; i < 1000; ++i){
+      textStr += ".";
+    };
     var text = new Text({
-      text: "."
+      text: textStr
     });
     
     tryWgt.placeAt(document.body);
-    charBox = tryWgt.getMarginBox({
+    var box = tryWgt.getMarginBox({
       node: text.domNode
       , "class": "terminal"
     });
+    charBox = {
+      w: box.w / 1000
+      , h: box.h
+    };
     
     text.destroy();
     tryWgt.destroy();
@@ -62,15 +70,6 @@ define([
         screenKeys: true
       });
       
-      
-      /*term.on('data', function(data) {
-        socket.emit('data', data);
-      });
-
-      term.on('title', function(title) {
-        document.title = title;
-      });*/
-
       this.terminal.open(this.domNode);
 
       /*this.mouseWgt = this.ownObj(new MouseWgt({
@@ -125,8 +124,15 @@ define([
       };
     }
     , resize: function(){
+      var box = {
+        w: this._contentBox && this._contentBox.w
+        , h: this._contentBox && this._contentBox.h
+      };
       this.inherited(arguments);
-      //this.emitResize();
+      if (this._contentBox.w == box.w && this._contentBox.h == box.h && this._resizeEmited){
+        return;
+      };
+      this._resizeEmited = true;
       this.sceduleEmitResize.exec();
     }
   });

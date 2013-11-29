@@ -77,7 +77,7 @@ define([
           if (this.anim){
             this.anim.stop();
           };
-          console.log("cancel");
+          //console.log("cancel");
           this.doAnimation.cancel();
           domStyle.set(this.fadeNode, {
             opacity: 0

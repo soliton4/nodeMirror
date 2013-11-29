@@ -74,6 +74,7 @@ cp ../src/dojo/json.js ../release/nodeMirror/src/dojo/
 cp ../src/dojo/on.js ../release/nodeMirror/src/dojo/
 cp ../src/dojo/sniff.js ../release/nodeMirror/src/dojo/
 cp ../src/dojo/when.js ../release/nodeMirror/src/dojo/
+cp ../src/dojo/topic.js ../release/nodeMirror/src/dojo/
 
 mkdir ../release/nodeMirror/src/dojox
 mkdir ../release/nodeMirror/src/dojox/editor
