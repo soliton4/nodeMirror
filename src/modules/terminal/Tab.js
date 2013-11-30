@@ -24,6 +24,8 @@ define([
     , onShow: function(){
       this.inherited(arguments);
       this.terminalWgt.focus();
+      this._hidden = false;
+      this.set("dirty", false);
     }
     , buildRendering: function(){
       var self = this;
@@ -63,10 +65,6 @@ define([
     }
     , onHide: function(){
       this._hidden = true;
-    }
-    , onShow: function(){
-      this._hidden = false;
-      this.set("dirty", false);
     }
   });
 });

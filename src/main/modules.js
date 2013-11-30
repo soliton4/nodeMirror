@@ -20,6 +20,7 @@ define([], function(){
     
   , "modules/Terminal"
   , "modules/Control"
+  , "modules/Debug"
   ];
   
 });

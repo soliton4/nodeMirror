@@ -1,10 +1,1 @@
-@import url('tree.css');
-.treeOverFlowWidget {
-  display: none;
-  overflow: hidden;
-  position: absolute;
-  z-index: 1000;
-}
-.treeOverFlowWidget.hoverVisible {
-  display: block;
-}
+@import url('../../sol/wgt/tree/tree.css');

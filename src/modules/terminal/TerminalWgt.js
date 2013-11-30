@@ -85,6 +85,7 @@ define([
     , focus: function(){
       this.terminal.focus();
       this.terminal.element.focus();
+      console.log("focusing");
     }
     , on: function(parWhat, parHandler){
       if (parWhat == "resize"){

@@ -8,6 +8,8 @@ define([
   , "sol/string"
   , "main/config"
   , "main/connection"
+  , "main/serverOnly!./debug/Debugger"
+  , "modules/base/Base"
 
 ], function(
   declare
@@ -19,15 +21,24 @@ define([
   , solString
   , config
   , connection
+  , Debugger
+  , Base
+  
 ){
   
   var _handleConnection;
   
-  var Debug = declare([], {
+  var getDebugId = function(options){
+    return options.type + options.port;
+  };
+  
+  var Debug = declare([Base], {
     //, keepBuildRendering: true
+    remoteFunctions: lang.mixin({}, Base.remoteFunctions, { getList: true} )
     
-    constructor: function(){
+    , constructor: function(){
       var self = this;
+      self.debuggers = {};
       this.socketDef = new Deferred();
       self.handleConnection = _handleConnection;
       connection.on("connect", function(socket, session){
@@ -57,6 +68,16 @@ define([
       return def;
     }
     
+    , createDebugger: function(options){
+      console.log(options);
+      var self = this;
+      var def = new Deferred();
+      this.socket.emit("createDebugger", options, function(list){
+        def.resolve(list);
+      });
+      return def;
+    }
+    
     , openDebugger: function(parId){
       var def = new Deferred();
       var self = this;
@@ -78,11 +99,14 @@ define([
     
     , getList: function(){
       var def = new Deferred();
-      this.socketDef.then(function(socket){
-        socket.emit("debug/getList", function(parList){
-          def.resolve(parList);
-        });
-      });
+      var res = {};
+      for (var d in this.debuggers){
+        res[d] = {
+          type: this.debuggers[d].type
+          , port: this.debuggers[d].port
+        };
+      };
+      def.resolve(res);
       return def;
     }
     
@@ -91,10 +115,15 @@ define([
   
   if (has("server-modules")){
     _handleConnection = function(parSocket, session){
+      var self = this;
       var socket = parSocket;
       
-      socket.on("debug/getList", function(callback){
-        
+      socket.on("createDebugger", function(options, callback){
+        var debugId = getDebugId(options);
+        if (!self.debuggers[debugId]){
+          self.debuggers[debugId] = new Debugger(options);
+        };
+        self.getList().then(callback);
       });
       
       socket.on("opendebugger", function(par, respond){
@@ -175,7 +204,7 @@ define([
     };
   };
   
-  return Terminal;
+  return Debug;
   
 });
 
