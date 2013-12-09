@@ -103,8 +103,11 @@ define([
       if (this._rowBoxJsn){
         return this._rowBoxJsn;
       };
-      this._rowBoxJsn = domGeo.getMarginBox(this.rowNode);
-      return this._rowBoxJsn;
+      var rowBox = domGeo.getMarginBox(this.rowNode);
+      if (rowBox.h && rowBox.w){
+        this._rowBoxJsn = rowBox;
+      };
+      return rowBox;
     }
     
     , getIndentAddition: function(){

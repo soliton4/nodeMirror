@@ -40,7 +40,7 @@ define([
           this.doAnimation = this.ownObj(new DelayedExec({
             delay: 60000 * 5 // 5 min
           }, lang.hitch(this, function(){
-            console.log("called it");
+            //console.log("called it");
             this.createAnimation();
           })));
 		},

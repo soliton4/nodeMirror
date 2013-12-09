@@ -10,7 +10,8 @@ define([
   , "main/connection"
   , "main/serverOnly!./debug/Debugger"
   , "modules/base/Base"
-
+  , "modules/debug/Interface"
+  
 ], function(
   declare
   , Deferred
@@ -23,6 +24,7 @@ define([
   , connection
   , Debugger
   , Base
+  , Interface
   
 ){
   
@@ -44,6 +46,7 @@ define([
       connection.on("connect", function(socket, session){
         self.handleConnection(socket, session);
       });
+      self.interfaces = {};
     }
     
     , provideSideBarWidgetPs: function(){
@@ -69,31 +72,33 @@ define([
     }
     
     , createDebugger: function(options){
-      console.log(options);
+      //console.log(options);
       var self = this;
       var def = new Deferred();
-      this.socket.emit("createDebugger", options, function(list){
+      this.socket.emit("debug/create", options, function(list){
         def.resolve(list);
       });
       return def;
     }
     
     , openDebugger: function(parId){
+      
       var def = new Deferred();
       var self = this;
-      this.socket.emit("opendebugger",  {
-        mode: "debug"
-        , id: parId
-      }, function(response){
-        if (response.dbgid === undefined){
-          def.reject();
-          return;
-        };
-        def.resolve(new DebugInterface({
-          dbgid: response.dbgid
-          , socket: self.socket
-        }));
+      
+      if (self.interfaces[parId]){
+        def.resolve(self.interfaces[parId]);
+        return def;
+      };
+      
+      this.socketDef.then(function(socket){
+        self.interfaces[parId] = new Interface({
+          debugId: parId
+          , socket: socket
+        });
+        def.resolve(self.interfaces[parId]);
       });
+      
       return def;
     }
     
@@ -115,15 +120,44 @@ define([
   
   if (has("server-modules")){
     _handleConnection = function(parSocket, session){
+      session.interfaces = {};
+      
+      //console.log(parSocket);
+      
       var self = this;
       var socket = parSocket;
       
-      socket.on("createDebugger", function(options, callback){
+      socket.on("debug/create", function(options, callback){
+        //console.log("createDebugger");
         var debugId = getDebugId(options);
         if (!self.debuggers[debugId]){
           self.debuggers[debugId] = new Debugger(options);
         };
         self.getList().then(callback);
+      });
+      
+      socket.on("debug/createInterface", function(parDebugId, readyFun){
+        //console.log("createInterface");
+        if (session.interfaces[parDebugId]){
+          console.log("break1");
+          readyFun(true);
+          return;
+        };
+        if (!self.debuggers[parDebugId]){
+          console.log("break2");
+          readyFun(false);
+          return;
+        }
+        var interface = new Interface({
+          socket: socket
+          , debugId: parDebugId
+          , debuggerObj: self.debuggers[parDebugId]
+        });
+        var handler = interface.on("ready", function(){
+          console.log("readyfun");
+          readyFun(true);
+          handler.remove();
+        });
       });
       
       socket.on("opendebugger", function(par, respond){
@@ -196,11 +230,6 @@ define([
       this.socketDef = new Deferred();
       this.socketDef.resolve(socket);
       
-      this.socket.on("debug/listChange", function(parList){
-        if (self.wgt){
-          self.wgt.listChanged(parList);
-        };
-      });
     };
   };
   

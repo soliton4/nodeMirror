@@ -6,6 +6,7 @@ define([
   , array
 ){
   
+  
   var _on = {};
   
   var connection = {

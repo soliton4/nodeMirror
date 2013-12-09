@@ -68,19 +68,87 @@
     
     <!-- all styles -->
       <link rel="stylesheet" type="text/css" href="{{{relativeStr}}}style/style.css">
+    <!-- startup screen style -->
+      <style>
+        #startupscreen{
+          position: absolute;
+          width: 100%;
+          height: 100%;
+        }
+        
+        #startupscreen .graynode {
+          position: absolute;
+          top: 0px;
+          left: 0px;
+          background-color: white;
+          opacity: 0.7;
+          width: 100%;
+          height: 100%;
+          z-index: 100000;
+        }
+        #startupscreen .startupmsg {
+          position: absolute;
+          top: 50px;
+          left: 0px;
+          right: 0px;
+          width: 100%;
+          opacity: 1;
+          z-index: 110000;
+        }
+        #startupscreen .outsideTheBox{
+          margin-left: auto;
+          margin-right: auto;
+          width: 800px;
+          border: 0;
+          padding: 0;
+        }
+        
+        #startupscreen .startupmsg .box {
+          /*background-color: black;*/
+          /*border-left: 2px solid #8ca1fa;
+          border-right: 2px solid #8ca1fa;*/
+          margin: 0;
+          padding: 0;
+        }
+        
+        #startupscreen .startupmsg .msg {
+          color: #8ca1fa;
+          text-align: center;
+          font-size: large;
+          width: 800px;
+          margin: 0;
+          padding: 0;
+        }
+        
+        #startupscreen .startupmsg .msg.msg1 {
+          border-bottom: 2px solid #8ca1fa;
+          text-align: left;
+          padding-left: 20px;
+        }
+        
+        #startupscreen .startupmsg .msg2 {
+          border-bottom: 2px solid #8ca1fa;
+          text-align: right;
+          padding-right: 20px;
+          width: 800px;
+        }
+        
+      </style>
   </head>
   <body>
     <div id="startupscreen">
       <div class="graynode"></div>
       <div class="startupmsg">
-        <div class="msg">
-          Think outside the Box
-        </div>
-        <div class="msg">
-          Stay inside the Browser
-        </div>
-        <div class="loading">
-          loading ...
+        <div class="outsideTheBox">
+          <div class="msg msg1">
+            Think outside the Box
+          </div>
+          <div class="box">
+            <img src="/image/logoBig.png" width="800" height="407">
+            <div class="msg msg2">
+              Stay inside the Browser
+            </div>
+          </div>
         </div>
       </div>
     </div>

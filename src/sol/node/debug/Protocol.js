@@ -16,6 +16,12 @@ define([
       this.seq = 0;
       this._responseHandler = {};
     }
+    
+    , destroy: function(){
+      delete this._events;
+      delete this._responseHandler;
+    }
+    
     , write: function(data){
       if (typeof(data) == "STRING"){
         this.bufStr += data;
@@ -111,7 +117,7 @@ define([
     }
     
     , _handleEvent: function(parEvent){
-      //console.log(parEvent);
+      console.log(parEvent);
       //console.log(parEvent.event);
       if (this._events[parEvent.event]){
         for (var i = 0; i < this._events[parEvent.event].length; ++i){
@@ -155,7 +161,7 @@ define([
       };
       this._responseHandler[par.command] = lang.hitch(this, function(response){
         delete this._responseHandler[par.command];
-        def.resolve(response.body);
+        def.resolve(response);
       });
       return def.promise;
     }
@@ -185,14 +191,50 @@ define([
       this._expectResponse({
         command: "scripts"
       }).then(function(parResponse){
-        console.log(parResponse);
         def.resolve({
-          id: parResponse[0].id
-          , name: parResponse[0].name
-          , source: parResponse[0].source
+          id: parResponse.body[0].id
+          , name: parResponse.body[0].name
+          , source: parResponse.body[0].source
         });
       });
       
+      return def;
+    }
+    
+    /*"arguments" : { "fromFrame" : <number>
+                  "toFrame" : <number>
+                  "bottom" : <boolean, set to true if the bottom of the stack is requested>*/
+    , backtrace: function(par){
+      var def = new Deferred();
+      this._commmand("backtrace", par).then(function(res){
+        def.resolve(res);
+      });
+      return def;
+    }
+    
+    , setExceptionBreak: function(par){
+      var def = new Deferred();
+      this._commmand("setexceptionbreak", par).then(function(res){
+        def.resolve(res);
+      });
+      return def;
+    }
+    
+    , version: function(par){
+      var def = new Deferred();
+      this._commmand("version", par).then(function(res){
+        def.resolve(res);
+      });
+      return def;
+    }
+    
+    , setFrame: function(nr){
+      var def = new Deferred();
+      this._commmand("frame", {
+        number: nr
+      }).then(function(res){
+        def.resolve(res);
+      });
       return def;
     }
     

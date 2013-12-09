@@ -68,7 +68,8 @@ define([
           setTimeout(function(){
             self.mainBc.resize();
             domConstruct.destroy(dom.byId("startupscreen"));
-          }, 500);
+            self.mainBc.resize();
+          }, 2000);
         });
       };
     }

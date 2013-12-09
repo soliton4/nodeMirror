@@ -1,0 +1,110 @@
+<html>
+  <head>
+    <script>
+      
+          
+          // Configuration Object for Dojo Loader:
+    	  dojoConfig = {
+            baseUrl: "/", // Where we will put our packages
+            async: true, // We want to make sure we are using the "modern" loader
+            // While it is possible to use config-tlmSiblingOfDojo to tell the
+            // loader that your packages share the same root path as the loader,
+            // this really isn't always a good idea and it is better to be
+            // explicit about our package map.
+            packages: [{
+              name: "dojo",
+              location: "dojo"
+            },{
+                name: "dijit",
+                location: "dijit"
+            },{
+                name: "dojox",
+                location: "dojox"
+            },{
+                name: "main",
+                location: "main"
+            },{
+                name: "client",
+                location: "client"
+            },{
+                name: "sol",
+                location: "sol"
+            },{
+                name: "dgrid",
+                location: "dgrid"
+            },{
+                name: "jshint",
+                location: "jshint"
+            },{
+                name: "peg",
+                location: "peg"
+            },{
+                name: "codemirror",
+                location: "codemirror"
+            }]
+          };
+      
+      
+    </script>
+    <script src="/dojo/dojo.js"></script>
+    <script>
+      setTimeout(function(){
+        require([
+          "dojo/domReady!"
+          , "dojox/gfx"
+          , "dojo/dom"
+        ], function(
+          ready
+          , gfx
+          , dom
+        ){
+          var radius = 140;
+          var xoffset = 0;
+          var yoffset = 0;
+          var width = 30;
+          
+          var color = "#8586b5"
+          
+          surface = gfx.createSurface(dom.byId("gfx_holder"), 700, 700);
+	      surface.createRect({x: 0, y: 0, width: 700, height: 700}).setFill("#000000");
+          
+          surface.createCircle({cx: 200 + xoffset, cy: 200 + yoffset
+                                , r: radius + width }).setFill("#777777");
+          
+          surface.createCircle({cx: 200 + xoffset, cy: 200 + yoffset
+                                , r: radius + width -2 }).setFill(color);
+          
+          surface.createCircle({cx: 200 + xoffset, cy: 200 + yoffset
+                                , r: radius + 2 }).setFill("#777777");
+          
+          surface.createCircle({cx: 200 + xoffset, cy: 200 + yoffset
+                                , r: radius}).setFill("#000000");
+          
+          var base = radius + (width / 2);
+          
+          var tau = Math.PI * 2;
+          
+          var count = 12;
+          var i;
+          
+          for (i = 0; i < count; ++i){
+            surface.createCircle({
+              cx: 200 + xoffset + (Math.cos((tau / count) * i) * base) + 2
+              , cy: 200 + yoffset + (Math.sin((tau / count) * i) * base) + 2
+              , r: 5}).setFill("#0000FF");
+            surface.createCircle({
+              cx: 200 + xoffset + (Math.cos((tau / count) * i) * base)
+              , cy: 200 + yoffset + (Math.sin((tau / count) * i) * base)
+              , r: 5}).setFill("#A0A0A0");
+          }
+          
+          
+          
+        });
+      }, 100);
+    </script>
+  </head>
+  <body>
+    <div id="gfx_holder" style="width: 700px; height: 700px;"></div>
+  </body>
+</html>

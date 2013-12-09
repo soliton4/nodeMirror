@@ -157,6 +157,7 @@ var profile = (function(){
                 , "modules/contentTabs/ScrollingTabController"
                 , "dijit/form/ComboButton"
                 , "modules/binary/HexGrid"
+                , "modules/Debug"
               ]
               , boot: true
               , customBase: true

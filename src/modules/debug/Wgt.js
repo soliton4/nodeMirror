@@ -58,10 +58,14 @@ define([
       };
       for (d in list){
         if (!this.debuggers[d]){
-          this.debuggers[d] = new DebuggerWgt(list[d]);
+          this.debuggers[d] = new DebuggerWgt(lang.mixin({
+            debugId: d
+            , module: this.module
+          }, list[d]));
           this.debuggersContainer.addChild(this.debuggers[d]);
         };
       };
+      this.resize();
       console.log(list);
     }
     

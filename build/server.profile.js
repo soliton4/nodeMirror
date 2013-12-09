@@ -96,6 +96,7 @@ var profile = (function(){
                 , "main/contentIO"
                 , "sol/node/debug/Protocol"
                 , "sol/node/fileWalker"
+                , "modules/Debug"
                 ]
             }
         }
