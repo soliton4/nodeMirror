@@ -12,7 +12,19 @@ define([
   
   return declare([], {
     
-    resize: function(changeSize, resultSize){
+    constructor: function(){
+      if (!this._contentBox){
+        this._contentBox = {
+          l: 0,
+          t: 0,
+          w: 0,
+          h: 0
+        };
+      };
+
+    }
+    
+    , resize: function(changeSize, resultSize){
 			// summary:
 			//		Call this to resize a widget, or after its size has changed.
 			// description:

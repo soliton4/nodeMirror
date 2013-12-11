@@ -29,6 +29,29 @@ define([
       };
       return res;
     }
+    , normalize: function(parFileName){
+      var s = parFileName.split("/");
+      var i = 0;
+      var a = [];
+      for (i = 0; i < s.length; ++i){
+        if (s[i] == "."){
+          continue;
+        };
+        if (s[i] == ".."){
+          a.pop();
+          continue;
+        };
+        a.push(s[i]);
+      };
+      var r = "";
+      for (i = 0; i < a.length; ++i){
+        if (i){
+          r += "/";
+        };
+        r += a[i];
+      };
+      return r;
+    }
   });
   fileName = new FileName();
   return fileName;

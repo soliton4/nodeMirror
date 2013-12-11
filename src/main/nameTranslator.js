@@ -13,23 +13,23 @@ define([
   if (has("server-modules")){
     dirnamelen = config.dir.length;
   if (process.platform == "win32" || process.platform == "win64"){
-	  isWin = true;
+      isWin = true;
 	};
   };
   
   var NameTranslator = declare("NameTranslator", [
   ], {
     reduceName: function(parName){
-	  if (isWin){
-	    return parName.substr(dirnamelen).replace("\\", "/");;
-	  }else{
+      if (isWin){
+        return parName.substr(dirnamelen).replace("\\", "/");
+      }else{
         return parName.substr(dirnamelen);
       };
     }
     , fileName: function(parName){
-	  if (isWin){
+      if (isWin){
         return config.dir + (parName.replace("/", "\\"));
-	  }else{
+      }else{
         return config.dir + parName;
       };
     }

@@ -8,6 +8,7 @@ define([
   , "dojo/node!session.socket.io"
   , "dojo/node!connect"
   , "dojo/Deferred"
+  , "dojo/node!imagemagick"
 ], function(
   express
   , mimeMagic
@@ -18,6 +19,7 @@ define([
   , sessionIo
   , connect
   , Deferred
+  , im
 ){
   
   // first add our server-modules flag so we can use same source files for server and client
@@ -41,6 +43,7 @@ define([
     , "term/server"
     , "main/connection"
     , "dojo/node!adm-zip"
+    , "sol/string"
   ], function(
     remoteCaller
     , treeItems
@@ -57,11 +60,25 @@ define([
     , terminalServer
     , connection
     , AdmZip
+    , solString
   ){
     
     var relativeStr = nodeMirrorConfig.webpath;
     
-    console.log('Current directory: ' + process.cwd());
+    var dirStr = nodeMirrorConfig["dir"];
+    var wd = process.cwd();
+    if (!( solString.endsWith(wd, "/") || solString.endsWith(wd, "\\") )){
+      wd += "/";
+    };
+    
+    if (( solString.startsWith(dirStr, "/") )){
+      
+    }else{
+      dirStr = wd + dirStr;
+    };
+    
+    dirStr = fileName.normalize(dirStr);
+    console.log("file directory: " + dirStr);
     
     //console.log(nodeMirrorConfig);
     
@@ -163,8 +180,11 @@ define([
         res.end(s);
       });
     });
-
     
+    // access to the choosen directory
+    mirror.use(relativeStr + "file/", express["static"](dirStr));
+    
+    // access to app files
     mirror.use(relativeStr, express["static"](nodeMirrorConfig["static"]));
   
     

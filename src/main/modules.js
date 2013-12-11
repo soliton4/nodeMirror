@@ -17,6 +17,7 @@ define([], function(){
   , "modules/JavaScript"
   , "modules/Less"
   , "modules/Peg"
+  , "modules/Image"
     
   , "modules/Terminal"
   , "modules/Control"
