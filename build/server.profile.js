@@ -97,6 +97,8 @@ var profile = (function(){
                 , "sol/node/debug/Protocol"
                 , "sol/node/fileWalker"
                 , "modules/Debug"
+                , "modules/debug/Debugger"
+                , "modules/Image"
                 ]
             }
         }

@@ -43,11 +43,15 @@ define([
       , "theme": "claro"
       , "tabposition": "top"
       , "treefiles": false
+      , "dirColorCode": false
+      , "dirViewMode": "list"
     }
     , saveable: {
       "theme": true
     , "tabposition": true
     , "treefiles": true
+    , "dirColorCode": true
+    , "dirViewMode": true
     }
     
     , constructor: function(){

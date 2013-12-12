@@ -31,6 +31,8 @@
     }
   }
   
+  .dirColorCode & {
+  
   .dgrid-row {
     background-color: @classicBaseColor;
     cursor: default;
@@ -73,6 +75,7 @@
       border-color: mix(@classicBaseColor, @imageColor, 90%);
     }
   } 
+  }
 
   .dgrid-row:hover {
     background-color: #abd6ff;
@@ -80,30 +83,32 @@
   
   .list {
     
-    .dgrid-row.directory  {
-      background-color: #000030;
-      color: white;
-    }
-    .dgrid-row.directory:hover {
-      color: #0000A0;
-      border-color: black;
+    .dirColorCode & {
+      .dgrid-row.directory  {
+        background-color: #000030;
+        color: white;
+      }
+      .dgrid-row.directory:hover {
+        color: #0000A0;
+        border-color: black;
+      }
+      .dgrid-scroller {
+        background-color: #E0E8E8;
+      }
     }
     
     .dgrid-row {
       background-image: none;
     }
     
-    .dgrid-scroller {
-      background-color: #E0E8E8;
-    }
     
     .dgrid-scroller {
       direction:rtl
     }
     
-  .dgrid-content {
-        direction:rtl;
-  }
+    .dgrid-content {
+      direction:rtl;
+    }
     
   
   .outer2 {

@@ -148,12 +148,12 @@ define([
           readyFun(false);
           return;
         }
-        var interface = new Interface({
+        var interfaceInstance = new Interface({
           socket: socket
           , debugId: parDebugId
           , debuggerObj: self.debuggers[parDebugId]
         });
-        var handler = interface.on("ready", function(){
+        var handler = interfaceInstance.on("ready", function(){
           console.log("readyfun");
           readyFun(true);
           handler.remove();

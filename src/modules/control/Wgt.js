@@ -215,6 +215,25 @@ define([
         });
         self.table.addChild(self.treeFilesChk);
       });
+      
+      config.get("dirColorCode").then(function(colorCode){
+        self.dirColorCodeChk = new CheckBox({
+          label: "Color Code Files"
+          , checked: colorCode || false
+          , onChange: function(){
+            config.set("dirColorCode", this.get("checked"));
+            if (this.get("checked")){
+              domClass.add(document.body, "dirColorCode");
+            }else{
+              domClass.remove(document.body, "dirColorCode");
+            }
+          }
+        });
+        self.table.addChild(self.dirColorCodeChk);
+        if (colorCode){
+          domClass.add(document.body, "dirColorCode");
+        };
+      });
     
     }
     

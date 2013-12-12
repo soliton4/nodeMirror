@@ -17,6 +17,8 @@ define([
   , "main/clientOnly!dijit/MenuItem"
   , "main/clientOnly!dijit/form/ComboButton"
   , "dojo/topic"
+  , "main/config"
+  , "main/clientOnly!dojo/dom-class"
 ], function(
   declare
   , Base
@@ -36,6 +38,8 @@ define([
   , MenuItem
   , ComboButton
   , topic
+  , config
+  , domClass
 ){
   
   
@@ -159,7 +163,19 @@ define([
     
     , buildRendering: function(){
       var ret = this.inherited(arguments);
+      var self = this;
       
+      config.get("dirViewMode").then(function(viewMode){
+        if (viewMode == "details" || viewMode == "list"){
+          self.set("viewMode", viewMode);
+        };
+      });
+      /*config.get("dirColorCode").then(function(colorCode){
+        if (colorCode){
+          domClass.add(self.domNode, "colorCode");
+        };
+      });*/
+       
       this.upDirButton = this.ownObj(new Button({
         label: "up"
         , showLabel: true
@@ -197,7 +213,6 @@ define([
       this.menu.addChild(this.searchButton);
       
       
-      var self = this;
       var menu = new Menu({ style: "display: none;"});
       var menuItem1 = new MenuItem({
         label: "Details",
@@ -261,9 +276,11 @@ define([
     }
     
     , _setViewModeAttr: function(viewMode){
-      if (this.viewMode == viewMode){
+      /*if (this.viewMode == viewMode){
         return;
-      };
+      };*/
+      config.set("dirViewMode", viewMode);
+      
       this._set("viewMode", viewMode);
       if (this.grid){
         this.grid.set("viewMode", viewMode);

@@ -20,6 +20,11 @@ Ever asked yourself which Editor you should choose? This is trying to answer tha
   - a Unix / Windows Computer
   - node.js
   - the ability to start a node.js app
+
+
+## Optional
+   
+   - you need imagemagick installed on your machine to view images
   
   
 ## Customizablity
@@ -51,6 +56,11 @@ If a file is opened for which no native Text Mode exists it will be opened in a 
 ## Terminal Module  
   
 utilizing pty.js nodeMirror allows you to have several terminals within your browser. the Terminals will stay open when you close your browser window. You can even have the same terminal open on different browsers / machines opening new possibilities for collaboration.   
+  
+  
+## Debug Module  
+  
+this is early beta. feel free to play with it. basic breakpoint / exception and stepdebugging works. 
   
   
 ## Security  

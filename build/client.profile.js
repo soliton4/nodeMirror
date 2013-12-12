@@ -158,6 +158,9 @@ var profile = (function(){
                 , "dijit/form/ComboButton"
                 , "modules/binary/HexGrid"
                 , "modules/Debug"
+                , "modules/Image"
+                , "modules/image/ImageWgt"
+                , "modules/debug/Wgt"
               ]
               , boot: true
               , customBase: true

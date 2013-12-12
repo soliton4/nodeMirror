@@ -8,7 +8,6 @@ define([
   , "dojo/node!session.socket.io"
   , "dojo/node!connect"
   , "dojo/Deferred"
-  , "dojo/node!imagemagick"
 ], function(
   express
   , mimeMagic
@@ -19,7 +18,6 @@ define([
   , sessionIo
   , connect
   , Deferred
-  , im
 ){
   
   // first add our server-modules flag so we can use same source files for server and client

@@ -16,61 +16,61 @@
 .directory .list .scrollBar.scroll:hover {
   opacity: 0.8;
 }
-.directory .dgrid-row {
+.dirColorCode .directory .dgrid-row {
   background-color: #f0f0f0;
   cursor: default;
 }
-.directory .dgrid-row:hover {
+.dirColorCode .directory .dgrid-row:hover {
   border-color: #f0f0f0;
 }
-.directory .dgrid-row.directory {
+.dirColorCode .directory .dgrid-row.directory {
   background-color: #E0E0F0;
 }
-.directory .dgrid-row.directory:hover {
+.dirColorCode .directory .dgrid-row.directory:hover {
   border-color: #E0E0F0;
 }
-.directory .dgrid-row.text {
+.dirColorCode .directory .dgrid-row.text {
   background-color: #f2f2d8;
 }
-.directory .dgrid-row.text:hover {
+.dirColorCode .directory .dgrid-row.text:hover {
   border-color: #f2f2d8;
 }
-.directory .dgrid-row.javascript,
-.directory .dgrid-row.json {
+.dirColorCode .directory .dgrid-row.javascript,
+.dirColorCode .directory .dgrid-row.json {
   background-color: #f2e6d8;
 }
-.directory .dgrid-row.javascript:hover,
-.directory .dgrid-row.json:hover {
+.dirColorCode .directory .dgrid-row.javascript:hover,
+.dirColorCode .directory .dgrid-row.json:hover {
   border-color: #f2e6d8;
 }
-.directory .dgrid-row.octet-stream {
+.dirColorCode .directory .dgrid-row.octet-stream {
   background-color: #ededed;
 }
-.directory .dgrid-row.octet-stream:hover {
+.dirColorCode .directory .dgrid-row.octet-stream:hover {
   border-color: #ededed;
 }
-.directory .dgrid-row.image {
+.dirColorCode .directory .dgrid-row.image {
   background-color: #d8f2e8;
 }
-.directory .dgrid-row.image:hover {
+.dirColorCode .directory .dgrid-row.image:hover {
   border-color: #d8f2e8;
 }
 .directory .dgrid-row:hover {
   background-color: #abd6ff;
 }
-.directory .list .dgrid-row.directory {
+.dirColorCode .directory .list .dgrid-row.directory {
   background-color: #000030;
   color: white;
 }
-.directory .list .dgrid-row.directory:hover {
+.dirColorCode .directory .list .dgrid-row.directory:hover {
   color: #0000A0;
   border-color: black;
 }
+.dirColorCode .directory .list .dgrid-scroller {
+  background-color: #E0E8E8;
+}
 .directory .list .dgrid-row {
   background-image: none;
-}
-.directory .list .dgrid-scroller {
-  background-color: #E0E8E8;
 }
 .directory .list .dgrid-scroller {
   direction: rtl;

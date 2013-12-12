@@ -23,7 +23,8 @@
     "session.socket.io": "*",
     "connect": "*",
     "npm": "*",
-    "extend": "*"
+    "extend": "*",
+    "imagemagick": "*"
   },  
   "keywords": [
     "ide"
