@@ -40,6 +40,7 @@ define([
     , placeholder: ""
     , lineWrapping: false
     , keyMap: "default"
+    , styleActiveLine: true
   };
   
   var hintMap = {};
@@ -131,14 +132,14 @@ define([
       var helper = this.mirror.getHelper(CodeMirror.Pos(0, 0), "lint");
       if (helper){
         if (parValue){
-          this.mirror.setOption("lint", {
+          this.mirror.setOption("lint", {options: {
             laxcomma: true
           , laxbreak: true
           , multistr: true
-          , maxerr: 1000
+          , maxerr: 300
           , newcap: false
           , "-W032": true
-          });
+          }});
         }else{
           this.mirror.setOption("lint", parValue);
         }

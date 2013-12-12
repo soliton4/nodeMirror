@@ -29,6 +29,10 @@
 .dirColorCode .directory .dgrid-row.directory:hover {
   border-color: #E0E0F0;
 }
+.dirColorCode .directory .list .dgrid-row.directory {
+  background-color: #000030;
+  color: white;
+}
 .dirColorCode .directory .dgrid-row.text {
   background-color: #f2f2d8;
 }
@@ -58,13 +62,15 @@
 .directory .dgrid-row:hover {
   background-color: #abd6ff;
 }
-.dirColorCode .directory .list .dgrid-row.directory {
-  background-color: #000030;
-  color: white;
-}
-.dirColorCode .directory .list .dgrid-row.directory:hover {
-  color: #0000A0;
-  border-color: black;
+.dirColorCode .directory .list {
+  /*.dgrid-row.directory  {
+        background-color: #000030;
+        color: white;
+      }*/
+  /*.dgrid-row.directory:hover {
+        color: #0000A0;
+        border-color: black;
+      }*/
 }
 .dirColorCode .directory .list .dgrid-scroller {
   background-color: #E0E8E8;

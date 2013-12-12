@@ -33,20 +33,28 @@
   
   .dirColorCode & {
   
-  .dgrid-row {
-    background-color: @classicBaseColor;
-    cursor: default;
-  } 
-  .dgrid-row:hover {
-    border-color: @classicBaseColor;
-  }
+    .dgrid-row {
+      background-color: @classicBaseColor;
+      cursor: default;
+    } 
+    .dgrid-row:hover {
+      border-color: @classicBaseColor;
+    }
 
-  .dgrid-row.directory  {
-    background-color: #E0E0F0;
-  } 
-  .dgrid-row.directory:hover {
-    border-color: #E0E0F0;
-  }
+    .dgrid-row.directory  {
+      background-color: #E0E0F0;
+    } 
+    .dgrid-row.directory:hover {
+      border-color: #E0E0F0;
+    }
+    
+    .list {
+      .dgrid-row.directory  {
+        background-color: #000030;
+        color: white;
+      }
+    }
+    
 
   .dgrid-row.text  {
     background-color: mix(@classicBaseColor, @textColor, 90%);
@@ -84,14 +92,14 @@
   .list {
     
     .dirColorCode & {
-      .dgrid-row.directory  {
+      /*.dgrid-row.directory  {
         background-color: #000030;
         color: white;
-      }
-      .dgrid-row.directory:hover {
+      }*/
+      /*.dgrid-row.directory:hover {
         color: #0000A0;
         border-color: black;
-      }
+      }*/
       .dgrid-scroller {
         background-color: #E0E8E8;
       }
