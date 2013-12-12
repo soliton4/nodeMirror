@@ -15,6 +15,7 @@ define([
       this._events = {};
       this.seq = 0;
       this._responseHandler = {};
+      this._requestsRunning = {};
     }
     
     , destroy: function(){
@@ -117,7 +118,7 @@ define([
     }
     
     , _handleEvent: function(parEvent){
-      console.log(parEvent);
+      //console.log(parEvent);
       //console.log(parEvent.event);
       if (this._events[parEvent.event]){
         for (var i = 0; i < this._events[parEvent.event].length; ++i){
@@ -256,16 +257,46 @@ define([
       dataStr += jsnStr.length;
       dataStr += "\r\n\r\n";
       dataStr += jsnStr;
-      this._data(dataStr);
       
-      //"type":"response","command":"scripts","success":true,"body":
+      var request = {
+        data: dataStr
+        , command: parCmd
+        , handle: function(parResponse){
+          //console.log(parResponse);
+          def.resolve(parResponse);
+        }
+      };
       
-      this._expectResponse({
-        command: parCmd
-      }).then(function(parResponse){
-        console.log(parResponse);
-        def.resolve(parResponse);
-      });
+      var self = this;
+      var execRequest = function(parRequest){
+        if (!self._requestsRunning[parRequest.command]){
+          self._requestsRunning[parRequest.command] = {
+            queue: []
+          };
+        };
+        
+        self._data(parRequest.data);
+        self._expectResponse({
+          command: parRequest.command
+        }).then(function(parResponse){
+          parRequest.handle(parResponse);
+          
+          var entry = self._requestsRunning[parRequest.command];
+          if (entry && entry.queue.length){
+            execRequest(entry.queue.shift());
+            
+          }else{
+            delete self._requestsRunning[parRequest.command];
+            
+          };
+        });
+      };
+      
+      if (this._requestsRunning[request.command]){
+        this._requestsRunning[request.command].queue.push(request);
+      }else{
+        execRequest(request);
+      };
       
       return def;
     }

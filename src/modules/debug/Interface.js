@@ -51,6 +51,13 @@ define([
           par.callback(self.debuggerObj.getBreakPoint());
         }));
         
+        this._eventBindings.push(this.on("getTrace", function(par){
+          self.debuggerObj.getTrace().then(function(trace){
+            console.log("have trace");
+            par.callback(trace);
+          });
+        }));
+        
         this._eventBindings.push(this.on("getSource", function(par){
           self.debuggerObj.getSource(par.data.id, par.data.force).then(par.callback);
         }));
@@ -99,6 +106,15 @@ define([
     , getBreakPoint: function(){
       var def = new Deferred();
       this._remoteEmit("getBreakPoint", {
+      }, function(res){
+        def.resolve(res);
+      });
+      return def.promise;
+    }
+    
+    , getTrace: function(){
+      var def = new Deferred();
+      this._remoteEmit("getTrace", {
       }, function(res){
         def.resolve(res);
       });

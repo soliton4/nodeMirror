@@ -147,51 +147,6 @@ define([
       };
     }
     
-    /*, updateHints: function() {
-      if (!JSHINT || !this.jshint){
-        return;
-      };
-      
-      this.mirror.operation(lang.hitch(this, function(){
-        var i;
-        this._removeLineWgts();
-        
-        JSHINT(this.mirror.getValue(), {
-          laxcomma: true
-          , laxbreak: true
-          , multistr: true
-          , maxerr: 1000
-          , newcap: false
-        });
-        this.jshintErrors = 0;
-        for (i = 0; i < JSHINT.errors.length; ++i) {
-          var err = JSHINT.errors[i];
-          if (!err) continue;
-          if (err.reason == "Unnecessary semicolon."
-              || err.reason == "Expected a 'break' statement before 'case'."
-          ){
-            continue;
-          };
-          var msg = document.createElement("div");
-          var icon = msg.appendChild(document.createElement("span"));
-          icon.innerHTML = "!!";
-          icon.className = "lint-error-icon";
-          msg.appendChild(document.createTextNode(err.reason));
-          msg.className = "lint-error";
-          this.widgets.push(this.mirror.addLineWidget(err.line - 1, msg, {coverGutter: false, noHScroll: true}));
-          this.jshintErrors++;
-        };
-      }));
-    }*/
-    
-    /*, _removeLineWgts: function(){
-      var i;
-      for (i = 0; i < this.widgets.length; ++i){
-        this.mirror.removeLineWidget(this.widgets[i]);
-      };
-      this.widgets = [];
-    }*/
-    
     , postMixInProperties: function(){
       this.inherited(arguments);
     }
@@ -209,32 +164,11 @@ define([
       
       this.mirror.refresh();
       
-      /*if (this.jshint){
-        this._startJshint();
-      };*/
     }
-    /*,_setJshintAttr: function(parValue){
-      this._set("jshint", parValue);
-      if (parValue){
-        this._startJshint();
-      }else{
-        this._removeLineWgts();
-      };
-    }*/
     
-    /*, _startJshint: function(){
-      if (!this._jshintOn){
-        this._jshintOn = true;
-        this.mirror.on("change", lang.hitch(this, function(){
-          if (this.jshintErrors > 0){
-            this.checkDelayed.exec(300);
-          }else{
-            this.checkDelayed.exec();
-          };
-        }));
-      };
-      this.checkDelayed.exec(500);
-    }*/
+    , setCursor: function(){
+      this.mirror.getDoc().setCursor.apply(this.mirror.getDoc(), arguments);
+    }
     
     , blockComment: function(from, to, options){
       if (!from){

@@ -110,6 +110,40 @@ define([
       return this.breakpoint;
     }
     
+    , getTrace: function(){
+      console.log("getTrace!");
+      var def = new Deferred();
+      var self = this;
+      if (this._trace){
+        def.resolve(this._trace);
+      }else{
+        var frameNr = 1;
+        var trace = [self.breakpoint.frames[0]];
+        var done = function(){
+          this._trace = trace;
+          def.resolve(trace);
+        };
+        var getFun = function(){
+          console.log("getting frame " + frameNr);
+          self.protocol.setFrame(frameNr).then(function(res){
+            if (
+              res.success 
+              /*&& frameNr < 3*/
+            ){
+              trace.push(res);
+              frameNr++;
+              getFun();
+            }else{
+              done();
+            };
+          });
+        };
+        getFun();
+        
+      };
+      return def;
+    }
+    
     , _connect: function(){
       
       console.log("connected");
@@ -125,6 +159,7 @@ define([
           self.breakpoint = {
             frames: [par]
           };
+          delete this._trace;
           self.emit("break", self.breakpoint);
         });
         
@@ -138,6 +173,9 @@ define([
             frames: [par]
             , exception: par
           };
+          delete this._trace;
+          console.log("setting breakpoint");
+          console.log(self.breakpoint);
           self.emit("break", self.breakpoint);
         });
         
@@ -146,7 +184,7 @@ define([
       
       this.dbgSock.on("data", function(data){
         console.log("data:");
-        console.log(data.toString());
+        console.log(data.toString().substr(0, 255));
         console.log("------------------------");
         self.protocol.write(data);
       });
@@ -172,6 +210,7 @@ define([
               self.breakpoint = {
                 frames: [par]
               };
+              delete this._trace;
               self.emit("break", self.breakpoint);
             });
           };
@@ -213,7 +252,12 @@ define([
     }
     
     , cont: function(parStep){
+      console.log("====");
+      console.log("cont");
+      console.log("====");
       if (this._state != "break" && this._state != "exception"){
+        console.log("ignored");
+        console.log("this._state");
         return;
       };
       this.setState("run");

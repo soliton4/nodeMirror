@@ -181,7 +181,7 @@ define([
     , focusBreakPoint: function(){
       var self = this;
       this.openScript(this.breakPoint.script.id).then(function(wgt){
-        wgt.setBreakPoint(self.breakPoint);
+        wgt.setBreakPoint(self.breakPoint, self.exception);
       });
     }
     
@@ -203,7 +203,11 @@ define([
       this.sources = {};
       
       var setBreakPointFun = lang.hitch(this, function(par){
+        /*his.debuggerObj.getTrace().then(function(trace){
+          debugger;
+        });*/
         this.breakPoint = debugUtil.dereference(par.frames[0].body, par.frames[0].refs);
+        this.exception = par.exception;
         this.focusBreakPoint();
       });
       
@@ -217,7 +221,7 @@ define([
         }));
         this.debuggerObj.getState().then(lang.hitch(this, function(parState){
           this.set("state", parState);
-          if (parState == "break"){
+          if (parState == "break" || parState == "exception"){
             this.debuggerObj.getBreakPoint().then(setBreakPointFun);
           };
         }));

@@ -83,6 +83,10 @@ define([
         , length: bp.sourceLineText.length - bp.column
         , exception: exception
       });
+      this.mirror.setCursor({
+        line: bp.line,
+        ch: bp.column
+      });
     }
     
     , _continue: function(parStep){

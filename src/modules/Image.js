@@ -93,7 +93,7 @@ define([
     , getBase64Ps: function(parName, par){
       var def = new Deferred();
       var name = this.getFileName(parName);
-      console.log("doing resize: " + name);
+      //console.log("doing resize: " + name);
       
       //require("dojo/node!imagemagick", function(im){
         
@@ -103,11 +103,13 @@ define([
           width: par.width,
           height: par.height
         };
-        console.log("doing resize: " + name);
+        //console.log("doing resize: " + name);
         im.resize(options, function(err, stdout, stderr){
-          console.log(err);
+          if (err){
+            console.log(err);
+          };
           var buf = new Buffer(stdout, 'binary');
-          console.log(buf.toString("base64"));
+          //console.log(buf.toString("base64"));
           def.resolve(buf.toString("base64"));
           
           //console.log(stdout);

@@ -27,6 +27,10 @@ CodeMirror.defineMode("debugging", function(config, parserConfig) {
       };
     },
     
+    blankLine: function(state){
+      state.line++;
+    },
+    
     token: function(stream, state) {
       if (state.ended){
         stream.skipToEnd();
