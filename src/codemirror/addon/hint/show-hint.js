@@ -16,11 +16,16 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
 (function() {
   "use strict";
 
+  var HINT_ELEMENT_CLASS        = "CodeMirror-hint";
+  var ACTIVE_HINT_ELEMENT_CLASS = "CodeMirror-hint-active";
+
   CodeMirror.showHint = function(cm, getHints, options) {
     // We want a single cursor position.
     if (cm.somethingSelected()) return;
-    if (getHints == null) getHints = cm.getHelper(cm.getCursor(), "hint");
-    if (getHints == null) return;
+    if (getHints == null) {
+      if (options && options.async) return;
+      else getHints = CodeMirror.hint.auto;
+    }
 
     if (cm.state.completionActive) cm.state.completionActive.close();
 
@@ -57,6 +62,7 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
       var completion = data.list[i];
       if (completion.hint) completion.hint(this.cm, data, completion);
       else this.cm.replaceRange(getText(completion), data.from, data.to);
+      CodeMirror.signal(data, "pick", completion);
       this.close();
     },
 
@@ -155,6 +161,13 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
     return ourMap;
   }
 
+  function getHintElement(hintsElement, el) {
+    while (el && el != hintsElement) {
+      if (el.nodeName.toUpperCase() === "LI" && el.parentNode == hintsElement) return el;
+      el = el.parentNode;
+    }
+  }
+
   function Widget(completion, data) {
     this.completion = completion;
     this.data = data;
@@ -162,12 +175,12 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
 
     var hints = this.hints = document.createElement("ul");
     hints.className = "CodeMirror-hints";
-    this.selectedHint = 0;
+    this.selectedHint = options.getDefaultSelection ? options.getDefaultSelection(cm,options,data) : 0;
 
     var completions = data.list;
     for (var i = 0; i < completions.length; ++i) {
       var elt = hints.appendChild(document.createElement("li")), cur = completions[i];
-      var className = "CodeMirror-hint" + (i ? "" : " CodeMirror-hint-active");
+      var className = HINT_ELEMENT_CLASS + (i != this.selectedHint ? "" : " " + ACTIVE_HINT_ELEMENT_CLASS);
       if (cur.className != null) className = cur.className + " " + className;
       elt.className = className;
       if (cur.render) cur.render(elt, data, cur);
@@ -231,13 +244,15 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
     });
 
     CodeMirror.on(hints, "dblclick", function(e) {
-      var t = e.target || e.srcElement;
-      if (t.hintId != null) {widget.changeActive(t.hintId); widget.pick();}
+      var t = getHintElement(hints, e.target || e.srcElement);
+      if (t && t.hintId != null) {widget.changeActive(t.hintId); widget.pick();}
     });
+
     CodeMirror.on(hints, "click", function(e) {
-      var t = e.target || e.srcElement;
-      if (t.hintId != null) widget.changeActive(t.hintId);
+      var t = getHintElement(hints, e.target || e.srcElement);
+      if (t && t.hintId != null) widget.changeActive(t.hintId);
     });
+
     CodeMirror.on(hints, "mousedown", function() {
       setTimeout(function(){cm.focus();}, 20);
     });
@@ -272,9 +287,9 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
         i = avoidWrap ? 0  : this.data.list.length - 1;
       if (this.selectedHint == i) return;
       var node = this.hints.childNodes[this.selectedHint];
-      node.className = node.className.replace(" CodeMirror-hint-active", "");
+      node.className = node.className.replace(" " + ACTIVE_HINT_ELEMENT_CLASS, "");
       node = this.hints.childNodes[this.selectedHint = i];
-      node.className += " CodeMirror-hint-active";
+      node.className += " " + ACTIVE_HINT_ELEMENT_CLASS;
       if (node.offsetTop < this.hints.scrollTop)
         this.hints.scrollTop = node.offsetTop - 3;
       else if (node.offsetTop + node.offsetHeight > this.hints.scrollTop + this.hints.clientHeight)
@@ -286,6 +301,37 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
       return Math.floor(this.hints.clientHeight / this.hints.firstChild.offsetHeight) || 1;
     }
   };
+
+  CodeMirror.registerHelper("hint", "auto", function(cm, options) {
+    var helpers = cm.getHelpers(cm.getCursor(), "hint");
+    if (helpers.length) {
+      for (var i = 0; i < helpers.length; i++) {
+        var cur = helpers[i](cm, options);
+        if (cur && cur.list.length) return cur;
+      }
+    } else {
+      var words = cm.getHelper(cm.getCursor(), "hintWords");
+      if (words) return CodeMirror.hint.fromList(cm, {words: words});
+    }
+  });
+
+  CodeMirror.registerHelper("hint", "fromList", function(cm, options) {
+    var cur = cm.getCursor(), token = cm.getTokenAt(cur);
+    var found = [];
+    for (var i = 0; i < options.words.length; i++) {
+      var word = options.words[i];
+      if (word.slice(0, token.string.length) == token.string)
+        found.push(word);
+    }
+
+    if (found.length) return {
+      list: found,
+      from: CodeMirror.Pos(cur.line, token.start),
+            to: CodeMirror.Pos(cur.line, token.end)
+    };
+  });
+
+  CodeMirror.commands.autocomplete = CodeMirror.showHint;
 })();
 
   return CodeMirror;

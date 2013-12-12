@@ -252,7 +252,7 @@ CodeMirror.defineMode("haskell", function(_config, modeConfig) {
     token: function(stream, state) {
       var t = state.f(stream, function(s) { state.f = s; });
       var w = stream.current();
-      return (w in wellKnownWords) ? wellKnownWords[w] : t;
+      return wellKnownWords.hasOwnProperty(w) ? wellKnownWords[w] : t;
     },
 
     blockCommentStart: "{-",

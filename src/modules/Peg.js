@@ -89,7 +89,15 @@ define([
       domClass.add(this.getJsBtn.domNode, "invisible");
       this.menu.addChild(this.getJsBtn);
       
+      this.mirror.set("mode", "pegjs");
+      
       return ret;
+    }
+    
+    , _setContentAttr: function(){
+      var res = this.inherited(arguments);
+      this.mirror.set("mode", "pegjs");
+      return res;
     }
     
     , getJs: function(){

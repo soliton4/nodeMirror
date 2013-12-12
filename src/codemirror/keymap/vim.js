@@ -2741,10 +2741,9 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
       return regexp;
     }
     function showConfirm(cm, text) {
-      if (cm.openConfirm) {
-        cm.openConfirm('<span style="color: red">' + text +
-            '</span> <button type="button">OK</button>', function() {},
-            {bottom: true});
+      if (cm.openNotification) {
+        cm.openNotification('<span style="color: red">' + text + '</span>',
+                            {bottom: true, duration: 5000});
       } else {
         alert(text);
       }
@@ -2971,6 +2970,7 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
           exCommands[commandName](cm, params);
         } catch(e) {
           showConfirm(cm, e);
+          throw e;
         }
       },
       parseInput_: function(cm, inputStream, result) {
@@ -3131,7 +3131,7 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
             var args = new CodeMirror.StringStream(params.argString);
             if (args.eat('!')) { reverse = true; }
             if (args.eol()) { return; }
-            if (!args.eatSpace()) { throw new Error('invalid arguments ' + args.match(/.*/)[0]); }
+            if (!args.eatSpace()) { return 'Invalid arguments'; }
             var opts = args.match(/[a-z]+/);
             if (opts) {
               opts = opts[0];
@@ -3140,13 +3140,17 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
               var decimal = opts.indexOf('d') != -1 && 1;
               var hex = opts.indexOf('x') != -1 && 1;
               var octal = opts.indexOf('o') != -1 && 1;
-              if (decimal + hex + octal > 1) { throw new Error('invalid arguments'); }
+              if (decimal + hex + octal > 1) { return 'Invalid arguments'; }
               number = decimal && 'decimal' || hex && 'hex' || octal && 'octal';
             }
-            if (args.eatSpace() && args.match(/\/.*\//)) { throw new Error('patterns not supported'); }
+            if (args.eatSpace() && args.match(/\/.*\//)) { 'patterns not supported'; }
           }
         }
-        parseArgs();
+        var err = parseArgs();
+        if (err) {
+          showConfirm(cm, err + ': ' + params.argString);
+          return;
+        }
         var lineStart = params.line || cm.firstLine();
         var lineEnd = params.lineEnd || params.line || cm.lastLine();
         if (lineStart == lineEnd) { return; }
@@ -3267,13 +3271,13 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
         clearSearchHighlight(cm);
       },
       delmarks: function(cm, params) {
-        if (!params.argString || !params.argString.trim()) {
+        if (!params.argString || !trim(params.argString)) {
           showConfirm(cm, 'Argument required');
           return;
         }
 
         var state = cm.state.vim;
-        var stream = new CodeMirror.StringStream(params.argString.trim());
+        var stream = new CodeMirror.StringStream(trim(params.argString));
         while (!stream.eol()) {
           stream.eatSpace();
 
@@ -3410,7 +3414,8 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
       // Actually do replace.
       next();
       if (done) {
-        throw new Error('No matches for ' + query.source);
+        showConfirm(cm, 'No matches for ' + query.source);
+        return;
       }
       if (!confirm) {
         replaceAll();

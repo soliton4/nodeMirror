@@ -17,12 +17,10 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
   CodeMirror.defineOption("placeholder", "", function(cm, val, old) {
     var prev = old && old != CodeMirror.Init;
     if (val && !prev) {
-      cm.on("focus", onFocus);
       cm.on("blur", onBlur);
       cm.on("change", onChange);
       onChange(cm);
     } else if (!val && prev) {
-      cm.off("focus", onFocus);
       cm.off("blur", onBlur);
       cm.off("change", onChange);
       clearPlaceholder(cm);
@@ -48,9 +46,6 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
     cm.display.lineSpace.insertBefore(elt, cm.display.lineSpace.firstChild);
   }
 
-  function onFocus(cm) {
-    clearPlaceholder(cm);
-  }
   function onBlur(cm) {
     if (isEmpty(cm)) setPlaceholder(cm);
   }
@@ -58,7 +53,6 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
     var wrapper = cm.getWrapperElement(), empty = isEmpty(cm);
     wrapper.className = wrapper.className.replace(" CodeMirror-empty", "") + (empty ? " CodeMirror-empty" : "");
 
-    if (cm.hasFocus()) return;
     if (empty) setPlaceholder(cm);
     else clearPlaceholder(cm);
   }

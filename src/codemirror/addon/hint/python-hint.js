@@ -46,10 +46,6 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
 
     var completionList = getCompletions(token, context);
     completionList = completionList.sort();
-    //prevent autocomplete for last word, instead show dropdown with one word
-    if(completionList.length == 1) {
-      completionList.push(" ");
-    }
 
     return {list: completionList,
             from: CodeMirror.Pos(cur.line, token.start),

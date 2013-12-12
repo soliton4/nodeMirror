@@ -19,6 +19,9 @@ define([
 ){
   var GetJsDlg = declare([Dialog], {
     title: "JavaScript"
+    , "style": {
+      width: "80%"
+    }
     , buildRendering: function(){
       var self = this;
       this.inherited(arguments);

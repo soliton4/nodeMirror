@@ -44,7 +44,7 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
       this.edit = this.mv.edit;
       this.orig = CodeMirror(pane, copyObj({value: orig, readOnly: true}, copyObj(options)));
 
-      this.diff = getDiff(orig, options.value);
+      this.diff = getDiff(asString(orig), asString(options.value));
       this.diffOutOfDate = false;
 
       this.showDifferences = options.showDifferences !== false;
@@ -366,6 +366,11 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
       if (this.left) this.left.setShowDifferences(val);
     }
   };
+
+  function asString(obj) {
+    if (typeof obj == "string") return obj;
+    else return obj.getValue();
+  }
 
   // Operations on diffs
 
