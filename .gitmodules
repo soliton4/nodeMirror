@@ -22,3 +22,6 @@
 [submodule "generic-js/term.js"]
 	path = generic-js/term.js
 	url = https://github.com/chjj/term.js
+[submodule "generic-js/CodeMirror"]
+	path = generic-js/CodeMirror
+	url = https://github.com/soliton4/CodeMirror
