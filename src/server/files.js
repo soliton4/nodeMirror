@@ -270,8 +270,13 @@ define([
     , writeTextDef: function(parFileName, parText){
       var def = new Deferred();
       fs.writeFile(parFileName, parText, {encoding: "utf8"}, function(err, data){
-        console.log(parFileName);
-        console.log(data);
+        if (err){
+          console.log(err);
+          console.log(typeof err);
+          def.reject(err);
+        };
+        //console.log(parFileName);
+        //console.log(data);
         def.resolve();
       });
       return def.promise;

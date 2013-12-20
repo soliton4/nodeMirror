@@ -141,7 +141,8 @@ define([
     }
     
     , saveContentPs: function(par, parContent){
-      return files.writeTextDef(this.getFileName(par.id), parContent.text);
+      var ps = files.writeTextDef(this.getFileName(par.id), parContent.text);
+      return ps;
     }
     
     , onShow: function(){

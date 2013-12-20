@@ -465,7 +465,7 @@ window.CodeMirror = (function() {
   // updates.
   function updateDisplayInner(cm, changes, visible, forced) {
     var display = cm.display, doc = cm.doc;
-    if (!display.wrapper.clientWidth) {
+    if (!display.wrapper.offsetWidth) {
       display.showingFrom = display.showingTo = doc.first;
       display.viewOffset = 0;
       return;
@@ -2894,6 +2894,18 @@ window.CodeMirror = (function() {
   CodeMirror.prototype = {
     constructor: CodeMirror,
     focus: function(){window.focus(); focusInput(this); fastPoll(this);},
+    
+    getLineDom: function(line){
+      if (typeof line == "number") line = getLine(this.doc, line);
+      
+      var dims = getDimensions(this);
+      var lineNode = buildLineElement(this, line, lineNo(line), dims);
+      return { node: lineNode, dim: dims };
+    },
+    
+    visibleLines: function(){
+      return visibleLines(this.display, this.doc);
+    },
 
     setOption: function(option, value) {
       var options = this.options, old = options[option];
@@ -4999,10 +5011,11 @@ window.CodeMirror = (function() {
     clearHistory: function() {this.history = makeHistory(this.history.maxGeneration);},
 
     markClean: function() {
-      this.cleanGeneration = this.changeGeneration();
+      this.cleanGeneration = this.changeGeneration(true);
     },
-    changeGeneration: function() {
-      this.history.lastOp = this.history.lastOrigin = null;
+    changeGeneration: function(forceSplit) {
+      if (forceSplit)
+        this.history.lastOp = this.history.lastOrigin = null;
       return this.history.generation;
     },
     isClean: function (gen) {
@@ -5306,10 +5319,10 @@ window.CodeMirror = (function() {
              anchorBefore: doc.sel.anchor, headBefore: doc.sel.head,
              anchorAfter: selAfter.anchor, headAfter: selAfter.head};
       hist.done.push(cur);
-      hist.generation = ++hist.maxGeneration;
       while (hist.done.length > hist.undoDepth)
         hist.done.shift();
     }
+    hist.generation = ++hist.maxGeneration;
     hist.lastTime = time;
     hist.lastOp = opId;
     hist.lastOrigin = change.origin;

@@ -72,21 +72,104 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
 
   function updateFoldInfo(cm, from, to) {
     var opts = cm.state.foldGutter.options, cur = from;
+    if (!cm.state.foldGutter.float){
+      var node = document.createElement("div");
+      node.style.position = "absolute";
+      node.className = "codemirror-fold-floating";
+      node.style.width = "100%";
+      node.style.zIndex = "5";
+      var scroller = cm.getScrollerElement();
+      scroller.appendChild(node);
+      
+      cm.state.foldGutter.float = {
+        lines: {},
+        linesAr: [],
+        node: node
+      };
+      
+      cm.on("scroll", function(cm){
+        var lines = cm.visibleLines();
+        //console.log("from: " + lines.from + " to: " + lines.to);
+        //var x = 1;
+        var linesAr = cm.state.foldGutter.float.linesAr;
+        var i;
+        for (i = 0; i < linesAr.length; ++i){
+          //if (linesAr[i].cur > lines.from){
+          //  break;
+          //};
+          if(linesAr[i].node){
+            cm.state.foldGutter.float.node.removeChild(linesAr[i].node);
+            delete linesAr[i].node;
+          };
+          if ((linesAr[i].cur || 1) <= lines.from && linesAr[i].range.to.line > lines.from){
+            if (!linesAr[i].node){
+              var line = cm.getLineDom(linesAr[i].cur);
+              linesAr[i].node = line.node;
+              linesAr[i].dim = line.dim;
+              linesAr[i].node.style.backgroundColor = "white";
+              //debugger;
+              linesAr[i].node.style.marginLeft = line.dim.gutterTotalWidth;
+            };
+            cm.state.foldGutter.float.node.appendChild(linesAr[i].node);
+          };
+        };
+        var scroller = cm.getScrollerElement();
+        cm.state.foldGutter.float.node.style.top = scroller.scrollTop + "px";
+      });
+      //cm.on("viewportChange", function(cm, from, to){
+      //  var x = 1;
+      //});
+    };
+    var floatInfo = cm.state.foldGutter.float;
     cm.eachLine(from, to, function(line) {
       var mark = null;
+      var i;
+      if (floatInfo.lines[cur]){
+        if (floatInfo.lines[cur].node){
+          cm.state.foldGutter.float.node.removeChild(floatInfo.lines[cur].node);
+        };
+        delete floatInfo.lines[cur];
+        for (i = 0; i < floatInfo.linesAr.length; ++i){
+          if (floatInfo.linesAr[i].cur > cur){
+            break;
+          };
+          if (floatInfo.linesAr[i].cur == cur){
+            floatInfo.linesAr.splice(i, 1);
+            break;
+          };
+        }
+      };
       if (isFolded(cm, cur)) {
         mark = marker(opts.indicatorFolded);
       } else {
         var pos = Pos(cur, 0), func = opts.rangeFinder || CodeMirror.fold.auto;
         var range = func && func(cm, pos);
-        if (range && range.from.line + 1 < range.to.line)
+        if (range && range.from.line + 1 < range.to.line){
           mark = marker(opts.indicatorOpen);
+          var floatEntry = {
+            cur: cur
+            , range: range
+          };
+          //var l = cm.getLineDom(line);
+          floatInfo.lines[cur] = floatEntry;
+          var inserted = false;
+          for (i = 0; i < floatInfo.linesAr.length; ++i){
+            if (floatInfo.linesAr[i].cur > cur){
+              floatInfo.linesAr.splice(i, 0, floatEntry);
+              inserted = true;
+              break;
+            };
+          };
+          if (!inserted){
+            floatInfo.linesAr.push(floatEntry);
+          };
+        }
       }
       cm.setGutterMarker(line, opts.gutter, mark);
       ++cur;
     });
   }
-
+  
   function updateInViewport(cm) {
     var vp = cm.getViewport(), state = cm.state.foldGutter;
     if (!state) return;

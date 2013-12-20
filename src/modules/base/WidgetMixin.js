@@ -233,7 +233,9 @@ define([
     
     , savePs: function(){
       var ps = this.saveContentPs(this.get("par"), this.get("content"));
-      ps.then(lang.hitch(this, "set", "dirty", false));
+      ps.then(lang.hitch(this, "set", "dirty", false), function(e){
+        debugger;
+      });
       return ps;
     }
     

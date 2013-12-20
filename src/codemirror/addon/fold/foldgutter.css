@@ -19,3 +19,13 @@
 .CodeMirror-foldgutter-folded:after {
   content: "\25B8";
 }
+
+.codemirror-fold-floating {
+  background-color: white;
+  box-shadow: 0px 0px 10px 0px gray;
+  
+  -webkit-transition: height 0.8s;
+  -moz-transition: height 0.8s;
+  transition: height 0.8s;
+  
+}
