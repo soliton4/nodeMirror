@@ -72,7 +72,7 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
 
   function updateFoldInfo(cm, from, to) {
     var opts = cm.state.foldGutter.options, cur = from;
-    if (!cm.state.foldGutter.float){
+    if (opts.float && !cm.state.foldGutter.float){
       var node = document.createElement("div");
       node.style.position = "absolute";
       node.className = "codemirror-fold-floating";
@@ -124,24 +124,26 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
     cm.eachLine(from, to, function(line) {
       var mark = null;
       var i;
-      if (floatInfo.lines[cur]){
-        if (floatInfo.lines[cur].node){
-          cm.state.foldGutter.float.node.removeChild(floatInfo.lines[cur].node);
+      if (opts.float){
+        if (floatInfo.lines[cur]){
+          if (floatInfo.lines[cur].node){
+            cm.state.foldGutter.float.node.removeChild(floatInfo.lines[cur].node);
+          };
+          delete floatInfo.lines[cur];
+          for (i = 0; i < floatInfo.linesAr.length; ++i){
+            if (floatInfo.linesAr[i].cur > cur){
+              break;
+            };
+            if (floatInfo.linesAr[i].cur == cur){
+              floatInfo.linesAr.splice(i, 1);
+              break;
+            };
+          }
         };
-        delete floatInfo.lines[cur];
-        for (i = 0; i < floatInfo.linesAr.length; ++i){
-          if (floatInfo.linesAr[i].cur > cur){
-            break;
-          };
-          if (floatInfo.linesAr[i].cur == cur){
-            floatInfo.linesAr.splice(i, 1);
-            break;
-          };
-        }
       };
       if (isFolded(cm, cur)) {
         mark = marker(opts.indicatorFolded);
-      } else {
+      } else if (opts.float){
         var pos = Pos(cur, 0), func = opts.rangeFinder || CodeMirror.fold.auto;
         var range = func && func(cm, pos);
         if (range && range.from.line + 1 < range.to.line){
@@ -163,7 +165,7 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
           if (!inserted){
             floatInfo.linesAr.push(floatEntry);
           };
-        }
+        };
       }
       cm.setGutterMarker(line, opts.gutter, mark);
       ++cur;

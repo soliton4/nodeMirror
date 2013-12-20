@@ -34,7 +34,7 @@ define([
     , matchTags: true
     , showTrailingSpace: false
     , autoCloseTags: true
-    , foldGutter: true
+    //, foldGutter: true
     , gutters: true
     , extraKeys: {}
     , placeholder: ""
@@ -124,6 +124,26 @@ define([
     
     , on: function(parWhat, parFun){
       return this.mirror.on(parWhat, parFun);
+    }
+    
+    , _setFoldFloatAttr: function(parValue){
+      this._set("foldFloat", parValue);
+      if (this.foldGutter){
+        this.foldGutter.float = parValue;
+        this.set("foldGutter", this.foldGutter);
+      };
+    }
+    , _setFoldGutterAttr: function(parValue){
+      
+      if (parValue){
+        if (parValue === true){
+          parValue = {};
+        };
+        parValue.float = parValue.float || this.foldFloat;
+      };
+      this._set("foldGutter", parValue);
+      
+      this.mirror.setOption("foldGutter", parValue);
     }
     
     , _setLintAttr: function(parValue){

@@ -8,6 +8,7 @@ define([
     , showTrailingSpace: false
     , autoCloseTags: true
     , foldGutter: true
+    , foldFloat: false
     , autoComplete: true
     , keyMap: "default"
   };

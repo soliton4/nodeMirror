@@ -123,6 +123,12 @@ define([
         , onChange: onChangeCheckBoxFun
         
       }), new CheckBox({
+        label: "Code folding - float feature"
+        , setting: "foldFloat"
+        , valueSet: valueSetCheckBoxFun
+        , onChange: onChangeCheckBoxFun
+        
+      }), new CheckBox({
         label: "Ctrl+Space auto complete"
         , setting: "autoComplete"
         , valueSet: valueSetCheckBoxFun
