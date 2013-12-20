@@ -129,7 +129,7 @@ define([
     , _setFoldFloatAttr: function(parValue){
       this._set("foldFloat", parValue);
       if (this.foldGutter){
-        this.foldGutter.float = parValue;
+        this.foldGutter["float"] = parValue;
         this.set("foldGutter", this.foldGutter);
       };
     }
@@ -139,7 +139,7 @@ define([
         if (parValue === true){
           parValue = {};
         };
-        parValue.float = parValue.float || this.foldFloat;
+        parValue["float"] = parValue["float"] || this.foldFloat;
       };
       this._set("foldGutter", parValue);
       
@@ -156,9 +156,10 @@ define([
             laxcomma: true
           , laxbreak: true
           , multistr: true
-          , maxerr: 300
+          , maxerr: 100
           , newcap: false
           , "-W032": true
+          , "- W069": true
           }});
         }else{
           this.mirror.setOption("lint", parValue);

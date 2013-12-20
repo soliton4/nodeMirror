@@ -145,6 +145,10 @@ for making this a great IDE
   
 ## contemporaty  
   
+  - 0.1.15 check out the new tree and code folding features. you never get lost in the tree.
+  also a beta implementation for the same feature in code is available in settings
+    "code folding - float feature"
+  
   - 0.1.8 has a new folder view. actually its 2 views now: list and details. the list view is a css hack. i was wondering if there are any issues with it on modern browsers. if so, pls report them.  
   also pls give feedback if you like the color coding. i believe representing files as icons is a deadend. i tried to make the filetype intuitive by color coding different types. tell me what you think.
   
