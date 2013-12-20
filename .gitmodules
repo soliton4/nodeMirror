@@ -10,8 +10,8 @@
 [submodule "src/util"]
 	path = src/util
 	url = https://github.com/dojo/util.git
-[submodule "generic-js/CodeMirror"]
-	path = generic-js/CodeMirror
+[submodule "generic-js/CodeMirror-original"]
+	path = generic-js/CodeMirror-original
 	url = https://github.com/marijnh/CodeMirror
 [submodule "generic-js/csslint"]
 	path = generic-js/csslint
