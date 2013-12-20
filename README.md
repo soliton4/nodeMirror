@@ -46,6 +46,7 @@ Ever asked yourself which Editor you should choose? This is trying to answer tha
  - integrated pegjs parser debugger  
  - download directories as zip files  
  - Terminals (!)  
+ - build in web server  
  - more ...  
   
   
@@ -64,6 +65,11 @@ utilizing pty.js nodeMirror allows you to have several terminals within your bro
 ## Debug Module  
   
 this is early beta. feel free to play with it. basic breakpoint / exception and stepdebugging works. 
+  
+  
+## Web Server
+  
+all files you are editing are available under /file/
   
   
 ## Security  
