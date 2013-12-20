@@ -1,3 +1,6 @@
+![logo](https://raw.github.com/soliton4/nodeMirror/master/src/image/logo/logoReadme.png)
+  
+  
 ## tldr  
   
   --> [screenshots](#screenshots)
