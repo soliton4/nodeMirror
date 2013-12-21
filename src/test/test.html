@@ -1,6 +1,10 @@
 <html><head>
         <script>
           // Configuration Object for Dojo Loader:
+          window.onbeforeunload = function(){
+            return confirm("Do you really want to close?") 
+          };
+          
     	  dojoConfig = {
             baseUrl: "/", // Where we will put our packages
             async: false, // We want to make sure we are using the "modern" loader
@@ -42,7 +46,7 @@
           };
 	    </script>
   
-  <script src="/dojo/dojo.js">
+  <!--<script src="/dojo/dojo.js">
   </script>
   <script>
     dojo.addOnLoad(function(){
@@ -51,7 +55,7 @@
         console.log("yay");
       });
     });
-  </script>
+  </script>-->
   <style>
     body {
       background-color: black;

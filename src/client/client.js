@@ -63,6 +63,16 @@ define([
   var tabs;
   var openIds = {};
   
+  window.onbeforeunload = function(){
+    for (var id in openIds){
+      if (openIds[id].get("dirty")){
+        if (openIds[id].get("preventDirtyClose")){
+          return "There are unchanged Changes";
+        };
+      };
+    };
+    return;
+  };
   
   globals.openExtra = function(parExtra){
     tabs.addChild(parExtra);
@@ -152,6 +162,7 @@ define([
           delete openIds[this.par.id];
         }
       }).then(function(wgt){
+        wgt.set("preventDirtyClose", true);
         var existing = openIds[res.par.id];
         if (existing){
           if (!existing._destroyed){

@@ -21,7 +21,6 @@ define([
   ){
     contentTabs = moduleLoader.getModule("modules/ContentTabs");
   });
-
   
   return declare([noDomTitleMixin], {
     closable: true
