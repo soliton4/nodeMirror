@@ -44,7 +44,7 @@ Ever asked yourself which Editor you should choose? This is trying to answer tha
   
 ## Requirements  
   
-  - a Unix / Windows Computer
+  - a Unix / Windows Computer (yes mac is unix)
   - node.js
   - the ability to start a node.js app
 
