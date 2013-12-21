@@ -80,6 +80,8 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
         node.className = "codemirror-fold-floating";
         node.style.width = "100%";
         node.style.zIndex = "5";
+        node.style.backgroundColor = window.getComputedStyle(cm.display.wrapper).backgroundColor;
+        node.style.background = window.getComputedStyle(cm.display.wrapper).background;
         var scroller = cm.getScrollerElement();
         scroller.appendChild(node);
 
@@ -109,7 +111,8 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
                 var line = cm.getLineDom(linesAr[i].cur);
                 linesAr[i].node = line.node;
                 linesAr[i].dim = line.dim;
-                linesAr[i].node.style.backgroundColor = "white";
+                linesAr[i].node.style.backgroundColor = window.getComputedStyle(cm.display.wrapper).backgroundColor;
+                linesAr[i].node.style.background = window.getComputedStyle(cm.display.wrapper).background;
                 //debugger;
                 linesAr[i].node.style.marginLeft = line.dim.gutterTotalWidth;
               };

@@ -1,4 +1,3 @@
-// requires lib/codemirror.js loaded
 define([
   "dojo/_base/declare"
   , "dojo/_base/lang"
@@ -159,7 +158,7 @@ define([
           , maxerr: 100
           , newcap: false
           , "-W032": true
-          , "- W069": true
+          , "-W069": true
           }});
         }else{
           this.mirror.setOption("lint", parValue);

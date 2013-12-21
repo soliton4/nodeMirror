@@ -38,7 +38,7 @@ define([
             opacity: 0
           });
           this.doAnimation = this.ownObj(new DelayedExec({
-            delay: 60000 * 5 // 5 min
+            delay: 60000 * 15 // 5 min
           }, lang.hitch(this, function(){
             //console.log("called it");
             this.createAnimation();
@@ -51,7 +51,7 @@ define([
         };
           this.anim = this.ownObj(fx.animateProperty({
             node: this.fadeNode,
-            duration: 60000 * 25 // 25 min (total 30 min)
+            duration: 60000 * 25 // 25 min (total 40 min)
             , rate: 2500
             , properties: {
               opacity: {start: 0, end: 1}

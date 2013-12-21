@@ -5,6 +5,30 @@
   
   --> [screenshots](#screenshots)
   
+## Usage  
+  
+```
+npm install node-mirror  
+  
+node node_modules/node-mirror/bin/nodeMirror.js --port 3000 --dir /home/sol/projects --username sol --password mysupersecretpassword
+```
+  
+or glboal installed
+```
+nodeMirror --port 3000 --dir /home/sol/projects --username sol --password mysupersecretpassword
+```
+
+```
+http://127.0.0.1:3000/  
+```
+
+list of options
+```
+nodeMirror --help
+```
+
+
+
 ## Description  
   
 Develop your App completely within the Browser.  
@@ -75,19 +99,6 @@ all files you are editing are available under /file/
 ## Security  
   
 pass username and password to secure your local files from being hacked  
-  
-  
-## Usage  
-  
-```
-npm install node-mirror  
-  
-node node_modules/node-mirror/bin/nodeMirror.js --port 3000 --dir /home/sol/projects --username sol --password mysupersecretpassword
-```
-
-```
-http://127.0.0.1:3000/  
-```
   
   
 ## miscellaneous  
