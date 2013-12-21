@@ -31,13 +31,13 @@ nodeMirror --help
 
 ## Description  
   
-Develop your App completely within the Browser.  
+Create your App completely within the Browser.  
 Administrate your Server and edit your Code from where ever you are.  
   
-NodeMirror is a IDE utilizing CodeMirror.net, pty.js and other cool libraries.  
+nodeMirror is a IDE utilizing CodeMirror.net, pty.js and other cool libraries.  
   
-I wrote it to fit the needs of a Developer and to make maximal usage of the CodeMirror Editor library.  
-Giving you a Powerful IDE and Admin tool.  
+I wrote it to fit the needs of a Developer, especialy me, and to make maximal usage of the CodeMirror Editor library.  
+Giving you a powerful IDE and Admin tool.  
 
 Ever asked yourself which Editor you should choose? This is trying to answer that Question once and for all ;)
   
@@ -56,14 +56,15 @@ Ever asked yourself which Editor you should choose? This is trying to answer tha
   
 ## Customizablity
   
-  NodeMirror is open Source. You can easily customize it to your needs.  
+  nodeMirror is open Source. You can easily customize it to your needs.  
   Everything is a module. If you are missing some functionality let me know or fork it and write a module.
   
   
 ## features include:
   
  - view / edit all content/types supported by CodeMirror.net  
- - view / edit all files in text mode or download them  
+ - view / edit all files in text mode, hex Editor or download them  
+ - view all imagemagick supported image types
  - html tester / analyzer  
  - .less tester / .less online help / save your .less file immediately as .css file  
  - awesome hexeditor  
@@ -105,7 +106,7 @@ pass username and password to secure your local files from being hacked
   
 i am using this for my development so you can expect more.  
   
-the npm distribution is a release build  
+the npm distribution is a dojo release build  
 check out my git page to get the development version which you can use to customize NodeMirror  
 call the build script to make your own version of NodeMirror  
 
