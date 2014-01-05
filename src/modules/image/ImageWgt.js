@@ -3,11 +3,13 @@ define([
   , "dijit/_WidgetBase"
   , "sol/wgt/mixin/resize"
   , "dojo/dom-construct"
+  , "sol/convenient/Delayed"
 ], function(
   declare
   , _WidgetBase
   , resizeMixin
   , domConstruct
+  , Delayed
 ){
   return declare([_WidgetBase, resizeMixin], {
     resize: function(){
@@ -23,18 +25,26 @@ define([
       if (!(this._contentBox.w && this._contentBox.h)){
         return;
       };
-      this.module.getBase64Ps(this.par.id, {
-        width: this._contentBox.w
-        , height: this._contentBox.h
-      }).then(function(base64Src){
-        if (self.imgNode){
-          domConstruct.destroy(self.imgNode);
-        };
-        self.imgNode = domConstruct.create("img", {
-          src: "data:image/png;base64," + base64Src
-        });
-        domConstruct.place(self.imgNode, self.domNode);
-      });
+      
+      if (!this._load){
+        this._load = this.ownObj(new Delayed({
+          delay: 300
+        }, function(){
+          self.module.getBase64Ps(self.par.id, {
+            width: self._contentBox.w
+            , height: self._contentBox.h
+          }).then(function(base64Src){
+            if (self.imgNode){
+              domConstruct.destroy(self.imgNode);
+            };
+            self.imgNode = domConstruct.create("img", {
+              src: "data:image/png;base64," + base64Src
+            });
+            domConstruct.place(self.imgNode, self.domNode);
+          });
+        }));
+      };
+      this._load.exec();
     }
   });
 });

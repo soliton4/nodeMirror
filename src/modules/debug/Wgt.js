@@ -66,7 +66,7 @@ define([
         };
       };
       this.resize();
-      console.log(list);
+      //console.log(list);
     }
     
     , createDebugger: function(){

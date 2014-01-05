@@ -1,9 +1,6 @@
 <html><head>
         <script>
           // Configuration Object for Dojo Loader:
-          window.onbeforeunload = function(){
-            return confirm("Do you really want to close?") 
-          };
           
     	  dojoConfig = {
             baseUrl: "/", // Where we will put our packages
@@ -44,7 +41,63 @@
                 location: "codemirror"
             }]
           };
-	    </script>
+          
+          
+    function f(){
+      var v1 = document.getElementById("v1");
+      var v2 = document.getElementById("v2");
+      var v3 = document.getElementById("v3");
+      var a1 = document.getElementById("a1");
+      var a2 = document.getElementById("a2");
+      var a3 = document.getElementById("a3");
+      
+      var c = 0;
+      
+      setTimeout(function(){
+        //alert(v1.readyState);
+        //alert(v1.duration);
+        a1.currentTime = a1.duration - 20;
+        a2.currentTime = a2.duration - 20;
+        a3.currentTime = a3.duration - 20;
+      
+      setInterval(function(){
+        //alert("x")
+        if (c == 1){
+          v1.play();
+          a1.play();
+        }
+        if (c == 2){
+          v2.play();
+          a2.play();
+          v1.pause();
+          a1.pause();
+          v2.style.display = ""
+          v1.style.display = "none"
+        }
+        if (c == 3){
+          v3.play();
+          a3.play();
+          v2.pause();
+          a2.pause();
+          v3.style.display = ""
+          v2.style.display = "none"
+        }
+        if (c == 4){
+          v3.pause();
+          a3.pause();
+        }
+        ++c;
+      }, 1000);
+      }, 1000);
+      //v1.oncanplay = function(){
+      //  alert("can play");
+      //};
+      //v1.addEventListener('ended',function(e){
+        //v2.play();
+      //}, false);
+      //v1.play();
+    };
+  </script>
   
   <!--<script src="/dojo/dojo.js">
   </script>
@@ -79,16 +132,12 @@
       font-size: 50px;
     }
   </style>
-  </head><body>
-    <div class="fonttest1">
-      See UNICORNS!!!
-    </div>
-    <div class="fonttest2">
-      ~home>run.sh;
-    </div>
-    <div class="fonttest3">
-      ~home>run.sh;
-    </div>
-    <textarea id="ta1">haha</textarea>
+  </head><body onload="f()">
+    <video id="v1" src="/file/src/test/v1.ogg" type="video/ogg" controls></video>
+    <video id="v2" src="/file/src/test/v2.ogg" type="video/ogg" controls style="display: none"></video>
+    <video id="v3" src="/file/src/test/v3.ogg" type="video/ogg" controls style="display: none"></video>
+    <audio id="a1" src="/file/src/test/a1.ogg" type="audio/ogg" controls></audio>
+    <audio id="a2" src="/file/src/test/a2.ogg" type="audio/ogg" controls></audio>
+    <audio id="a3" src="/file/src/test/a3.ogg" type="audio/ogg" controls></audio>
   </body>
 </html>
