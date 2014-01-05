@@ -8,6 +8,7 @@ var profile = (function(){
         optimize: "closure",
         cssOptimize: "comments",
         stripConsole: "warn",
+        locale: 'en-us',
         
         packages:[{
             name: "dojo",
@@ -82,7 +83,8 @@ var profile = (function(){
             , "server-modules": false
           },
           async: 1,
-          deps: [ "client/client" ]
+          deps: [ "client/client" ],
+          locale: 'en-us'
         },
         layers: {
             "dojo/dojo": {
