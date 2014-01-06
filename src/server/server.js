@@ -42,6 +42,7 @@ define([
     , "main/connection"
     , "dojo/node!adm-zip"
     , "sol/string"
+    , "dojo/node!child_process"
   ], function(
     remoteCaller
     , treeItems
@@ -59,6 +60,7 @@ define([
     , connection
     , AdmZip
     , solString
+    , child_process
   ){
     
     var relativeStr = nodeMirrorConfig.webpath;
@@ -182,9 +184,119 @@ define([
     // access to the choosen directory
     mirror.use(relativeStr + "file/", express["static"](dirStr));
     
+    mirror.get(relativeStr + "x11", function(req, res){
+      
+      res.header("Content-Type", "video/ogg");
+      
+      var spawn  = child_process.spawn;
+      
+      var params = [
+        '-loglevel', 'quiet',
+        "-flags", "low_delay",
+        "-s", "1024x768",
+        "-f", "x11grab",
+        "-r", "5",
+        '-i', ":0.0+0,0",
+        '-f', "ogg",
+        //'-acodec', 'libvorbis',
+        "-an",
+        '-vcodec', 'libtheora',
+        '-q:v', '9',
+        "-flags", "low_delay",
+        "-t", "0.5",
+        //"-fflags", "nobuffer",
+        'pipe:1'
+      ];
+      
+      avconv = spawn('avconv', params);
+      
+      var stream = avconv.stdout;
+      stream.pipe(res);
+      stream.on("end", function(){
+        res.end();
+      });
+      
+      res.on("end", function(){
+        avconv.kill();
+      });
+    });
+      //avconv -s 1024x768 -f x11grab -r 5 -i :0.0+0,0 -vcodec libtheora -q:v 6 -f ogg -
+      
+      
+    mirror.get(relativeStr + "x11.mp4", function(req, res){
+      
+      res.header("Content-Type", "video/h264");
+      
+      var spawn  = child_process.spawn;
+      
+      var params = [
+        '-loglevel', 'quiet',
+        //"-flags", "low_delay",
+        "-s", "1024x768",
+        "-f", "x11grab",
+        "-r", "4",
+        '-i', ":0.0+0,0",
+        '-f', "h264",
+        //'-acodec', 'libvorbis',
+        "-an",
+        '-vcodec', 'libx264',
+        '-pre', 'lossless_ultrafast',
+        //"-flags", "low_delay",
+        "-threads", "0",
+        'pipe:1'
+      ];
+      
+      avconv = spawn('avconv', params);
+      
+      var stream = avconv.stdout;
+      stream.pipe(res);
+      
+      res.on("end", function(){
+        avconv.kill();
+      });
+    });
+    //avconv -f x11grab -r 25 -s 1280x720 -i :0.0+0,0 -vcodec libx264 -pre lossless_ultrafast -threads 0 video.mkv  
+      
+      
+    mirror.get(relativeStr + "x11.webm", function(req, res){
+      
+      res.header("Content-Type", "video/webm");
+      
+      var spawn  = child_process.spawn;
+      
+      var params = [
+        '-loglevel', 'quiet',
+        //"-flags", "low_delay",
+        "-s", "1024x768",
+        "-f", "x11grab",
+        "-r", "4",
+        '-i', ":0.0+0,0",
+        '-f', "webm",
+        //'-acodec', 'libvorbis',
+        "-an",
+        '-vcodec', 'libvpx',
+        "-max_delay", "1",
+        //'-pre', 'lossless_ultrafast',
+        //"-flags", "low_delay",
+        //"-threads", "0",
+        'pipe:1'
+      ];
+      
+      avconv = spawn('avconv', params);
+      
+      var stream = avconv.stdout;
+      stream.pipe(res);
+      
+      res.on("end", function(){
+        avconv.kill();
+      });
+    });
+      
+      
     // access to app files
     mirror.use(relativeStr, express["static"](nodeMirrorConfig["static"]));
-  
+    
+      
     
     
     

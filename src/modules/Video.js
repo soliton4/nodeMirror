@@ -8,7 +8,6 @@ define([
   , "sol/string"
   , "modules/base/Base"
   , "modules/base/BorderContainer"
-  , "main/serverOnly!dojo/node!fluent-ffmpeg"
   , "main/clientOnly!./video/VideoWgt"
   , "main/clientOnly!dijit/form/HorizontalSlider"
 ], function(
@@ -21,7 +20,6 @@ define([
   , solString
   , Base
   , BorderContainerBase
-  , ffmpeg
   , VideoWgt
   , HorizontalSlider
 ){

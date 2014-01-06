@@ -19,6 +19,8 @@ define([], function(){
   , "modules/Peg"
   , "modules/Image"
   , "modules/Video"
+  , "modules/Audio"
+  , "modules/PromiseLand"
     
   , "modules/Terminal"
   , "modules/Control"

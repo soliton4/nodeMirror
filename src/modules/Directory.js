@@ -314,7 +314,7 @@ define([
     
     , _setOriginalTitleAttr: function(par){
       this._set("originalTitle", par);
-      this._set("title", par + "/");
+      this.set("title", par + "/");
     }
 
     

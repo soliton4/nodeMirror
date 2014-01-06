@@ -6,30 +6,36 @@
 // promiseLand is a very promising Language
 //
 //
+
 (function(){
-  var require = require;
-  var define = define;
+  var defineFun;
+  var requireFun;
+  
   if (typeof exports == "object" && typeof module == "object"){ // CommonJS
-    var commonJsRequire = require;
-    require = function(modulesAr, callback){
+    console.log("commonjs");
+    requireFun = function(modulesAr, callback){
       var i = 0;
       var l = modulesAr.length;
       var args = [];
       for (i; i < l; ++i){
-        args.push(commonJsRequire(modulesAr[i]));
+        args.push(require(modulesAr[i]));
       };
       callback.apply(callback, args);
     };
-    define = function(requireAr, callback){
-      require(requireAr, function(){
+    defineFun = function(requireAr, callback){
+      requireFun(requireAr, function(){
         module.exports = callback.apply(callback, arguments);
       });
     };
-    //module.exports = mod();
+    
   }else if (typeof define == "function" && define.amd){ // AMD
-    //return define([], mod);
+    console.log("amd");
+    defineFun = define;
+    requireFun = require;
+    
   }else{ // Plain browser env
-    require = function(modulesAr, callback){
+    console.log("plain browser mode");
+    requireFun = function(modulesAr, callback){
       if (modulesAr && modulesAr.length){
         throw {
           msg: "no module loader available"
@@ -37,8 +43,8 @@
       };
       callback.apply(callback, []);
     };
-    define = function(requireAr, callback){
-      require(requireAr, function(){
+    defineFun = function(requireAr, callback){
+      requireFun(requireAr, function(){
         var originalPromiseLand = this["promiseLand"];
         this["promiseLand"] = callback.apply(callback, arguments);
         if (originalPromiseLand){
@@ -50,10 +56,10 @@
         };
       });
     };
-    //this.promiseLand = mod();
+    
   };
   
-  define([], function(){
+  defineFun([], function(){
     var promiseLand = {
       
     };

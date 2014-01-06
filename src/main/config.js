@@ -67,7 +67,7 @@ define([
     }
     
     , set: function(parName, parValue){
-      console.log("calling set!!!");
+      //console.log("calling set!!!");
       if (isServer){
         console.log("doing a set");
         try{

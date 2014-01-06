@@ -32,6 +32,7 @@ define([
     , ".coffee": "text/x-coffeescript"
     , ".cuf": "text/x-fortran"
     , ".cu": "text/x-c"
+    , ".pland": "text/promiseland"
   };
 
   var forceTextExtensions = {
@@ -41,6 +42,7 @@ define([
     , ".coffee": "text/x-coffeescript"
     , ".cuf": "text/x-fortran"
     , ".cu": "text/x-c"
+    , ".pland": "text/promiseland"
   };
   
   var files;
