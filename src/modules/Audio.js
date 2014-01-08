@@ -12,6 +12,7 @@ define([
   , "main/clientOnly!dijit/form/HorizontalSlider"
   , "main/clientOnly!dojo/dom-construct"
   , "main/clientOnly!sol/wgt/Node"
+  , "main/clientOnly!dojo/_base/Color"
 ], function(
   declare
   , Deferred
@@ -26,6 +27,7 @@ define([
   , HorizontalSlider
   , domConstruct
   , Node
+  , Color
 ){
   
   /*var additionalSubtypes = {
@@ -74,6 +76,7 @@ define([
     }
     
     , _setContentAttr: function(parContent){
+      var self = this;
       //this._set("content", parContent);
       if (this.aNode){
         this.aNode.destroy();
@@ -85,9 +88,63 @@ define([
           , type: "audio/ogg"
           , "controls": "controls"
         }
-        , region: "center"
+        , region: "top"
       }));
       this.addChild(this.aNode);
+      if (window.requestAnimationFrame, window.webkitAudioContext){
+        this._context = new webkitAudioContext();
+        this._analyser = this._context.createAnalyser();
+        this._source = this._context.createMediaElementSource(this.aNode.domNode);
+        this._source.connect(this._analyser);
+        this._analyser.connect(this._context.destination);        
+        this._analyser.fftSize = 1024;
+        this._analyser.smoothingTimeConstant = 0.2;
+      };
+      
+      if (!this.cNode){
+        this.cNode = this.ownObj(new Node({
+          tagName: "canvas",
+          tagAttributes: {
+          }
+          , region: "center"
+        }));
+        this.addChild(this.cNode);
+        var ctx = self.cNode.domNode.getContext("2d");
+        if (window.requestAnimationFrame, window.webkitAudioContext){
+          var frameLoop = function(){
+            if (self._destroyed){
+              return;
+            };
+            window.requestAnimationFrame(frameLoop);
+            var ar = new Uint8Array(self._analyser.frequencyBinCount);
+            self._analyser.getByteFrequencyData(ar);
+            ctx.clearRect(0, 0, self.cNode.domNode.width, self.cNode.domNode.height); // Clear the canvas
+            //ctx.fillStyle = '#00CCFF'; // Color of the bars
+            bars = 512;
+            for (var i = 0; i < bars; i++) {
+              var v = ar[i];
+              var r = v < 128 ? 0 : (v - 128) * 2;
+              var g = v < 64 ? 0 : v > 192 ? 255 - ((v - 192) * 4) : (v - 64) * 2;
+              var b = v > 128 ? 0 : 255 - (v * 2);
+              var c = new Color([r, g, b]);
+              ctx.fillStyle = c.toHex();
+              bar_x = i;
+              bar_width = 1;
+              bar_height = -(ar[i] / 2);
+              //fillRect( x, y, width, height ) // Explanation of the parameters below
+              ctx.fillRect(bar_x, self.cNode.domNode.height, bar_width, bar_height);
+            };
+          };
+          window.requestAnimationFrame(frameLoop);
+        };
+      };
+    }
+    
+    , destroy: function(){
+      /*if (window.cancelAnimationFrame && this.animationId){
+        window.cancelAnimationFrame(this.animationId);
+      };*/
+      return this.inherited(arguments);
     }
     
     , getContentPs: function(par){
@@ -112,13 +169,13 @@ define([
           
           var params = [
             '-loglevel', 'quiet',
-            '-threads', "4",
+            '-threads', "2",
             '-i', name,
             '-f', "ogg",
             '-acodec', 'libvorbis',
             '-vcodec', 'libtheora',
             '-vn',
-            '-threads', "4",
+            '-threads', "2",
             'pipe:1'
           ];
           
