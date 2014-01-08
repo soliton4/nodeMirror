@@ -65,7 +65,7 @@ define([
     */
     , isCompetentPs: function(par){
       var def = this.def();
-      if (par.contentType == "application/pdf")){
+      if (par.contentType == "application/pdf"){
         def.resolve();
       }else{
         def.reject();

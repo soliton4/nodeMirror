@@ -48,6 +48,15 @@ var profile = (function(){
         },{
             name: "xstyle",
             location: "xstyle" // to avoid error msg
+        }, {
+          name: "audio"
+        , location: "audio"
+        }, {
+          name: "video"
+        , location: "video"
+        }, {
+          name: "promiseland"
+        , location: "promiseland"
         }],
         staticHasFeatures: {
           "host-node": 1 // Ensure we "force" the loader into Node.js mode
@@ -99,6 +108,12 @@ var profile = (function(){
                 , "modules/Debug"
                 , "modules/debug/Debugger"
                 , "modules/Image"
+                , "modules/Video"
+                , "modules/Audio"
+                , "modules/PromiseLand"
+                , "promiseland"
+                , "promiseland/parser"
+                , "promiseland/main"
                 ]
             }
         }

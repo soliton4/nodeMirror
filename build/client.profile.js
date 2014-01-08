@@ -61,6 +61,15 @@ var profile = (function(){
         }, {
           name: "image"
         , location: "image"
+        }, {
+          name: "audio"
+        , location: "audio"
+        }, {
+          name: "video"
+        , location: "video"
+        }, {
+          name: "promiseland"
+        , location: "promiseland"
         }],
       
       plugins: {
@@ -163,6 +172,11 @@ var profile = (function(){
                 , "modules/Image"
                 , "modules/image/ImageWgt"
                 , "modules/debug/Wgt"
+                , "modules/Video"
+                , "modules/video/VideoWgt"
+                , "modules/Audio"
+                , "modules/PromiseLand"
+                , "modules/promiseLand/Tester"
               ]
               , boot: true
               , customBase: true

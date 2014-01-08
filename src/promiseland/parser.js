@@ -3,7 +3,6 @@
   var requireFun;
   
   if (typeof exports == "object" && typeof module == "object"){ // CommonJS
-    console.log("commonjs");
     requireFun = function(modulesAr, callback){
       var i = 0;
       var l = modulesAr.length;
@@ -20,7 +19,6 @@
     };
     
   }else if (typeof define == "function" && define.amd){ // AMD
-    console.log("amd");
     defineFun = define;
     requireFun = require;
     
@@ -131,19 +129,28 @@
     };
     
     var parser = {
-      parseStr: function(promiseLandCodeStr){
-        var parsedAr = promiseLand._parser.parse(promiseLandCodeStr);
-        
-        var i = 0;
-        var l = parsedAr.length;
-        var resStr = "";
-        for (i; i < l; ++i){
-          if (parsedAr[i].type == "Program"){
-            resStr += parseProgram(parsedAr[i]);
-          }else{
-            unknownType(parsedAr[i]);
+      parse: function(promiseLandCodeStr){
+        var p = new promiseLand.Promise();
+        console.log("2");
+        promiseLand._getParser().then(function(parser){
+          console.log(parser);
+          var parsedAr = parser.parse(promiseLandCodeStr);
+          
+          var i = 0;
+          var l = parsedAr.length;
+          var resStr = "";
+          for (i; i < l; ++i){
+            if (parsedAr[i].type == "Program"){
+              resStr += parseProgram(parsedAr[i]);
+            }else{
+              unknownType(parsedAr[i]);
+            };
           };
-        };
+          p.resolve(resStr);
+          
+        });
+        console.log("returning promise");
+        return p.promise;
       }
     };
     

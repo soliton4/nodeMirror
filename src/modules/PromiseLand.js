@@ -112,7 +112,10 @@ define([
     , testPs: function(par, parCode){
       var def = this.def();
       
-      def.resolve(parser.parseStr(parCode));
+      parser.parse(parCode).then(function(jsStr){
+        def.resolve(jsStr);
+      });
+      //def.resolve("xxx");
       return def;
     }
     
