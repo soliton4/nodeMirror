@@ -195,16 +195,19 @@ define([
         "-flags", "low_delay",
         "-s", "1024x768",
         "-f", "x11grab",
-        "-r", "5",
+        "-r", "2",
         '-i', ":0.0+0,0",
         '-f', "ogg",
         //'-acodec', 'libvorbis',
         "-an",
         '-vcodec', 'libtheora',
         '-q:v', '9',
-        "-flags", "low_delay",
-        "-t", "0.5",
+        //"-flags", "low_delay",
         //"-fflags", "nobuffer",
+        //"-max_delay", "0.1",
+        "-t", "0.5", 
+        "-threads", "0",
+        //"-tune", "zerolatency",
         'pipe:1'
       ];
       
@@ -221,7 +224,31 @@ define([
       });
     });
       //avconv -s 1024x768 -f x11grab -r 5 -i :0.0+0,0 -vcodec libtheora -q:v 6 -f ogg -
+    
+    mirror.get(relativeStr + "x11.png", function(req, res){
       
+      res.header("Content-Type", "image/png");
+      
+      var spawn  = child_process.spawn;
+      
+      var params = [
+        '-window', 'root', 'png:-'
+      ];
+      
+      var ip = spawn('import', params);
+      
+      var stream = ip.stdout;
+      stream.pipe(res);
+      stream.on("end", function(){
+        res.end();
+      });
+      
+      res.on("end", function(){
+        ip.kill();
+      });
+    });
+      
+    
       
     mirror.get(relativeStr + "x11.mp4", function(req, res){
       
@@ -241,7 +268,7 @@ define([
         "-an",
         '-vcodec', 'libx264',
         '-pre', 'lossless_ultrafast',
-        //"-flags", "low_delay",
+        "-flags", "low_delay",
         "-threads", "0",
         'pipe:1'
       ];
@@ -275,10 +302,13 @@ define([
         //'-acodec', 'libvorbis',
         "-an",
         '-vcodec', 'libvpx',
-        "-max_delay", "1",
+        "-max_delay", "0.1",
+        "-t", "1", 
+        "-q:v", "10",
         //'-pre', 'lossless_ultrafast',
         //"-flags", "low_delay",
-        //"-threads", "0",
+        "-threads", "0",
+        "-tune", "zerolatency",
         'pipe:1'
       ];
       
