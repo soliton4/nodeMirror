@@ -25,3 +25,6 @@
 [submodule "generic-js/CodeMirror"]
 	path = generic-js/CodeMirror
 	url = https://github.com/soliton4/CodeMirror
+[submodule "generic-js/pdf.js"]
+	path = generic-js/pdf.js
+	url = https://github.com/mozilla/pdf.js
