@@ -6,3 +6,6 @@
   background-color: white;
   opacity: 0.5;
 }
+.x11divWraper {
+  overflow: scroll;
+}

@@ -35,6 +35,10 @@ define([
       array.forEach(this.terminals, function(t){
         ar.push(t);
       });
+      ar.push({
+        id: "x11"
+        , label: "X11"
+      });
       return ar;
     }
     

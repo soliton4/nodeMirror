@@ -5,6 +5,7 @@ define([
   , "main/moduleLoader!client"
   , "./Tab"
   , "dojo/_base/array"
+  , "./X11"
 ], function(
   declare
   , Tree
@@ -12,6 +13,7 @@ define([
   , moduleLoader
   , Tab
   , array
+  , X11
 ){
   return declare([
     Tree
@@ -60,6 +62,16 @@ define([
           self.tabs[term.termid] = tab;
           self._addTerm(term.termid);
         });
+      }else if (item.id == "x11"){
+        var tab = new X11({
+          "module": self.module
+        });
+        tabs.addChild(tab);
+        tab.on("close", function(){
+          delete self.tabs["x11"];
+        });
+        tabs.selectChild(tab);
+        self.tabs["x11"] = tab;
       }else{
         self.module.openTerminal(item.id).then(function(term){
           var tab = new Tab({

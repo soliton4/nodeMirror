@@ -180,11 +180,13 @@ define([
         res.end(s);
       });
     });
+      
+      mirror.use(express.limit(100000000000));
     
     // access to the choosen directory
     mirror.use(relativeStr + "file/", express["static"](dirStr));
     
-    mirror.get(relativeStr + "x11", function(req, res){
+    /*mirror.get(relativeStr + "x11", function(req, res){
       
       res.header("Content-Type", "video/ogg");
       
@@ -216,16 +218,20 @@ define([
       var stream = avconv.stdout;
       stream.pipe(res);
       stream.on("end", function(){
-        res.end();
+        console.log("avconv ended");
+        setTimeout(function(){
+          res.end();
+        }, 1000);
       });
       
       res.on("end", function(){
+        console.log("http ended");
         avconv.kill();
       });
-    });
+    });*/
       //avconv -s 1024x768 -f x11grab -r 5 -i :0.0+0,0 -vcodec libtheora -q:v 6 -f ogg -
     
-    mirror.get(relativeStr + "x11.png", function(req, res){
+    /*mirror.get(relativeStr + "x11.png", function(req, res){
       
       res.header("Content-Type", "image/png");
       
@@ -246,90 +252,189 @@ define([
       res.on("end", function(){
         ip.kill();
       });
-    });
+    });*/
       
     
       
-    mirror.get(relativeStr + "x11.mp4", function(req, res){
+    /*mirror.get(relativeStr + "x11.mp4", function(req, res){
       
-      res.header("Content-Type", "video/h264");
+      res.header("Content-Type", "video/mp4");
       
       var spawn  = child_process.spawn;
       
-      var params = [
-        '-loglevel', 'quiet',
-        //"-flags", "low_delay",
-        "-s", "1024x768",
-        "-f", "x11grab",
-        "-r", "4",
-        '-i', ":0.0+0,0",
-        '-f', "h264",
-        //'-acodec', 'libvorbis',
-        "-an",
-        '-vcodec', 'libx264',
-        '-pre', 'lossless_ultrafast',
-        "-flags", "low_delay",
-        "-threads", "0",
-        'pipe:1'
+      var x264Params = [
+        "--demuxer", "y4m",
+        "-",
+        "--preset", "veryfast",
+        "--tune", "zerolatency",
+        "--intra-refresh",
+        "--fps", "5",
+        "--vbv-maxrate", "5000",
+        "--vbv-bufsize", "200",
+        "--slice-max-size", "1500",
+        "-o", "-"
       ];
+      var x264 = spawn('x264', x264Params);
       
-      avconv = spawn('avconv', params);
+      var instream = x264.stdin;
+      var outstream = x264.stdout;
+      outstream.pipe(res);
+
+      
+      var avconvParams = [
+        //'-loglevel', 'quiet',
+        "-r", "5",
+        "-f", "x11grab",
+        "-s", "1024x768",
+        '-i', ":0.0+0,0",
+        "-pix_fmt", "yuv420p",
+        "-r", "5",
+        "-f", "yuv4mpegpipe",
+        "-"
+      ];
+      var avconv = spawn('avconv', avconvParams);
       
       var stream = avconv.stdout;
-      stream.pipe(res);
+      stream.pipe(instream);
       
       res.on("end", function(){
         avconv.kill();
+        x264.kill();
       });
     });
     //avconv -f x11grab -r 25 -s 1280x720 -i :0.0+0,0 -vcodec libx264 -pre lossless_ultrafast -threads 0 video.mkv  
-      
+    //avconv -r 5 -f x11grab -s 1024x768 -i :0.0+0,0  -pix_fmt yuv420p -r 5 -f yuv4mpegpipe - | x264 --demuxer y4m - --preset veryfast --tune zerolatency --intra-refresh –fps 5 --vbv-maxrate 5000 --vbv-bufsize 200 --slice-max-size 1500 -o z5.mp4
+    */
       
     mirror.get(relativeStr + "x11.webm", function(req, res){
+      req.connection.setTimeout(0);
       
       res.header("Content-Type", "video/webm");
       
       var spawn  = child_process.spawn;
       
-      var params = [
-        '-loglevel', 'quiet',
-        //"-flags", "low_delay",
-        "-s", "1024x768",
-        "-f", "x11grab",
-        "-r", "4",
-        '-i', ":0.0+0,0",
-        '-f', "webm",
-        //'-acodec', 'libvorbis',
-        "-an",
-        '-vcodec', 'libvpx',
-        "-max_delay", "0.1",
-        "-t", "1", 
-        "-q:v", "10",
-        //'-pre', 'lossless_ultrafast',
-        //"-flags", "low_delay",
-        "-threads", "0",
-        "-tune", "zerolatency",
-        'pipe:1'
-      ];
+      x11size().then(function(size){
+        var params = [
+          "-re",                   // Real time mode
+          "-f","x11grab",          // Grab screen
+          "-r","12",              // Framerate
+          "-s", size.x + "x" + size.y,   // Capture size
+          "-i",":0+" + 0 + "," + 0, // Capture offset
+          "-g","1",                // All frames are i-frames
+          "-me_method","zero",     // Motion algorithms off
+          "-flags2","fast",
+          "-vcodec","libvpx",      // vp8 encoding
+          "-preset","ultrafast",
+          "-tune","zerolatency",
+          "-b:v","1M",             // Target bit rate
+          "-crf","40",             // Quality
+          "-qmin","5",             // Quantization
+          "-qmax","5",
+          "-t", "180", // 3 min
+          "-f","webm",             // File format
+          "-"                      // Output to STDOUT
+        ];
+
+        var avconv = spawn('avconv', params);
+
+        var stream = avconv.stdout;
+        stream.pipe(res);
+        
+        stream.on("end", function(){
+          console.log("avconv: end");
+          res.end();
+          avconv.kill();
+        });
+        
+        res.on("end", function(){
+          console.log("webm: res end");
+          avconv.kill();
+          stream.end();
+        });
+        res.on("close", function(){
+          console.log("webm: res close");
+          avconv.kill();
+          stream.end();
+        });
+        
+      });
       
-      avconv = spawn('avconv', params);
+    });
       
-      var stream = avconv.stdout;
-      stream.pipe(res);
       
-      res.on("end", function(){
-        avconv.kill();
+      /*
+      var ffmpeg = child_process.spawn("ffmpeg",[
+                "-re",                   // Real time mode
+                "-f","x11grab",          // Grab screen
+                "-r","100",              // Framerate
+                "-s",width+"x"+height,   // Capture size
+                "-i",":0+"+top+","+left, // Capture offset
+                "-g","0",                // All frames are i-frames
+                "-me_method","zero",     // Motion algorithms off
+                "-flags2","fast",
+                "-vcodec","libvpx",      // vp8 encoding
+                "-preset","ultrafast",
+                "-tune","zerolatency",
+                "-b:v","1M",             // Target bit rate
+                "-crf","40",             // Quality
+                "-qmin","5",             // Quantization
+                "-qmax","5",
+                "-f","webm",             // File format
+                "-"                      // Output to STDOUT
+            ]);
+            
+   ffmpeg -re -f x11grab -r 100 -s 1024x768 -i :0+0,0 -g 0 -me_method zero -flags2 fast -vcodec libvpx -preset ultrafast -tune zerolatency -b:v 1M -crf 40 -qmin 5 -qmax 5 -f webm  -
+            
+            
+            
+      */
+      
+      function x11size(){
+        var def = new Deferred();
+        var spawn  = child_process.spawn;
+        
+        var params = [
+          "-root", "_NET_DESKTOP_GEOMETRY"
+        ];
+        
+        var xprop = spawn('xprop', params);
+        
+        var dataAr = [];
+        var stream = xprop.stdout;
+        stream.on("data", function(data){
+          dataAr.push(data);
+        });
+        
+        stream.on("end", function(){
+          var s = Buffer.concat(dataAr).toString("utf8");
+          var ar = s.split("=");
+          var value = ar[ar.length - 1];
+          ar = value.split(",");
+          var y = parseInt(ar.pop(), 10);
+          var x = parseInt(ar.pop(), 10);
+          def.resolve({ x: x, y: y });
+          //res.end();
+        });
+
+        return def.promise;
+      }
+
+      
+    mirror.get(relativeStr + "x11properties", function(req, res){
+      
+      res.header("Content-Type", "application/json");
+      
+      x11size().then(function(size){
+        res.send(size);
       });
     });
+      
       
       
     // access to app files
     mirror.use(relativeStr, express["static"](nodeMirrorConfig["static"]));
     
       
-    
-    
-    
     
     server.listen(nodeMirrorConfig.port);
     

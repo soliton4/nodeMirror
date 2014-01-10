@@ -10,6 +10,7 @@ define([
   , "main/serverOnly!sol/node/npm"
   , "main/serverOnly!dojo/node!../../../lib/terminal.js"
   , "main/connection"
+  , "main/serverOnly!dojo/node!child_process"
 
 ], function(
   declare
@@ -23,6 +24,7 @@ define([
   , npm
   , terminal
   , connection
+  , child_process
 ){
   
   var pty;
@@ -118,6 +120,10 @@ define([
         }));
       });
       return def;
+    }
+    
+    , mouseEvent: function(evt){
+      this.socket.emit("x11mouse", evt);
     }
     
     , getList: function(){
@@ -222,6 +228,34 @@ define([
             
           });
         });
+      });
+
+      var spawn  = child_process.spawn;
+      
+      socket.on("x11mouse", function(evt){
+        
+        var params1;
+        var params2;
+        
+        if (evt.type == "mousedown" || evt.type == "mouseup" || evt.type == "mousemove"){
+          params1 = ["mousemove", "" + evt.x, "" + evt.y];
+        };
+        if (evt.type == "mousedown"){
+          params2 = ["mousedown", "" + evt.button];
+        }else if (evt.type == "mouseup"){
+          params2 = ["mouseup", "" + evt.button];
+        };
+        
+        if (params1){
+          var xdotool = spawn('xdotool', params1);
+          xdotool.on("exit", function(){
+            console.log("exit");
+            console.log(params2);
+            if (params2){
+              xdotool = spawn('xdotool', params2);
+            };
+          });
+        };
       });
       
     };
