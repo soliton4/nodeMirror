@@ -61,6 +61,10 @@ define([
       if (this.video){
         domConstruct.destroy(this.video);
       };
+      if (this.vidTimeout){
+        clearTimeout(this.vidTimeout);
+        delete this.vidTimeout;
+      };
       var self = this;
       this.video = domConstruct.create("video", {
         "class": "x11Video"
@@ -72,7 +76,7 @@ define([
       on(this.video, "ended", lang.hitch(this, "createVideo"));
       on(this.video, "error", lang.hitch(this, "createVideo"));
       on(this.video, "playing", function(){
-        setTimeout(function(){
+        self.vidTimeout = setTimeout(function(){
           self.createVideo();
         }, 1000 * 175);
       });
@@ -93,6 +97,25 @@ define([
           , y: evt.offsetY
           , button: evt.button + 1
         });
+      });
+      on(this.video, "mousemove", function(evt){
+        event.stop(evt);
+        self.module.mouseEvent({
+          type: "mousemove"
+          , x: evt.offsetX
+          , y: evt.offsetY
+        });
+      });
+      on(this.video, "mouseover", function(evt){
+        event.stop(evt);
+        self.module.mouseEvent({
+          type: "mousemove"
+          , x: evt.offsetX
+          , y: evt.offsetY
+        });
+      });
+      on(this.video, "contextmenu", function(evt){
+        event.stop(evt);
       });
     }
     

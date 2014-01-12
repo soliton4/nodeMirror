@@ -245,14 +245,19 @@ define([
         }else if (evt.type == "mouseup"){
           params2 = ["mouseup", "" + evt.button];
         };
+        var do2;
         
         if (params1){
+          //console.log(params1);
           var xdotool = spawn('xdotool', params1);
           xdotool.on("exit", function(){
-            console.log("exit");
-            console.log(params2);
-            if (params2){
-              xdotool = spawn('xdotool', params2);
+            //console.log("exit");
+            if (params2 && !do2){
+              do2 = true;
+              setTimeout(function(){
+                //console.log(params2);
+                xdotool = spawn('xdotool', params2);
+              }, 0);
             };
           });
         };
