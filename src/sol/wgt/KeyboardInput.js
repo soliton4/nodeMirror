@@ -5,6 +5,9 @@ define([
   , "dojo/on"
   , "dojo/_base/lang"
   , "dojo/keys"
+  , "dojo/_base/event"
+  , "dojo/Evented"
+  
 ], function(
   declare
   , _WidgetBase
@@ -12,6 +15,8 @@ define([
   , on
   , lang
   , keys
+  , event
+  , Evented
 ){
   
   var basicMap = {};
@@ -27,9 +32,10 @@ define([
   };
   var BasicMap = declare([], basicMap);
   
-  return declare([_WidgetBase, BasicMap], {
+  return declare([Evented, _WidgetBase, BasicMap], {
     
     buildRendering: function(){
+      var self = this;
       this.domNode = domConstruct.create("div", {
         style: {
           height: "0px"
@@ -42,12 +48,30 @@ define([
       domConstruct.place(this.textarea, this.domNode);
       on(this.textarea, "keypress", lang.hitch(this, "_keypress"));
       on(this.textarea, "keydown", lang.hitch(this, "_keydown"));
+      on(this.textarea, "keyup", lang.hitch(this, "_keyup"));
       if (!this.keyMap){
         this.keyMap = {};
       };
+      on(this.textarea, "focus", function(){
+        self._focused = true;
+        self.emit("focus");
+      });
+      on(this.textarea, "blur", function(){
+        self._focused = false;
+        self.emit("blue");
+      });
+    }
+    
+    , isFocused: function(){
+      return !!this._focused;
+    }
+    
+    , lookupCode: function(parCode){
+      return codeMap[parCode];
     }
     
     , _keypress: function(e){
+      event.stop(e);
       e.charOrCode = e.keyChar || e.keyCode;
       if (e.charOrCode){
         if (this.keyMap[e.charOrCode]){
@@ -65,22 +89,41 @@ define([
     }
     
     , _keydown: function(e){
+      event.stop(e);
       e.charOrCode = e.keyChar || e.keyCode;
       if (e.charOrCode){
         if (this.keyMap[e.charOrCode]){
-          this.keyMap[e.charOrCode](e);
+          try{
+            this.keyMap[e.charOrCode](e);
+          }catch(er){};
         };
         if (codeMap[e.charOrCode]){
-          this["on" + codeMap[e.charOrCode]](e);
+          try{
+            this["on" + codeMap[e.charOrCode]](e);
+          }catch(er){};
         };
+        this.emit("keydown", e);
+        this.emit("keydown" + e.charOrCode, e);
         /*if (typeof e.charOrCode == "String"){
           this.onInput(e.charOrCode, e);
         };*/
       };
     }
+    , _keyup: function(e){
+      event.stop(e);
+      e.charOrCode = e.keyChar || e.keyCode;
+      if (e.charOrCode){
+        this.emit("keyup", e);
+        this.emit("keyup" + e.charOrCode, e);
+      };
+    }
     
     , focus: function(){
       this.textarea.focus();
+    }
+    
+    , blur: function(){
+      this.textarea.blur();
     }
     
     , onInput: function(charStr, evt){}

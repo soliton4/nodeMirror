@@ -125,6 +125,9 @@ define([
     , mouseEvent: function(evt){
       this.socket.emit("x11mouse", evt);
     }
+    , keyEvent: function(evt){
+      this.socket.emit("x11key", evt);
+    }
     
     , getList: function(){
       var def = new Deferred();
@@ -258,6 +261,62 @@ define([
                 //console.log(params2);
                 xdotool = spawn('xdotool', params2);
               }, 0);
+            };
+          });
+        };
+      });
+      
+      var keyMap = {
+        "BACKSPACE": "BackSpace"
+        , "LEFT_ARROW": "Left"
+        , "RIGHT_ARROW": "Right"
+        , "DELETE": "Delete"
+        , "SPACE": "space"
+        , "ENTER": "Return"
+        , "TAB": "Tab"
+      };
+      
+      socket.on("x11key", function(evt){
+        
+        var params1;
+        var params2;
+        
+        //evt.charOrCode = "s";
+        console.log(evt.charOrCode);
+        console.log(typeof evt.charOrCode);
+        var charStr = evt.charOrCode;
+        if (keyMap[charStr]){
+          charStr = keyMap[charStr];
+        };
+        //if (evt.charOrCode > 0){
+        //  charStr = String.fromCharCode(evt.charOrCode);
+        //};
+        
+        if (!charStr){
+          return;
+        };
+        
+        if (evt.type == "keydown"){
+          params1 = ["keydown", charStr];
+          //params2 = ["keyup", charStr];
+          
+        }else if (evt.type == "keyup"){
+          params1 = ["keyup", "" + charStr];
+          
+        };
+        var do2;
+        
+        if (params1){
+          console.log(params1);
+          var xdotool = spawn('xdotool', params1);
+          xdotool.on("exit", function(){
+            //console.log("exit");
+            if (params2 && !do2){
+              do2 = true;
+              setTimeout(function(){
+                console.log(params2);
+                xdotool = spawn('xdotool', params2);
+              }, 100);
             };
           });
         };

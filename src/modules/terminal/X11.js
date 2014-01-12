@@ -11,6 +11,9 @@ define([
   , "dojo/on"
   , "dojo/_base/lang"
   , "dojo/_base/event"
+  , "sol/wgt/KeyboardInput"
+  , "dijit/Toolbar"
+  
 ], function(
   declare
   , BorderContainer
@@ -24,19 +27,70 @@ define([
   , on
   , lang
   , event
+  , KeyboardInput
+  , Toolbar
 ){
   var vidid = 0;
   
   return declare([BorderContainer, tabMixin], {
     title: "X11"
+    , gutters: false
     , closable: true
     , "class": "x11 x11Tab"
+    
     , onShow: function(){
-      this.inherited(arguments);
+      this.keyBoard.focus();
+      return this.inherited(arguments);
     }
     , buildRendering: function(){
       var self = this;
       this.inherited(arguments);
+      
+      this.toolBar = this.ownObj(new Toolbar({
+        region: "top"
+      }));
+      this.addChild(this.toolBar);
+      
+      this.keyBoard = this.ownObj(new KeyboardInput({
+        region: "top"
+      }));
+      this.addChild(this.keyBoard);
+      this.keyBoard.on("keydown", function(e){
+        
+        var charStr = self.keyBoard.lookupCode(e.keyCode);
+        
+        if (!charStr){
+          if (e.charCode) {
+            charStr = String.fromCharCode(e.charCode);
+          } else {
+            charStr = String.fromCharCode(e.keyCode);
+          };
+        };
+        
+        self.module.keyEvent({
+          type: "keydown"
+          , charOrCode: charStr
+        });
+        
+      });
+      this.keyBoard.on("keyup", function(e){
+        
+        var charStr = self.keyBoard.lookupCode(e.keyCode);
+        
+        if (!charStr){
+          if (e.charCode) {
+            charStr = String.fromCharCode(e.charCode);
+          } else {
+            charStr = String.fromCharCode(e.keyCode);
+          };
+        };
+        
+        self.module.keyEvent({
+          type: "keyup"
+          , charOrCode: charStr
+        });
+        
+      });
       
       this.div = this.ownObj(new Node({
         tagName: "div"
@@ -89,6 +143,10 @@ define([
           , button: evt.button + 1
         });
       });
+      on(this.video, "click", function(evt){
+        event.stop(evt);
+        self.keyBoard.focus();
+      });
       on(this.video, "mouseup", function(evt){
         event.stop(evt);
         self.module.mouseEvent({
@@ -137,10 +195,12 @@ define([
       };
       this.inherited(arguments);
       this.playFun();
+      this.keyBoard.focus();
     }
     
     , onHide: function(){
-      
+      this.keyBoard.blur();
+      return this.inherited(arguments);
     }
   });
 });
