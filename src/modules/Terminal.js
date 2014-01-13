@@ -270,10 +270,15 @@ define([
         "BACKSPACE": "BackSpace"
         , "LEFT_ARROW": "Left"
         , "RIGHT_ARROW": "Right"
+        , "UP_ARROW": "Up"
+        , "DOWN_ARROW": "Down"
         , "DELETE": "Delete"
         , "SPACE": "space"
         , "ENTER": "Return"
         , "TAB": "Tab"
+        , "CTRL": "ctrl"
+        , "copyKey": "ctrl"
+        , "ALT": "alt"
       };
       
       socket.on("x11key", function(evt){
@@ -283,7 +288,7 @@ define([
         
         //evt.charOrCode = "s";
         console.log(evt.charOrCode);
-        console.log(typeof evt.charOrCode);
+        //console.log(typeof evt.charOrCode);
         var charStr = evt.charOrCode;
         if (keyMap[charStr]){
           charStr = keyMap[charStr];
@@ -291,6 +296,7 @@ define([
         //if (evt.charOrCode > 0){
         //  charStr = String.fromCharCode(evt.charOrCode);
         //};
+        console.log(charStr);
         
         if (!charStr){
           return;

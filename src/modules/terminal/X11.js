@@ -55,11 +55,31 @@ define([
         region: "top"
       }));
       this.addChild(this.keyBoard);
+      
+      var keyMap = {
+        "188": "comma"
+        , "190": "period"
+        , "191": "slash"
+        , "186": "somicolon"
+        , "222": "quotedbl"
+        , "189": "minus"
+        , "187": "equal"
+        , "192": "grave"
+        , "219": "bracketleft"
+        , "221": "bracketright"
+        , "220": "backslash"
+      };
+      
       this.keyBoard.on("keydown", function(e){
         
         var charStr = self.keyBoard.lookupCode(e.keyCode);
         
         if (!charStr){
+          charStr = keyMap[e.keyCode];
+        };
+        
+        if (!charStr){
+          
           if (e.charCode) {
             charStr = String.fromCharCode(e.charCode);
           } else {
@@ -76,6 +96,10 @@ define([
       this.keyBoard.on("keyup", function(e){
         
         var charStr = self.keyBoard.lookupCode(e.keyCode);
+        
+        if (!charStr){
+          charStr = keyMap[e.keyCode];
+        };
         
         if (!charStr){
           if (e.charCode) {
