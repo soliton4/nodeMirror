@@ -429,6 +429,18 @@ define([
       });
     });
       
+      var ulnr = 0;
+      
+    mirror.post(relativeStr + "ultest", function(req, res){
+      fs.readFile(req.files.displayImage.path, function (err, data) {
+        // ...
+        var newPath = "/home/sol/uploadedFileName" + ulnr++;
+        fs.writeFile(newPath, data, function (err) {
+          res.redirect("back");
+        });
+      });
+    });
+      
       
       
     // access to app files
