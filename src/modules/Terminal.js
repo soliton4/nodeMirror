@@ -291,6 +291,7 @@ define([
           , "CTRL": "ctrl"
           , "copyKey": "ctrl"
           , "ALT": "alt"
+          , "CAPS_LOCK": "Caps_Lock"
         };
 
         socket.on("x11key", function(evt){

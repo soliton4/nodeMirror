@@ -269,6 +269,7 @@ define([
               "-t", "180", // 3 min
               "-f", format,             // File format
             ];
+              //console.log(nodeMirrorConfig.x11videotool);
             if (nodeMirrorConfig.x11videotool == "avconv"){
               params.push("-qmin");
               params.push(s({ogg: "7"}, "5"));             // Quantization
@@ -280,8 +281,18 @@ define([
               params.push("6");
             };
             params.push("-");                      // Output to STDOUT
+              
+              var cmdStr = "";
+              cmdStr += nodeMirrorConfig.x11videotool;
+              var i = 0;
+              for (i = 0; i < params.length; ++i){
+                cmdStr += " ";
+                cmdStr += params[i];
+              };
+              console.log(cmdStr);
 
             //avconv -re -f x11grab -r 12 -s 1024x768 -i :3+0,0 -g 1 -me_method zero -flags2 fast -vcodec libvpx -preset ultrafast -tune zerolatecy -b:v 1M -crf 40 -qmin 5 -qmax 5 -t 180 -f webm -
+            //ffmpeg -re -f x11grab -r 5 -s 1024x768 -i :0+0,0 -g 1 -me_method zero -flags2 fast -vcodec libtheora -preset ultrafast -tune zerolatecy -b:v 1M -crf 40 -q:v 6 -t 180 -f ogg -
             var avconv;
             try{
               avconv = spawn(nodeMirrorConfig.x11videotool, params);
@@ -289,11 +300,9 @@ define([
               console.log("error 1");
             };
             killfun = function(){
-              console.log("killing avconv");
+              console.log("killing ...");
               delete nodeControl.gpregister.avconv[vidid];
-              console.log("step");
               avconv.kill();
-              console.log("end");
             };
             //console.log("step 2");
             setTimeout(function(){
@@ -310,11 +319,13 @@ define([
                   console.log("pipe error");
                 };
               });
-              stream.on("error", function(){
+              stream.on("error", function(err){
                 console.log("some stream error");
+                console.log(err);
               });
-              res.on("error", function(){
+              res.on("error", function(err){
                 console.log("some res error");
+                console.log(err);
               });
               //stream.pipe(res);
             }catch(e){
@@ -325,32 +336,34 @@ define([
             try{
 
             stream.on("end", function(){
-              console.log("step end");
+              console.log("stream end");
               try{
-                console.log("avconv: end");
                 res.end();
                 killfun();
               }catch(e){
                 console.log("error 3");
               }
             });
-
-            console.log("step 4");
-            res.on("end", function(){
-              console.log("step res end");
+            stream.on("close", function(){
+              console.log("stream close");
               try{
-                console.log("vid: res end");
+                res.end();
+                killfun();
+              }catch(e){
+                console.log("error 3.5");
+              }
+            });
+
+            res.on("end", function(){
+              try{
                 killfun();
                 stream.end();
               }catch(e){
                 console.log("error 4");
               }
             });
-            console.log("step 5");
             res.on("close", function(){
-              console.log("step res close");
               try{
-                console.log("webm: res close");
                 killfun();
                 stream.end();
               }catch(e){
