@@ -26,10 +26,16 @@ define([
       var self = this;
       this.terminals = [];
       this.tabs = {};
+	}
+    
+    , buildRendering: function(){
+      this.inherited(arguments);
       this.model = new Model({
         terminals: this.terminals
+        , x11terminal: this.x11terminal
       });
-	}
+      
+    }
     
     , startup: function(){
       if (this._started){

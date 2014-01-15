@@ -84,7 +84,9 @@ define([
     , provideSideBarWidgetPs: function(){
       var def = new Deferred();
       var self = this;
-      config.get("terminal").then(function(terminal){
+      config.get("terminal", "x11terminal").then(function(par){
+        var terminal = par.terminal;
+        var x11terminal = par.x11terminal;
         if (terminal === false){
           def.reject();
           return;
@@ -95,6 +97,7 @@ define([
           require(["main/clientOnly!modules/terminal/Wgt"], function(Wgt){
             self.wgt = new Wgt({
               module: self
+              , x11terminal: x11terminal
             });
             def.resolve(self.wgt);
           });
@@ -127,6 +130,10 @@ define([
     }
     , keyEvent: function(evt){
       this.socket.emit("x11key", evt);
+    }
+    
+    , x11vidkill: function(vidid){
+      this.socket.emit("x11vidkill", vidid);
     }
     
     , getList: function(){
@@ -235,99 +242,115 @@ define([
 
       var spawn  = child_process.spawn;
       
-      socket.on("x11mouse", function(evt){
-        
-        var params1;
-        var params2;
-        
-        if (evt.type == "mousedown" || evt.type == "mouseup" || evt.type == "mousemove"){
-          params1 = ["mousemove", "" + evt.x, "" + evt.y];
-        };
-        if (evt.type == "mousedown"){
-          params2 = ["mousedown", "" + evt.button];
-        }else if (evt.type == "mouseup"){
-          params2 = ["mouseup", "" + evt.button];
-        };
-        var do2;
-        
-        if (params1){
-          //console.log(params1);
-          var xdotool = spawn('xdotool', params1);
-          xdotool.on("exit", function(){
-            //console.log("exit");
-            if (params2 && !do2){
-              do2 = true;
-              setTimeout(function(){
-                //console.log(params2);
-                xdotool = spawn('xdotool', params2);
-              }, 0);
-            };
-          });
-        };
-      });
-      
-      var keyMap = {
-        "BACKSPACE": "BackSpace"
-        , "LEFT_ARROW": "Left"
-        , "RIGHT_ARROW": "Right"
-        , "UP_ARROW": "Up"
-        , "DOWN_ARROW": "Down"
-        , "DELETE": "Delete"
-        , "SPACE": "space"
-        , "ENTER": "Return"
-        , "TAB": "Tab"
-        , "CTRL": "ctrl"
-        , "copyKey": "ctrl"
-        , "ALT": "alt"
-      };
-      
-      socket.on("x11key", function(evt){
-        
-        var params1;
-        var params2;
-        
-        //evt.charOrCode = "s";
-        console.log(evt.charOrCode);
-        //console.log(typeof evt.charOrCode);
-        var charStr = evt.charOrCode;
-        if (keyMap[charStr]){
-          charStr = keyMap[charStr];
-        };
-        //if (evt.charOrCode > 0){
-        //  charStr = String.fromCharCode(evt.charOrCode);
-        //};
-        console.log(charStr);
-        
-        if (!charStr){
+      config.get("x11terminal").then(function(x11terminal){
+        if (!x11terminal){
           return;
         };
-        
-        if (evt.type == "keydown"){
-          params1 = ["keydown", charStr];
-          //params2 = ["keyup", charStr];
-          
-        }else if (evt.type == "keyup"){
-          params1 = ["keyup", "" + charStr];
-          
+
+        socket.on("x11mouse", function(evt){
+
+          var params1;
+          var params2;
+
+          if (evt.type == "mousedown" || evt.type == "mouseup" || evt.type == "mousemove"){
+            params1 = ["mousemove", "" + evt.x, "" + evt.y];
+          };
+          if (evt.type == "mousedown"){
+            params2 = ["mousedown", "" + evt.button];
+          }else if (evt.type == "mouseup"){
+            params2 = ["mouseup", "" + evt.button];
+          };
+          var do2;
+
+          if (params1){
+            //console.log(params1);
+            var xdotool = spawn('xdotool', params1);
+            xdotool.on("exit", function(){
+              //console.log("exit");
+              if (params2 && !do2){
+                do2 = true;
+                setTimeout(function(){
+                  //console.log(params2);
+                  xdotool = spawn('xdotool', params2);
+                }, 0);
+              };
+            });
+          };
+        });
+
+        var keyMap = {
+          "BACKSPACE": "BackSpace"
+          , "LEFT_ARROW": "Left"
+          , "RIGHT_ARROW": "Right"
+          , "UP_ARROW": "Up"
+          , "DOWN_ARROW": "Down"
+          , "DELETE": "Delete"
+          , "SPACE": "space"
+          , "ENTER": "Return"
+          , "TAB": "Tab"
+          , "CTRL": "ctrl"
+          , "copyKey": "ctrl"
+          , "ALT": "alt"
         };
-        var do2;
-        
-        if (params1){
-          console.log(params1);
-          var xdotool = spawn('xdotool', params1);
-          xdotool.on("exit", function(){
-            //console.log("exit");
-            if (params2 && !do2){
-              do2 = true;
-              setTimeout(function(){
-                console.log(params2);
-                xdotool = spawn('xdotool', params2);
-              }, 100);
+
+        socket.on("x11key", function(evt){
+
+          var params1;
+          var params2;
+
+          //evt.charOrCode = "s";
+          console.log(evt.charOrCode);
+          //console.log(typeof evt.charOrCode);
+          var charStr = evt.charOrCode;
+          if (keyMap[charStr]){
+            charStr = keyMap[charStr];
+          };
+          //if (evt.charOrCode > 0){
+          //  charStr = String.fromCharCode(evt.charOrCode);
+          //};
+          console.log(charStr);
+
+          if (!charStr){
+            return;
+          };
+
+          if (evt.type == "keydown"){
+            params1 = ["keydown", charStr];
+            //params2 = ["keyup", charStr];
+
+          }else if (evt.type == "keyup"){
+            params1 = ["keyup", "" + charStr];
+
+          };
+          var do2;
+
+          if (params1){
+            console.log(params1);
+            var xdotool = spawn('xdotool', params1);
+            xdotool.on("exit", function(){
+              //console.log("exit");
+              if (params2 && !do2){
+                do2 = true;
+                setTimeout(function(){
+                  console.log(params2);
+                  xdotool = spawn('xdotool', params2);
+                }, 100);
+              };
+            });
+          };
+        });
+
+        require(["main/nodeControl"], function(nodeControl){
+          socket.on("x11vidkill", function(vidid){
+            console.log("vidkill event");
+            var killfun = nodeControl.gpregister.avconv[vidid];
+            if (killfun){
+              console.log("calling fun");
+              killfun();
             };
           });
-        };
+        });
       });
-      
     };
   }else{
     _handleConnection = function(socket){

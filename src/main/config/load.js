@@ -20,6 +20,9 @@ define([
         if (!defaultConfig.dir){
           defaultConfig.dir = nodeMirror.getProcessDir();
         };
+        if (!defaultConfig.x11videotool){
+          defaultConfig.x11videotool = "avconv";
+        };
         require(["dojo/node!runtime-configuration"], function(rc){
           var rcInstance = rc(id, {
             port: 3000

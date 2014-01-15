@@ -45,6 +45,7 @@ define([
       , "treefiles": false
       , "dirColorCode": false
       , "dirViewMode": "list"
+      , "x11terminal": false
     }
     , saveable: {
       "theme": true
@@ -126,12 +127,25 @@ define([
     }
     
     , get: function(parName){
+      var requestAr = [];
+      var i = 0;
+      for (i = 0; i < arguments.length; ++i){
+        requestAr.push(arguments[i]);
+      };
       var def = new Deferred();
       if (isServer){
         def.resolve(this.config[parName]);
       }else{
         this.configLoaded.then(lang.hitch(this, function(){
-          def.resolve(this.config[parName]);
+          if (requestAr.length > 1){
+            var res = {};
+            for (i = 0; i < requestAr.length; ++i){
+              res[requestAr[i]] = this.config[requestAr[i]];
+            };
+            def.resolve(res);
+          }else{
+            def.resolve(this.config[parName]);
+          };
         }));
       };
       return def;

@@ -13,6 +13,7 @@ define([
         , label: ""
       };
       this.terminals = par.terminals;
+      this.x11terminal = par.x11terminal;
     }
     , getRoot: function(thenFun, errFun){
       thenFun(this.rootItem);
@@ -35,10 +36,12 @@ define([
       array.forEach(this.terminals, function(t){
         ar.push(t);
       });
-      ar.push({
-        id: "x11"
-        , label: "X11"
-      });
+      if (this.x11terminal){
+        ar.push({
+          id: "x11"
+          , label: "X11"
+        });
+      };
       return ar;
     }
     

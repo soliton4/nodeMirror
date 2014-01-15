@@ -186,414 +186,197 @@ define([
     // access to the choosen directory
     mirror.use(relativeStr + "file/", express["static"](dirStr));
     
-    /*mirror.get(relativeStr + "x11", function(req, res){
       
-      res.header("Content-Type", "video/ogg");
-      
-      var spawn  = child_process.spawn;
-      
-      var params = [
-        '-loglevel', 'quiet',
-        "-flags", "low_delay",
-        "-s", "1024x768",
-        "-f", "x11grab",
-        "-r", "2",
-        '-i', ":0.0+0,0",
-        '-f', "ogg",
-        //'-acodec', 'libvorbis',
-        "-an",
-        '-vcodec', 'libtheora',
-        '-q:v', '9',
-        //"-flags", "low_delay",
-        //"-fflags", "nobuffer",
-        //"-max_delay", "0.1",
-        "-t", "0.5", 
-        "-threads", "0",
-        //"-tune", "zerolatency",
-        'pipe:1'
-      ];
-      
-      avconv = spawn('avconv', params);
-      
-      var stream = avconv.stdout;
-      stream.pipe(res);
-      stream.on("end", function(){
-        console.log("avconv ended");
-        setTimeout(function(){
-          res.end();
-        }, 1000);
-      });
-      
-      res.on("end", function(){
-        console.log("http ended");
-        avconv.kill();
-      });
-    });*/
-      //avconv -s 1024x768 -f x11grab -r 5 -i :0.0+0,0 -vcodec libtheora -q:v 6 -f ogg -
-    
-    /*mirror.get(relativeStr + "x11.png", function(req, res){
-      
-      res.header("Content-Type", "image/png");
-      
-      var spawn  = child_process.spawn;
-      
-      var params = [
-        '-window', 'root', 'png:-'
-      ];
-      
-      var ip = spawn('import', params);
-      
-      var stream = ip.stdout;
-      stream.pipe(res);
-      stream.on("end", function(){
-        res.end();
-      });
-      
-      res.on("end", function(){
-        ip.kill();
-      });
-    });*/
-      
-    
-      
-    /*mirror.get(relativeStr + "x11.mp4", function(req, res){
-      
-      res.header("Content-Type", "video/mp4");
-      
-      var spawn  = child_process.spawn;
-      
-      var x264Params = [
-        "--demuxer", "y4m",
-        "-",
-        "--preset", "veryfast",
-        "--tune", "zerolatency",
-        "--intra-refresh",
-        "--fps", "5",
-        "--vbv-maxrate", "5000",
-        "--vbv-bufsize", "200",
-        "--slice-max-size", "1500",
-        "-o", "-"
-      ];
-      var x264 = spawn('x264', x264Params);
-      
-      var instream = x264.stdin;
-      var outstream = x264.stdout;
-      outstream.pipe(res);
-
-      
-      var avconvParams = [
-        //'-loglevel', 'quiet',
-        "-r", "5",
-        "-f", "x11grab",
-        "-s", "1024x768",
-        '-i', ":0.0+0,0",
-        "-pix_fmt", "yuv420p",
-        "-r", "5",
-        "-f", "yuv4mpegpipe",
-        "-"
-      ];
-      var avconv = spawn('avconv', avconvParams);
-      
-      var stream = avconv.stdout;
-      stream.pipe(instream);
-      
-      res.on("end", function(){
-        avconv.kill();
-        x264.kill();
-      });
-    });
-    //avconv -f x11grab -r 25 -s 1280x720 -i :0.0+0,0 -vcodec libx264 -pre lossless_ultrafast -threads 0 video.mkv  
-    //avconv -r 5 -f x11grab -s 1024x768 -i :0.0+0,0  -pix_fmt yuv420p -r 5 -f yuv4mpegpipe - | x264 --demuxer y4m - --preset veryfast --tune zerolatency --intra-refresh –fps 5 --vbv-maxrate 5000 --vbv-bufsize 200 --slice-max-size 1500 -o z5.mp4
-    */
-      
-      
-    mirror.get(relativeStr + "x11.stream", function(req, res){
-      req.connection.setTimeout(0);
-      
-      var format = "webm";
-      
-      res.header("Content-Type", "video/webm");
-      
-      var spawn  = child_process.spawn;
-      
-      x11size().then(function(size){
-        console.log("x11 size:");
-        console.log(size);
-        
-        var params = [
-          "-re",                   // Real time mode
-          "-f","x11grab",          // Grab screen
-          "-r","4",              // Framerate
-          "-s", size.x + "x" + size.y,   // Capture size
-          "-i",":0+" + 0 + "," + 0, // Capture offset
-          "-g","0",                // All frames are i-frames
-          "-me_method","zero",     // Motion algorithms off
-          "-flags2","fast",
-          "-vcodec","libvpx",      // vp8 encoding
-          "-preset","ultrafast",
-          "-tune","zerolatency",
-          "-b:v","1M",             // Target bit rate
-          "-crf","40",             // Quality
-          //"-qmin","5",             // Quantization
-          //"-qmax","5",
-          "-t", "180", // 3 min
-          "-f","webm",             // File format
-          "-"                      // Output to STDOUT
-        ];
-        //ffmpeg -re -f x11grab -r 12 -s 1024x768 -i :3+0,0 -g 1 -me_method zero -flags2 fast -vcodec libvpx -preset ultrafast -tune zerolatecy -b:v 1M -crf 40 -qmin 5 -qmax 5 -t 180 -f webm -
-        var avconv;
-        try{
-          avconv = spawn('ffmpeg', params);
-        }catch(e){
-          console.log("error 1");
-        }
-        console.log("step 2");
-        
-        var stream;
-        try{
-          stream = avconv.stdout;
-          stream.on("data", function(data){
-            try{
-              res.write(data);
-            }catch(e){
-              console.log("pipe error");
-            };
-          });
-          stream.on("error", function(){
-            console.log("some stream error");
-          });
-          res.on("error", function(){
-            console.log("some res error");
-          });
-          //stream.pipe(res);
-        }catch(e){
-          console.log("error 2");
-        }
-        
-        console.log("step 3");
-        try{
-        
-        stream.on("end", function(){
-          console.log("step end");
-          try{
-            console.log("avconv: end");
-            res.end();
-            avconv.kill();
-          }catch(e){
-            console.log("error 3");
-          }
-        });
-        
-        console.log("step 4");
-        res.on("end", function(){
-          console.log("step res end");
-          try{
-            console.log("webm: res end");
-            avconv.kill();
-            stream.end();
-          }catch(e){
-            console.log("error 4");
-          }
-        });
-        console.log("step 5");
-        res.on("close", function(){
-          console.log("step res close");
-          try{
-            console.log("webm: res close");
-            avconv.kill();
-            stream.end();
-          }catch(e){
-            console.log("error 5");
-          }
-        });
-        }catch(e){
-          console.log("error 6");
-        }
-        console.log("step out");
-        
-      });
-      
-    });
-
-      
-      
-      
-    mirror.get(relativeStr + "x11.webm", function(req, res){
-      req.connection.setTimeout(0);
-      
-      res.header("Content-Type", "video/webm");
-      res.header("Cache-Control", "NO-CACHE");
-      
-      var spawn  = child_process.spawn;
-      
-      x11size().then(function(size){
-        console.log("x11 size:");
-        console.log(size);
-        
-        var params = [
-          "-re",                   // Real time mode
-          "-f","x11grab",          // Grab screen
-          "-r","4",              // Framerate
-          "-s", size.x + "x" + size.y,   // Capture size
-          "-i",":0+" + 0 + "," + 0, // Capture offset
-          "-g","0",                // All frames are i-frames
-          "-me_method","zero",     // Motion algorithms off
-          "-flags2","fast",
-          "-vcodec","libvpx",      // vp8 encoding
-          "-preset","ultrafast",
-          "-tune","zerolatency",
-          "-b:v","1M",             // Target bit rate
-          "-crf","40",             // Quality
-          //"-qmin","5",             // Quantization
-          //"-qmax","5",
-          "-t", "180", // 3 min
-          "-f","webm",             // File format
-          "-"                      // Output to STDOUT
-        ];
-        //ffmpeg -re -f x11grab -r 12 -s 1024x768 -i :3+0,0 -g 1 -me_method zero -flags2 fast -vcodec libvpx -preset ultrafast -tune zerolatecy -b:v 1M -crf 40 -qmin 5 -qmax 5 -t 180 -f webm -
-        var avconv;
-        try{
-          avconv = spawn('ffmpeg', params);
-        }catch(e){
-          console.log("error 1");
-        }
-        console.log("step 2");
-        
-        var stream;
-        try{
-          stream = avconv.stdout;
-          stream.on("data", function(data){
-            try{
-              res.write(data);
-            }catch(e){
-              console.log("pipe error");
-            };
-          });
-          stream.on("error", function(){
-            console.log("some stream error");
-          });
-          res.on("error", function(){
-            console.log("some res error");
-          });
-          //stream.pipe(res);
-        }catch(e){
-          console.log("error 2");
-        }
-        
-        console.log("step 3");
-        try{
-        
-        stream.on("end", function(){
-          console.log("step end");
-          try{
-            console.log("avconv: end");
-            res.end();
-            avconv.kill();
-          }catch(e){
-            console.log("error 3");
-          }
-        });
-        
-        console.log("step 4");
-        res.on("end", function(){
-          console.log("step res end");
-          try{
-            console.log("webm: res end");
-            stream.end();
-            avconv.kill();
-          }catch(e){
-            console.log("error 4");
-          }
-        });
-        console.log("step 5");
-        res.on("close", function(){
-          console.log("step res close");
-          try{
-            console.log("webm: res close");
-            stream.end();
-            avconv.kill();
-          }catch(e){
-            console.log("error 5");
-          }
-        });
-        }catch(e){
-          console.log("error 6");
-        }
-        console.log("step out");
-        
-      });
-      
-    });
-      
-      
-      /*
-      var ffmpeg = child_process.spawn("ffmpeg",[
-                "-re",                   // Real time mode
-                "-f","x11grab",          // Grab screen
-                "-r","100",              // Framerate
-                "-s",width+"x"+height,   // Capture size
-                "-i",":0+"+top+","+left, // Capture offset
-                "-g","0",                // All frames are i-frames
-                "-me_method","zero",     // Motion algorithms off
-                "-flags2","fast",
-                "-vcodec","libvpx",      // vp8 encoding
-                "-preset","ultrafast",
-                "-tune","zerolatency",
-                "-b:v","1M",             // Target bit rate
-                "-crf","40",             // Quality
-                "-qmin","5",             // Quantization
-                "-qmax","5",
-                "-f","webm",             // File format
-                "-"                      // Output to STDOUT
-            ]);
-            
-   ffmpeg -re -f x11grab -r 100 -s 1024x768 -i :0+0,0 -g 0 -me_method zero -flags2 fast -vcodec libvpx -preset ultrafast -tune zerolatency -b:v 1M -crf 40 -qmin 5 -qmax 5 -f webm  -
-            
-            
-            
-      */
+      nodeControl.gpregister.avconv = {};
       
       function x11size(){
-        var def = new Deferred();
-        var spawn  = child_process.spawn;
-        
-        var params = [
-          "-root", "_NET_DESKTOP_GEOMETRY"
-        ];
-        
-        var xprop = spawn('xprop', params);
-        
-        var dataAr = [];
-        var stream = xprop.stdout;
-        stream.on("data", function(data){
-          dataAr.push(data);
-        });
-        
-        stream.on("end", function(){
-          var s = Buffer.concat(dataAr).toString("utf8");
-          var ar = s.split("=");
-          var value = ar[ar.length - 1];
-          ar = value.split(",");
-          var y = parseInt(ar.pop(), 10);
-          var x = parseInt(ar.pop(), 10);
-          def.resolve({ x: x, y: y });
-          //res.end();
-        });
+            var def = new Deferred();
+            var spawn  = child_process.spawn;
 
-        return def.promise;
+            var params = [
+              "-root", "_NET_DESKTOP_GEOMETRY"
+            ];
+
+            var xprop = spawn('xprop', params);
+
+            var dataAr = [];
+            var stream = xprop.stdout;
+            stream.on("data", function(data){
+              dataAr.push(data);
+            });
+
+            stream.on("end", function(){
+              var s = Buffer.concat(dataAr).toString("utf8");
+              var ar = s.split("=");
+              var value = ar[ar.length - 1];
+              ar = value.split(",");
+              var y = parseInt(ar.pop(), 10);
+              var x = parseInt(ar.pop(), 10);
+              def.resolve({ x: x, y: y });
+              //res.end();
+            });
+
+            return def.promise;
       }
+      
+      if (nodeMirrorConfig.x11terminal){
+      
+          // x11 forwarding
+        mirror.get(relativeStr + "x11.stream", function(req, res){
+          req.connection.setTimeout(0);
 
+
+          var killfun = function(){
+            setTimeout(function(){
+              killfun();
+            }, 30000);
+          };
+
+          var format = req.query.format || "ogg";
+          console.log("format: " + format);
+          var vidid = req.query.vidid || "1"; 
+
+          nodeControl.gpregister.avconv[vidid] = function(){
+            killfun();
+          };
+
+          res.header("Content-Type", "video/" + format);
+
+          var spawn  = child_process.spawn;
+
+          function s(p, p2){
+            return p[format] || p.default || p2;
+          };
+
+          x11size().then(function(size){
+            //console.log("x11 size:");
+            //console.log(size);
+
+            var params = [
+              "-re",                   // Real time mode
+              "-f","x11grab",          // Grab screen
+              "-r","5",              // Framerate
+              "-s", size.x + "x" + size.y,   // Capture size
+              "-i",":0+" + 0 + "," + 0, // Capture offset
+              "-g","0",                // All frames are i-frames
+              "-me_method","zero",     // Motion algorithms off
+              "-flags2","fast",
+              "-vcodec", s( {"webm": "libvpx", ogg: "libtheora" }),      // vp8 encoding / ogg encoding
+              "-preset","ultrafast",
+              "-tune","zerolatency",
+              "-b:v","1M",             // Target bit rate
+              "-crf","40",             // Quality
+              "-t", "180", // 3 min
+              "-f", format,             // File format
+            ];
+            if (nodeMirrorConfig.x11videotool == "avconv"){
+              params.push("-qmin");
+              params.push(s({ogg: "7"}, "5"));             // Quantization
+              params.push("-qmax");
+              params.push(s({ogg: "7"}, "5"));
+            };
+            if (format == "ogg"){
+              params.push("-q:v");
+              params.push("6");
+            };
+            params.push("-");                      // Output to STDOUT
+
+            //avconv -re -f x11grab -r 12 -s 1024x768 -i :3+0,0 -g 1 -me_method zero -flags2 fast -vcodec libvpx -preset ultrafast -tune zerolatecy -b:v 1M -crf 40 -qmin 5 -qmax 5 -t 180 -f webm -
+            var avconv;
+            try{
+              avconv = spawn(nodeMirrorConfig.x11videotool, params);
+            }catch(e){
+              console.log("error 1");
+            };
+            killfun = function(){
+              console.log("killing avconv");
+              delete nodeControl.gpregister.avconv[vidid];
+              console.log("step");
+              avconv.kill();
+              console.log("end");
+            };
+            //console.log("step 2");
+            setTimeout(function(){
+              killfun();
+            }, 190000);
+
+            var stream;
+            try{
+              stream = avconv.stdout;
+              stream.on("data", function(data){
+                try{
+                  res.write(data);
+                }catch(e){
+                  console.log("pipe error");
+                };
+              });
+              stream.on("error", function(){
+                console.log("some stream error");
+              });
+              res.on("error", function(){
+                console.log("some res error");
+              });
+              //stream.pipe(res);
+            }catch(e){
+              console.log("error 2");
+            }
+
+            console.log("step 3");
+            try{
+
+            stream.on("end", function(){
+              console.log("step end");
+              try{
+                console.log("avconv: end");
+                res.end();
+                killfun();
+              }catch(e){
+                console.log("error 3");
+              }
+            });
+
+            console.log("step 4");
+            res.on("end", function(){
+              console.log("step res end");
+              try{
+                console.log("vid: res end");
+                killfun();
+                stream.end();
+              }catch(e){
+                console.log("error 4");
+              }
+            });
+            console.log("step 5");
+            res.on("close", function(){
+              console.log("step res close");
+              try{
+                console.log("webm: res close");
+                killfun();
+                stream.end();
+              }catch(e){
+                console.log("error 5");
+              }
+            });
+            }catch(e){
+              console.log("error 6");
+            }
+            console.log("step out");
+
+          });
+
+        });
+
+        mirror.get(relativeStr + "x11properties", function(req, res){
+
+          res.header("Content-Type", "application/json");
+
+          x11size().then(function(size){
+            res.send(size);
+          });
+        });
+    };
       
-    mirror.get(relativeStr + "x11properties", function(req, res){
-      
-      res.header("Content-Type", "application/json");
-      
-      x11size().then(function(size){
-        res.send(size);
-      });
-    });
-      
-      var ulnr = 0;
+    /*  var ulnr = 0;
       
     mirror.post(relativeStr + "ultest", function(req, res){
       fs.readFile(req.files.displayImage.path, function (err, data) {
@@ -603,7 +386,7 @@ define([
           res.redirect("back");
         });
       });
-    });
+    });*/
       
       
       

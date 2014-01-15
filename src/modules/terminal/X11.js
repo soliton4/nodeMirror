@@ -13,6 +13,9 @@ define([
   , "dojo/_base/event"
   , "sol/wgt/KeyboardInput"
   , "dijit/Toolbar"
+  , "dijit/form/Select"
+  , "dijit/form/Button"
+  , "dojo/dom-style"
   
 ], function(
   declare
@@ -29,6 +32,10 @@ define([
   , event
   , KeyboardInput
   , Toolbar
+  , Select
+  , Button
+  , domStyle
+    
 ){
   var vidid = 0;
   
@@ -51,6 +58,42 @@ define([
       }));
       this.addChild(this.toolBar);
       
+      this.formatSelect = this.ownObj(new Select({
+        options: [{
+          label: "ogg"
+          , value: "ogg"
+        }, {
+          label: "webm"
+          , value: "webm"
+        }]
+        , onChange: function(){
+          self.createVideo();
+        }
+      }));
+      this.toolBar.addChild(this.formatSelect);
+
+      this.fullScreenBtn = this.ownObj(new Button({
+        label: "Fullscreen"
+        , onClick: function(){
+          var element = self.div.domNode;
+          self.stopResize = true;
+          domStyle.set(element, "top", "0");
+          domStyle.set(element, "left", "0");
+          domStyle.set(element, "width", "100%");
+          domStyle.set(element, "height", "100%");
+          if(element.requestFullscreen) {
+            element.requestFullscreen();
+          } else if(element.mozRequestFullScreen) {
+            element.mozRequestFullScreen();
+          } else if(element.webkitRequestFullscreen) {
+            element.webkitRequestFullscreen();
+          } else if(element.msRequestFullscreen) {
+            element.msRequestFullscreen();
+          };
+        }
+      }));
+      this.toolBar.addChild(this.fullScreenBtn);
+
       this.keyBoard = this.ownObj(new KeyboardInput({
         region: "top"
       }));
@@ -81,9 +124,9 @@ define([
         if (!charStr){
           
           if (e.charCode) {
-            charStr = String.fromCharCode(e.charCode);
+            charStr = String.fromCharCode(e.charCode).toLowerCase();
           } else {
-            charStr = String.fromCharCode(e.keyCode);
+            charStr = String.fromCharCode(e.keyCode).toLowerCase();
           };
         };
         
@@ -103,9 +146,9 @@ define([
         
         if (!charStr){
           if (e.charCode) {
-            charStr = String.fromCharCode(e.charCode);
+            charStr = String.fromCharCode(e.charCode).toLowerCase();
           } else {
-            charStr = String.fromCharCode(e.keyCode);
+            charStr = String.fromCharCode(e.keyCode).toLowerCase();
           };
         };
         
@@ -126,39 +169,79 @@ define([
       }));
       this.addChild(this.div);
       
+      this.div2 = this.ownObj(new Node({
+        tagName: "div"
+        , "class": "x11div2"
+        , region: "bottom"
+      }));
+      this.addChild(this.div2);
+      
       this.createVideo();
       
       return;
       
     }
     
-    , createVideo: function(){
-      if (this._destroyed){
+    , resize: function(){
+      var fullscreenElement = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement;
+      if (fullscreenElement){
         return;
       };
-      if (this.video){
-        domConstruct.destroy(this.video);
-      };
+      var ret = this.inherited(arguments);
+      return ret;
+    }
+    
+    , clearVidTimeout: function(){
       if (this.vidTimeout){
         clearTimeout(this.vidTimeout);
         delete this.vidTimeout;
       };
+    }
+    
+    , createVideo: function(){
       var self = this;
-      this.video = domConstruct.create("video", {
+      if (this._destroyed){
+        return;
+      };
+      
+      this.creationProcess = true;
+      
+      this.clearVidTimeout();
+      var format = this.formatSelect.get("value") || "ogg";
+      
+      var newVidid = Math.floor(Math.random() * 1000000000);
+      var newVideo = domConstruct.create("video", {
         "class": "x11Video"
-        , "src": "x11.webm?vidid=" + (vidid++)
+        , "src": "x11.stream?vidid=" + newVidid + "&format=" + format
         , "autoplay": "autoplay"
-        //, "type": "video/webm"
+        , "type": "video/" + format
       });
-      domConstruct.place(this.video, this.div.domNode);
-      on(this.video, "ended", lang.hitch(this, "createVideo"));
-      on(this.video, "error", lang.hitch(this, "createVideo"));
-      on(this.video, "playing", function(){
+      domConstruct.place(newVideo, self.div2.domNode);
+      on(newVideo, "canplay", function(){
+        domConstruct.place(newVideo, self.div.domNode);
+        if (self.video){
+          domConstruct.destroy(self.video);
+          self.module.x11vidkill(self.vidid);
+        };
+        self.vidid = newVidid;
+        self.video = newVideo;
+        self.lastCurrentTime = 0;
+        self.progressCounter = 0;
+        self.video.play();
+        self.creationProcess = false;
+        self.clearVidTimeout();
         self.vidTimeout = setTimeout(function(){
           self.createVideo();
         }, 1000 * 175);
       });
-      on(this.video, "mousedown", function(evt){
+      on(newVideo, "ended", lang.hitch(this, "createVideo"));
+      on(newVideo, "error", lang.hitch(this, "createVideo"));
+      /*on(newVideo, "playing", function(){
+        self.vidTimeout = setTimeout(function(){
+          self.createVideo();
+        }, 1000 * 175);
+      });*/
+      on(newVideo, "mousedown", function(evt){
         event.stop(evt);
         self.module.mouseEvent({
           type: "mousedown"
@@ -167,11 +250,11 @@ define([
           , button: evt.button + 1
         });
       });
-      on(this.video, "click", function(evt){
+      on(newVideo, "click", function(evt){
         event.stop(evt);
         self.keyBoard.focus();
       });
-      on(this.video, "mouseup", function(evt){
+      on(newVideo, "mouseup", function(evt){
         event.stop(evt);
         self.module.mouseEvent({
           type: "mouseup"
@@ -180,7 +263,7 @@ define([
           , button: evt.button + 1
         });
       });
-      on(this.video, "mousemove", function(evt){
+      on(newVideo, "mousemove", function(evt){
         event.stop(evt);
         self.module.mouseEvent({
           type: "mousemove"
@@ -188,7 +271,7 @@ define([
           , y: evt.offsetY
         });
       });
-      on(this.video, "mouseover", function(evt){
+      on(newVideo, "mouseover", function(evt){
         event.stop(evt);
         self.module.mouseEvent({
           type: "mousemove"
@@ -196,7 +279,7 @@ define([
           , y: evt.offsetY
         });
       });
-      on(this.video, "contextmenu", function(evt){
+      on(newVideo, "contextmenu", function(evt){
         event.stop(evt);
       });
     }
@@ -206,11 +289,26 @@ define([
         return;
       };
       setTimeout(lang.hitch(this, "playFun"), 100);
-      this.video.play();
       try{
-        this.video.currentTime += 1;
+        this.video.play();
+        for (var i = 0; i < 20; ++i){
+          this.video.currentTime += 0.1;
+        };
       }catch(e){
       }
+      if (this.video){
+        if (this.video.currentTime == this.lastCurrentTime){
+          this.progressCounter++;
+        }else{
+          this.progressCounter = 0;
+        };
+        this.lastCurrentTime = this.video.currentTime;
+      }else{
+        this.progressCounter++;
+      };
+      if ((this.progressCounter > 10 * 5 && !this.creationProcess) || this.progressCounter > 10 * 20){
+        this.createVideo();
+      };
     }
     
     , startup: function(){
@@ -225,6 +323,13 @@ define([
     , onHide: function(){
       this.keyBoard.blur();
       return this.inherited(arguments);
+    }
+    
+    , destroy: function(){
+      try{
+        this.module.x11vidkill(this.vidid);
+      }catch(e){}
+      this.inherited(arguments);
     }
   });
 });

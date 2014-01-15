@@ -33,6 +33,8 @@ define([
       restartDef: true
     }
     
+    , gpregister: {}
+    
     , restartDef: function(){
       var def = new Deferred();
       setTimeout(function(){
