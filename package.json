@@ -1,6 +1,6 @@
 {
   "name": "node-mirror",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "author": {
     "name": "Matthias Behrens",
     "email": "matthias.behrens@gmail.com"
@@ -38,6 +38,9 @@
     , "hexeditor"
     , "less"
     , "peg.js"
+    , "x11"
+    , "x11 terminal"
+    , "audio player"
   ],
   "repository": {
     "type": "git",

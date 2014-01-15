@@ -245,7 +245,7 @@ define([
           var spawn  = child_process.spawn;
 
           function s(p, p2){
-            return p[format] || p.default || p2;
+            return p[format] || p["default"] || p2;
           };
 
           x11size().then(function(size){
@@ -267,7 +267,7 @@ define([
               "-b:v","1M",             // Target bit rate
               "-crf","40",             // Quality
               "-t", "180", // 3 min
-              "-f", format,             // File format
+              "-f", format             // File format
             ];
               //console.log(nodeMirrorConfig.x11videotool);
             if (nodeMirrorConfig.x11videotool == "avconv"){

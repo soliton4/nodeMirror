@@ -51,7 +51,12 @@ Ever asked yourself which Editor you should choose? This is trying to answer tha
 
 ## Optional
    
-   - you need imagemagick installed on your machine to view images
+   - you need imagemagick installed on your machine to view images  
+   - for audio files and the beta video module you need avconv installed  
+   - for the X11 Terminal you need the following programs installed:  
+     avconv (optional just ffmpeg)  
+     xprop  
+     xdotool  
   
   
 ## Customizablity
@@ -72,6 +77,7 @@ Ever asked yourself which Editor you should choose? This is trying to answer tha
  - download directories as zip files  
  - Terminals (!)  
  - build in web server  
+ - a freakin X11 terminal forwarder (!!)  
  - more ...  
   
   
@@ -81,11 +87,22 @@ For every Content Type where a CodeMirror Mode exists, a CodeMirror instance wil
 For all other files there is a download button or a Hex Editor.  
 If a file is opened for which no native Text Mode exists it will be opened in a Hex Editor. You can switch between hex view and text view.
   
+## Audio / Video Files
+  
+Audio and Video files are converted to a web format using avconv. make sure you have it installed.
+the Video module is beta.
+  
   
 ## Terminal Module  
   
 utilizing pty.js nodeMirror allows you to have several terminals within your browser. the Terminals will stay open when you close your browser window. You can even have the same terminal open on different browsers / machines opening new possibilities for collaboration.   
   
+## X11 Terminal Module  
+  
+a videostream encoded with avconv is forwarded to the client. client inputs are forwarded via xdotool.  
+make sure you have avconv, xprop and xdotool installed.  
+to activate the x11 module pass --x11terminal on the commandline. this feature stays optional because not every server has a x11 console.
+
   
 ## Debug Module  
   
