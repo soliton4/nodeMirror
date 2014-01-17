@@ -255,7 +255,7 @@ define([
             var params = [
               "-re",                   // Real time mode
               "-f","x11grab",          // Grab screen
-              "-r","5",              // Framerate
+              "-r","3",              // Framerate
               "-s", size.x + "x" + size.y,   // Capture size
               "-i",":0+" + 0 + "," + 0, // Capture offset
               "-g","0",                // All frames are i-frames
@@ -264,8 +264,8 @@ define([
               "-vcodec", s( {"webm": "libvpx", ogg: "libtheora" }),      // vp8 encoding / ogg encoding
               "-preset","ultrafast",
               "-tune","zerolatency",
-              "-b:v","1M",             // Target bit rate
-              "-crf","40",             // Quality
+              "-b:v","400000",             // Target bit rate
+              "-crf","20",             // Quality
               "-t", "180", // 3 min
               "-f", format             // File format
             ];
@@ -278,7 +278,7 @@ define([
             };
             if (format == "ogg"){
               params.push("-q:v");
-              params.push("6");
+              params.push("4");
             };
             params.push("-");                      // Output to STDOUT
               
