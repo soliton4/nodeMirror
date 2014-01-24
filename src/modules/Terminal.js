@@ -280,7 +280,13 @@ define([
 
       var spawn  = child_process.spawn;
       
-      config.get("x11terminal").then(function(x11terminal){
+      var x11videotool;
+      config.get("x11videotool").then(function(par){
+        x11videotool = par || "avconv";
+      });
+      
+      config.get("x11terminal", "x11videotool").then(function(x11terminal){
+        
         if (!x11terminal){
           return;
         };
@@ -323,7 +329,7 @@ define([
             params.push("-");                      // Output to STDOUT
 
             var cmdStr = "";
-            cmdStr += "avconv";
+            cmdStr += x11videotool;
             i = 0;
             for (i = 0; i < params.length; ++i){
               cmdStr += " ";
@@ -335,7 +341,7 @@ define([
             //ffmpeg -re -f x11grab -r 5 -s 1024x768 -i :0+0,0 -g 1 -me_method zero -flags2 fast -vcodec libtheora -preset ultrafast -tune zerolatecy -b:v 1M -crf 40 -q:v 6 -t 180 -f ogg -
             var avconv;
             try{
-              avconv = spawn("avconv", params);
+              avconv = spawn(x11videotool, params);
             }catch(e){
               console.log("error 1");
             };
