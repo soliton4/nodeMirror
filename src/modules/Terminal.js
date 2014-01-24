@@ -188,6 +188,7 @@ define([
   if (has("server-modules")){
     
     var x11queue = [];
+    var x11executing = false;
     
     _handleConnection = function(parSocket, session){
       var socket = parSocket;
@@ -439,6 +440,7 @@ define([
           if (evt.type == "mousedown" || evt.type == "mouseup" || evt.type == "mousemove"){
             params = ["mousemove", "" + evt.x, "" + evt.y];
             xdotool = spawn('xdotool', params);
+            x11executing = true;
             if (evt.type == "mousedown" || evt.type == "mouseup"){
               params = [evt.type, "" + evt.button];
               x11queue.push({
@@ -447,9 +449,11 @@ define([
             };
           }else if (evt.params){
             xdotool = spawn('xdotool', evt.params);
+            x11executing = true;
           };
           if (xdotool){
             xdotool.on("exit", function(){
+              x11executing = false;
               if (x11queue.length){
                 execMouseFun(x11queue.pop());
               };
@@ -464,9 +468,9 @@ define([
         
         socket.on("x11mouse", function(evt){
           
-          if (x11queue.length){
+          if (x11queue.length || x11executing){
             var lastitem = x11queue[x11queue.length - 1];
-            if (evt.type == "mousemove" && lastitem.type == "mousemove"){
+            if (lastitem && evt.type == "mousemove" && lastitem.type == "mousemove"){
               x11queue.pop();
             };
             x11queue.push(evt);
