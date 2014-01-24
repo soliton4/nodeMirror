@@ -6,6 +6,7 @@ define([
   , "./Tab"
   , "dojo/_base/array"
   , "./X11"
+  , "./X264"
 ], function(
   declare
   , Tree
@@ -14,6 +15,7 @@ define([
   , Tab
   , array
   , X11
+  , X264
 ){
   return declare([
     Tree
@@ -78,6 +80,17 @@ define([
         });
         tabs.selectChild(tab);
         self.tabs["x11"] = tab;
+        
+      }else if (item.id == "x264"){
+        var tab = new X264({
+          "module": self.module
+        });
+        tabs.addChild(tab);
+        tab.on("close", function(){
+          delete self.tabs["x264"];
+        });
+        tabs.selectChild(tab);
+        self.tabs["x264"] = tab;
       }else{
         self.module.openTerminal(item.id).then(function(term){
           var tab = new Tab({

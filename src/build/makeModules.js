@@ -472,11 +472,85 @@ modulizer.convertFile(genericDir + "jsonlint/lib/jsonlint.js", {
   
   
 // PEG.js
-pegSrcPath = genericDir + "peg/";
-pegDestPath = srcDir + "peg/";
+var pegSrcPath = genericDir + "peg/";
+var pegDestPath = srcDir + "peg/";
 
 modulizer.convertFile(pegSrcPath + "PEG.js", {
   "return": "PEG"
 }, pegDestPath + "Peg.js", errFun);
-  
+
+    
+// avc
+var avcSrcPath = genericDir + "Broadway/Player/";
+var avcDestPath = srcDir + "avc/";
+
+modulizer.convertFile(avcSrcPath + "util.js", {
+  "returnmultiple": {
+    "assert": true
+    , "text": true
+    , "inherit": true
+  }
+}, avcDestPath + "util.js", errFun);
+    
+modulizer.convertFile(avcSrcPath + "glUtils.js", {
+  require: [{
+    "module": "avc/sylvester"
+    , "as": "_sylvester"
+    , "members": ["Matrix", "Vector", "$M"]
+  }]  
+  , "returnmultiple": {
+    "makePerspective": true
+  }
+}, avcDestPath + "glUtils.js", errFun);
+    
+modulizer.convertFile(avcSrcPath + "sylvester.js", {
+  "returnmultiple": {
+    "Matrix": true,
+    "Vector": true,
+    "$M": true,
+    "$V": true
+  }
+}, avcDestPath + "sylvester.js", errFun);
+    
+
+modulizer.convertFile(avcSrcPath + "avc-codec.js", {
+  "return": "Module"
+  , replace: [{
+    find: /;(?=([^"\\]*(\\.|"([^"\\]*\\.)*[^"\\]*"))*[^"]*$)/g
+    , replace: ";\n"
+  }]
+}, avcDestPath + "avc-codec.js", errFun);
+
+modulizer.convertFile(avcSrcPath + "avc.js", {
+  require: [{
+    "module": "avc/avc-codec"
+    , "as": "Module"
+  }, {
+    "module": "avc/util"
+    , "as": "_util"
+    , "members": ["assert"]
+  }]  
+  , "return": "Avc"
+}, avcDestPath + "Avc.js", errFun);
+
+modulizer.convertFile(avcSrcPath + "canvas.js", {
+  require: [{
+    "module": "avc/util"
+    , "as": "_util"
+    , "members": ["assert", "text", "inherit"]
+  }, {
+    "module": "avc/glUtils"
+    , "as": "_glUtils"
+    , "members": ["makePerspective"]
+  }, {
+    "module": "avc/sylvester"
+    , "as": "_sylvester"
+    , "members": ["Matrix", "$V"]
+  }]  
+  , "returnmultiple": {
+    "YUVWebGLCanvas": true
+  }
+}, avcDestPath + "canvas.js", errFun);
+    
+    
 });

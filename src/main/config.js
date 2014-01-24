@@ -46,6 +46,9 @@ define([
       , "dirColorCode": false
       , "dirViewMode": "list"
       , "x11terminal": false
+      , "x11format": "ogg"
+      , "x11fps": 5
+      , "x11quality": 5
     }
     , saveable: {
       "theme": true
@@ -53,6 +56,9 @@ define([
     , "treefiles": true
     , "dirColorCode": true
     , "dirViewMode": true
+    , "x11format": true
+    , "x11fps": true
+    , "x11quality": true
     }
     
     , constructor: function(){

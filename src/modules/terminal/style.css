@@ -6,7 +6,7 @@
   background-color: white;
   opacity: 0.5;
 }
-.x11divWraper {
+.x11WrapperDiv .showScroll {
   overflow: scroll;
 }
 .x11div2 {

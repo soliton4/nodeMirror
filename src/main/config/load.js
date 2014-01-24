@@ -28,6 +28,9 @@ define([
             port: 3000
             , theme: "monokai"
             , webpath: "/"
+            , "x11format": "ogg"
+            , "x11fps": 5
+            , "x11quality": 5
           }, function(err, config){
             if (err){
               console.log(err);

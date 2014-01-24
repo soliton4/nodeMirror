@@ -16,6 +16,13 @@ define([
   , "dijit/form/Select"
   , "dijit/form/Button"
   , "dojo/dom-style"
+  , "dijit/form/NumberSpinner"
+  , "./X11Settings"
+  , "dijit/_WidgetBase"
+  , "sol/wgt/mixin/resize"
+  , "dijit/form/DropDownButton"
+  , "sol/base64"
+  , "avc/Wgt"
   
 ], function(
   declare
@@ -35,10 +42,47 @@ define([
   , Select
   , Button
   , domStyle
+  , NumberSpinner
+  , X11Settings
+  , _WidgetBase
+  , resizeMixin
+  , DropDownButton
+  , base64
+  , AvcWgt
     
 ){
-  var vidid = 0;
-  
+    
+  var EventDiv = declare([_WidgetBase, resizeMixin], {
+    "class": "x11EventDiv"
+    , resize: function(){
+      var ret = this.inherited(arguments);
+      if (this._contentBox && this.wrapper){
+        this.wrapper.set("box", this._contentBox);
+        this.wrapper.applyBoxChange();
+      };
+      return ret;
+    }
+  });
+
+  var WrapperDiv = declare([_WidgetBase, resizeMixin], {
+    "class": "x11WrapperDiv"
+    , resize: function(){
+      var ret = this.inherited(arguments);
+      this.applyBoxChange();
+      return ret;
+    }
+    , applyBoxChange: function(){
+      if (!(this.box && this._contentBox)){
+        return;
+      };
+      if (this.box.h > this._contentBox.h || this.box.w > this._contentBox.w){
+        domClass.add(this.domNode, "showScroll");
+      }else{
+        domClass.remove(this.domNode, "showScroll");
+      };
+    }
+  });
+
   return declare([BorderContainer, tabMixin], {
     title: "X11"
     , gutters: false
@@ -58,19 +102,16 @@ define([
       }));
       this.addChild(this.toolBar);
       
-      this.formatSelect = this.ownObj(new Select({
-        options: [{
-          label: "ogg"
-          , value: "ogg"
-        }, {
-          label: "webm"
-          , value: "webm"
-        }]
-        , onChange: function(){
-          self.createVideo();
-        }
+      this.settingsBtn = this.ownObj(new DropDownButton({
+        label: "Settings",
+        dropDown: new X11Settings({
+          applyChange: lang.hitch(this, function(){
+            this.module.stopX264();
+            this.createVideo();
+          })
+        })
       }));
-      this.toolBar.addChild(this.formatSelect);
+      this.toolBar.addChild(this.settingsBtn);
 
       this.fullScreenBtn = this.ownObj(new Button({
         label: "Fullscreen"
@@ -159,15 +200,61 @@ define([
         
       });
       
-      this.div = this.ownObj(new Node({
-        tagName: "div"
-        , "class": "x11divWraper"
-        , tagAttributes: {
-          "class": "x11divWraper"
-        }
-        , region: "center"
+      this.div = this.ownObj(new WrapperDiv({
+        region: "center"
       }));
       this.addChild(this.div);
+      
+      this.eventDiv = this.ownObj(new EventDiv({
+        wrapper: this.div
+      }));
+      this.eventDiv.placeAt(this.div.domNode);
+      
+      var eventNode = this.eventDiv.domNode;
+      
+      on(eventNode, "mousedown", function(evt){
+        event.stop(evt);
+        self.module.mouseEvent({
+          type: "mousedown"
+          , x: evt.offsetX
+          , y: evt.offsetY
+          , button: evt.button + 1
+        });
+      });
+      on(eventNode, "click", function(evt){
+        event.stop(evt);
+        self.keyBoard.focus();
+      });
+      on(eventNode, "mouseup", function(evt){
+        event.stop(evt);
+        self.module.mouseEvent({
+          type: "mouseup"
+          , x: evt.offsetX
+          , y: evt.offsetY
+          , button: evt.button + 1
+        });
+      });
+      on(eventNode, "mousemove", function(evt){
+        event.stop(evt);
+        self.module.mouseEvent({
+          type: "mousemove"
+          , x: evt.offsetX
+          , y: evt.offsetY
+        });
+      });
+      on(eventNode, "mouseover", function(evt){
+        event.stop(evt);
+        self.module.mouseEvent({
+          type: "mousemove"
+          , x: evt.offsetX
+          , y: evt.offsetY
+        });
+      });
+      on(eventNode, "contextmenu", function(evt){
+        event.stop(evt);
+      });
+      
+      
       
       this.div2 = this.ownObj(new Node({
         tagName: "div"
@@ -176,7 +263,7 @@ define([
       }));
       this.addChild(this.div2);
       
-      this.createVideo();
+      //this.createVideo();
       
       return;
       
@@ -198,6 +285,18 @@ define([
       };
     }
     
+    , _cleanUp: function(){
+      var self = this;
+            if (self.video){
+              domConstruct.destroy(self.video);
+              self.module.x11vidkill(self.vidid);
+            };
+      if (self.avc){
+        self.avc.destroy();
+      };
+      //self.module.stopX264();
+    }
+    
     , createVideo: function(){
       var self = this;
       if (this._destroyed){
@@ -206,82 +305,82 @@ define([
       
       this.creationProcess = true;
       
-      this.clearVidTimeout();
-      var format = this.formatSelect.get("value") || "ogg";
       
-      var newVidid = Math.floor(Math.random() * 1000000000);
-      var newVideo = domConstruct.create("video", {
-        "class": "x11Video"
-        , "src": "x11.stream?vidid=" + newVidid + "&format=" + format
-        , "autoplay": "autoplay"
-        , "type": "video/" + format
-      });
-      domConstruct.place(newVideo, self.div2.domNode);
-      on(newVideo, "canplay", function(){
-        domConstruct.place(newVideo, self.div.domNode);
-        if (self.video){
-          domConstruct.destroy(self.video);
-          self.module.x11vidkill(self.vidid);
+      config.get("x11format", "x11fps", "x11quality").then(function(par){
+        if (self._destroyed){
+          return false;
         };
-        self.vidid = newVidid;
-        self.video = newVideo;
-        self.lastCurrentTime = 0;
-        self.progressCounter = 0;
-        self.video.play();
-        self.creationProcess = false;
+        var format = par.x11format;
+        var fps = par.x11fps;
+        var quality = par.x11quality;
+        
         self.clearVidTimeout();
-        self.vidTimeout = setTimeout(function(){
-          self.createVideo();
-        }, 1000 * 175);
+        if (format == "h264"){
+          var first = true;
+          self.module.registerX264StreamFunction(function(data){
+            if (self._destroyed){
+              return false;
+            };
+            if (first){
+              self._cleanUp();
+              first = false;
+              self.avc = new AvcWgt({
+                size: {
+                  w: self.size.x
+                  , h: self.size.y
+                }
+              });
+              self.avc.placeAt(self.eventDiv.domNode);
+              self.vidTimeout = setTimeout(function(){
+                self.createVideo();
+              }, 1000 * 175);
+            };
+            //var frameData = base64.toUint8Array(data);
+            self.avc.decode(base64.toUint8Array(data));
+
+            return true;
+          }, {
+            fps: fps
+            , q: quality
+          });
+          
+          
+        }else{
+          var newVidid = Math.floor(Math.random() * 1000000000);
+          var newVideo = domConstruct.create("video", {
+            "class": "x11Video"
+            , "src": "x11.stream?vidid=" + newVidid + "&format=" + format + "&fps=" + fps + "&q=" + quality
+            , "autoplay": "autoplay"
+            , "type": "video/" + format
+          });
+          domConstruct.place(newVideo, self.div2.domNode);
+          on(newVideo, "canplay", function(){
+            if (self._destroyed){
+              return false;
+            };
+            domConstruct.place(newVideo, self.eventDiv.domNode);
+            self._cleanUp();
+            self.vidid = newVidid;
+            self.video = newVideo;
+            self.lastCurrentTime = 0;
+            self.progressCounter = 0;
+            self.video.play();
+            self.creationProcess = false;
+            self.clearVidTimeout();
+            self.vidTimeout = setTimeout(function(){
+              self.createVideo();
+            }, 1000 * 175);
+          });
+          on(newVideo, "ended", lang.hitch(self, "createVideo"));
+          on(newVideo, "error", lang.hitch(self, "createVideo"));
+          
+        };
       });
-      on(newVideo, "ended", lang.hitch(this, "createVideo"));
-      on(newVideo, "error", lang.hitch(this, "createVideo"));
       /*on(newVideo, "playing", function(){
         self.vidTimeout = setTimeout(function(){
           self.createVideo();
         }, 1000 * 175);
       });*/
-      on(newVideo, "mousedown", function(evt){
-        event.stop(evt);
-        self.module.mouseEvent({
-          type: "mousedown"
-          , x: evt.offsetX
-          , y: evt.offsetY
-          , button: evt.button + 1
-        });
-      });
-      on(newVideo, "click", function(evt){
-        event.stop(evt);
-        self.keyBoard.focus();
-      });
-      on(newVideo, "mouseup", function(evt){
-        event.stop(evt);
-        self.module.mouseEvent({
-          type: "mouseup"
-          , x: evt.offsetX
-          , y: evt.offsetY
-          , button: evt.button + 1
-        });
-      });
-      on(newVideo, "mousemove", function(evt){
-        event.stop(evt);
-        self.module.mouseEvent({
-          type: "mousemove"
-          , x: evt.offsetX
-          , y: evt.offsetY
-        });
-      });
-      on(newVideo, "mouseover", function(evt){
-        event.stop(evt);
-        self.module.mouseEvent({
-          type: "mousemove"
-          , x: evt.offsetX
-          , y: evt.offsetY
-        });
-      });
-      on(newVideo, "contextmenu", function(evt){
-        event.stop(evt);
-      });
     }
     
     , playFun: function(){
@@ -304,7 +403,8 @@ define([
         };
         this.lastCurrentTime = this.video.currentTime;
       }else{
-        this.progressCounter++;
+        return;
+        //this.progressCounter++;
       };
       if ((this.progressCounter > 10 * 5 && !this.creationProcess) || this.progressCounter > 10 * 20){
         this.createVideo();
@@ -315,8 +415,22 @@ define([
       if (this._started){
         return;
       };
+      var self = this;
       this.inherited(arguments);
-      this.playFun();
+      this.size = {
+        x: 800
+        , y: 600
+      };
+      this.module.x11size().then(function(size){
+        self.size.x = size.x;
+        self.size.y = size.y;
+        self.eventDiv.resize({
+          h: size.y
+          , w: size.x
+        });
+        self.createVideo();
+        self.playFun();
+      });
       this.keyBoard.focus();
     }
     
@@ -329,6 +443,8 @@ define([
       try{
         this.module.x11vidkill(this.vidid);
       }catch(e){}
+      this._cleanUp();
+      this.module.stopX264();
       this.inherited(arguments);
     }
   });
