@@ -28,3 +28,6 @@
 [submodule "generic-js/pdf.js"]
 	path = generic-js/pdf.js
 	url = https://github.com/mozilla/pdf.js
+[submodule "generic-js/Broadway"]
+	path = generic-js/Broadway
+	url = https://github.com/mbebenita/Broadway
