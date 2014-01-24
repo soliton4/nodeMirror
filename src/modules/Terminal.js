@@ -187,6 +187,8 @@ define([
   
   if (has("server-modules")){
     
+    var x11queue = [];
+    
     _handleConnection = function(parSocket, session){
       var socket = parSocket;
       
@@ -431,35 +433,48 @@ define([
         });
         
         
-        socket.on("x11mouse", function(evt){
-
-          var params1;
-          var params2;
-
+        var execMouseFun = function(evt){
+          var params;
+          var xdotool;
           if (evt.type == "mousedown" || evt.type == "mouseup" || evt.type == "mousemove"){
-            params1 = ["mousemove", "" + evt.x, "" + evt.y];
+            params = ["mousemove", "" + evt.x, "" + evt.y];
+            xdotool = spawn('xdotool', params);
+            if (evt.type == "mousedown" || evt.type == "mouseup"){
+              params = [evt.type, "" + evt.button];
+              x11queue.push({
+                params: params
+              });
+            };
+          }else if (evt.params){
+            xdotool = spawn('xdotool', evt.params);
           };
-          if (evt.type == "mousedown"){
-            params2 = ["mousedown", "" + evt.button];
-          }else if (evt.type == "mouseup"){
-            params2 = ["mouseup", "" + evt.button];
-          };
-          var do2;
-
-          if (params1){
-            //console.log(params1);
-            var xdotool = spawn('xdotool', params1);
+          if (xdotool){
             xdotool.on("exit", function(){
-              //console.log("exit");
-              if (params2 && !do2){
-                do2 = true;
-                setTimeout(function(){
-                  //console.log(params2);
-                  xdotool = spawn('xdotool', params2);
-                }, 0);
+              if (x11queue.length){
+                execMouseFun(x11queue.pop());
               };
             });
+          }else{
+            if (x11queue.length){
+              execMouseFun(x11queue.pop());
+            };
           };
+          
+        };
+        
+        socket.on("x11mouse", function(evt){
+          
+          if (x11queue.length){
+            var lastitem = x11queue[x11queue.length - 1];
+            if (evt.type == "mousemove" && lastitem.type == "mousemove"){
+              x11queue.pop();
+            };
+            x11queue.push(evt);
+            return;
+          };
+          
+          execMouseFun(evt);
+
         });
 
         var keyMap = {

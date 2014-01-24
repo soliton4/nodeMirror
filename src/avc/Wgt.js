@@ -38,10 +38,10 @@ define([
     , y: 360
     }
     , config: {
-      filter: "original",
-      filterHorLuma: "optimized",
-      filterVerLumaEdge: "optimized",
-      getBoundaryStrengthsA: "optimized"
+      //filter: "original",
+      //filterHorLuma: "optimized",
+      //filterVerLumaEdge: "optimized",
+      //getBoundaryStrengthsA: "optimized"
     }
     , buildRendering: function(){
       var self = this;
