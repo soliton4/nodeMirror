@@ -295,7 +295,9 @@ define([
       if (self.avc){
         self.avc.destroy();
       };
-      //self.module.stopX264();
+      if (self.vidid){
+        self.module.stopX264(self.vidid);
+      };
     }
     
     , createVideo: function(){
@@ -316,6 +318,7 @@ define([
         var quality = par.x11quality;
         
         self.clearVidTimeout();
+        var newVidid = Math.floor(Math.random() * 1000000000);
         if (format == "h264"){
           var first = true;
           self.module.registerX264StreamFunction(function(data){
@@ -324,6 +327,7 @@ define([
             };
             if (first){
               self._cleanUp();
+              self.vidid = newVidid;
               first = false;
               self.avc = new AvcWgt({
                 size: {
@@ -343,11 +347,11 @@ define([
           }, {
             fps: fps
             , q: quality
+            , vidid: newVidid
           });
           
           
         }else{
-          var newVidid = Math.floor(Math.random() * 1000000000);
           var newVideo = domConstruct.create("video", {
             "class": "x11Video"
             , "src": "x11.stream?vidid=" + newVidid + "&format=" + format + "&fps=" + fps + "&q=" + quality

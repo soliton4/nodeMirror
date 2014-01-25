@@ -163,9 +163,9 @@ define([
       
     }
     
-    , stopX264: function(){
+    , stopX264: function(vidid){
       this.socketDef.then(function(socket){
-        socket.emit("x264stop");
+        socket.emit("x264stop", vidid);
       });
       
     }
@@ -301,6 +301,7 @@ define([
           
           var fps = par.fps || "5";
           var quality = par.q || "5";
+          var vidid = par.vidid;
           
           x11Fun.x11size().then(function(size){
             
@@ -325,10 +326,12 @@ define([
               "-t", "180", // 3 min
               "-f", "h264"             // File format
             ];
-            /*params.push("-qmin");
+            params.push("-qmin");
             params.push("1");             // Quantization
             params.push("-qmax");
-            params.push(quality);*/
+            params.push(quality);
+            params.push("-q:v");                      // Output to STDOUT
+            params.push(quality);
             params.push("-");                      // Output to STDOUT
 
             var cmdStr = "";
@@ -353,7 +356,14 @@ define([
               avconv.kill();
               //delete nodeControl.gpregister.avconv[vidid];
             };
-            socket.on("x264stop", killfun);
+            socket.on("x264stop", function(parVidid){
+              if (vidid == parVidid || !parVidid){
+                killfun();
+              };
+            });
+            socket.on('disconnect', function () {
+              killfun();
+            });
 
             //console.log("step 2");
             setTimeout(function(){
