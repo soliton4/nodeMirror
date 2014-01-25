@@ -54,10 +54,10 @@ Ever asked yourself which Editor you should choose? This is trying to answer tha
    - you need imagemagick installed on your machine to view images  
    - for audio files and the beta video module you need avconv installed  
    - for the X11 Terminal you need the following programs installed:  
-     avconv (optional just ffmpeg)  
      xprop  
      xdotool  
-  
+     avconv (optional just ffmpeg - pass --x11videotool ffmpeg)  
+     if you want to use the h264 console make sure avconv is compiled with libx264  
   
 ## Customizablity
   
@@ -102,6 +102,9 @@ utilizing pty.js nodeMirror allows you to have several terminals within your bro
 a videostream encoded with avconv is forwarded to the client. client inputs are forwarded via xdotool.  
 make sure you have avconv, xprop and xdotool installed.  
 to activate the x11 module pass --x11terminal on the commandline. this feature stays optional because not every server has a x11 console.
+  
+a low latency h264 console is available. i apprechiate test reports of this bleeding edge technology.  
+pls refer to requirements.  
 
   
 ## Debug Module  
@@ -145,6 +148,9 @@ for creating the most developer friendly editor
   
 * pty.js ( https://github.com/chjj/pty.js )  
 for making terminals in node.js possible  
+  
+* Broadway.js ( https://github.com/mbebenita/Broadway )  
+for the h264 decoder used in the X11 remote console  
   
 * all the contributers, testers and users  
 for making this a great IDE  
