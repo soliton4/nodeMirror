@@ -433,34 +433,42 @@ define([
           });
         });
         
-        
+        var lastpos = "";
         var execMouseFun = function(evt){
           var params;
           var xdotool;
           if (evt.type == "mousedown" || evt.type == "mouseup" || evt.type == "mousemove"){
             params = ["mousemove", "" + evt.x, "" + evt.y];
             xdotool = spawn('xdotool', params);
+            lastpos = "" + evt.x + " " + evt.y;
             x11executing = true;
             if (evt.type == "mousedown" || evt.type == "mouseup"){
               params = [evt.type, "" + evt.button];
               x11queue.push({
                 params: params
+                , log: evt.type + "" + evt.x + " " + evt.y
               });
             };
           }else if (evt.params){
             xdotool = spawn('xdotool', evt.params);
+            console.log("lastpos " + lastpos);
+            console.log(evt.log);
             x11executing = true;
           };
           if (xdotool){
             xdotool.on("exit", function(){
               x11executing = false;
               if (x11queue.length){
-                execMouseFun(x11queue.pop());
+                var lastitem = x11queue[x11queue.length - 1];
+                x11queue.pop();
+                execMouseFun(lastitem);
               };
             });
           }else{
             if (x11queue.length){
-              execMouseFun(x11queue.pop());
+              var lastitem = x11queue[x11queue.length - 1];
+              x11queue.pop();
+              execMouseFun(lastitem);
             };
           };
           
@@ -503,7 +511,7 @@ define([
           var params2;
 
           //evt.charOrCode = "s";
-          console.log(evt.charOrCode);
+          //console.log(evt.charOrCode);
           //console.log(typeof evt.charOrCode);
           var charStr = evt.charOrCode;
           if (keyMap[charStr]){
@@ -512,7 +520,7 @@ define([
           //if (evt.charOrCode > 0){
           //  charStr = String.fromCharCode(evt.charOrCode);
           //};
-          console.log(charStr);
+          //console.log(charStr);
 
           if (!charStr){
             return;
@@ -529,17 +537,10 @@ define([
           var do2;
 
           if (params1){
-            console.log(params1);
+            //console.log(params1);
             var xdotool = spawn('xdotool', params1);
             xdotool.on("exit", function(){
               //console.log("exit");
-              if (params2 && !do2){
-                do2 = true;
-                setTimeout(function(){
-                  console.log(params2);
-                  xdotool = spawn('xdotool', params2);
-                }, 100);
-              };
             });
           };
         });

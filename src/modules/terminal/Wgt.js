@@ -6,7 +6,6 @@ define([
   , "./Tab"
   , "dojo/_base/array"
   , "./X11"
-  , "./X264"
 ], function(
   declare
   , Tree
@@ -15,7 +14,6 @@ define([
   , Tab
   , array
   , X11
-  , X264
 ){
   return declare([
     Tree

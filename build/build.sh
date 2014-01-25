@@ -93,3 +93,12 @@ cp ../release/client/style/style.css ../release/nodeMirror/src/style/
 
 mkdir ../release/nodeMirror/src/image
 cp ../src/image/* ../release/nodeMirror/src/image/
+
+mkdir ../release/nodeMirror/src/avc
+cp ../release/client/avc/Avc.js ../release/nodeMirror/src/avc/
+cp ../release/client/avc/avc-codec.js ../release/nodeMirror/src/avc/
+cp ../release/client/avc/canvas.js ../release/nodeMirror/src/avc/
+cp ../release/client/avc/glUtils.js ../release/nodeMirror/src/avc/
+cp ../release/client/avc/util.js ../release/nodeMirror/src/avc/
+cp ../release/client/avc/sylvester.js ../release/nodeMirror/src/avc/
+cp ../release/client/avc/Wgt.js ../release/nodeMirror/src/avc/

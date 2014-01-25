@@ -70,6 +70,9 @@ var profile = (function(){
         }, {
           name: "promiseland"
         , location: "promiseland"
+        }, {
+          name: "avc"
+        , location: "avc"
         }],
       
       plugins: {

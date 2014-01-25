@@ -22,7 +22,7 @@ define([
   , "sol/wgt/mixin/resize"
   , "dijit/form/DropDownButton"
   , "sol/base64"
-  , "avc/Wgt"
+  , "require" //"avc/Wgt"
   
 ], function(
   declare
@@ -48,9 +48,10 @@ define([
   , resizeMixin
   , DropDownButton
   , base64
-  , AvcWgt
+  , require //AvcWgt
     
 ){
+  var AvcWgt;
     
   var EventDiv = declare([_WidgetBase, resizeMixin], {
     "class": "x11EventDiv"
@@ -428,8 +429,11 @@ define([
           h: size.y
           , w: size.x
         });
-        self.createVideo();
-        self.playFun();
+        require(["avc/Wgt"], function(wgt){
+          AvcWgt = wgt;
+          self.createVideo();
+          self.playFun();
+        });
       });
       this.keyBoard.focus();
     }
