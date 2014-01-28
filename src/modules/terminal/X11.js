@@ -309,13 +309,14 @@ define([
       this.creationProcess = true;
       
       
-      config.get("x11format", "x11fps", "x11quality").then(function(par){
+      config.get("x11format", "x11fps", "x11quality", "x11targetrate").then(function(par){
         if (self._destroyed){
           return false;
         };
         var format = par.x11format;
         var fps = par.x11fps;
         var quality = par.x11quality;
+        var targetrate = par.x11targetrate;
         
         self.clearVidTimeout();
         var newVidid = Math.floor(Math.random() * 1000000000);
@@ -348,6 +349,7 @@ define([
             fps: fps
             , q: quality
             , vidid: newVidid
+            , targetrate: targetrate
           });
           
           

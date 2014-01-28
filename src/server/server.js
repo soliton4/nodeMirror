@@ -235,6 +235,7 @@ define([
               "-r", fps,              // Framerate
               "-s", size.x + "x" + size.y,   // Capture size
               "-i",":0+" + 0 + "," + 0, // Capture offset
+              //"-i",":0+" + 1024 + "," + 0, // Capture offset
               "-g","0",                // All frames are i-frames
               "-me_method","zero",     // Motion algorithms off
               "-flags2","fast",

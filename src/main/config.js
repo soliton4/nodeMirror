@@ -49,6 +49,7 @@ define([
       , "x11format": "ogg"
       , "x11fps": 5
       , "x11quality": 5
+      , "x11targetrate": 0
     }
     , saveable: {
       "theme": true
@@ -59,6 +60,7 @@ define([
     , "x11format": true
     , "x11fps": true
     , "x11quality": true
+    , "x11targetrate": true
     }
     
     , constructor: function(){

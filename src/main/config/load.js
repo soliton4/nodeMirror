@@ -31,6 +31,7 @@ define([
             , "x11format": "ogg"
             , "x11fps": 5
             , "x11quality": 5
+            , "x11targetrate": 0
           }, function(err, config){
             if (err){
               console.log(err);

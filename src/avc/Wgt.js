@@ -38,7 +38,7 @@ define([
     , y: 360
     }
     , config: {
-      //filter: "original",
+      filter: "original",
       //filterHorLuma: "optimized",
       //filterVerLumaEdge: "optimized",
       //getBoundaryStrengthsA: "optimized"
@@ -61,6 +61,14 @@ define([
       var onPictureDecoded = function(buffer, width, height) {
         if (!buffer) {
           return;
+        };
+        if (width != self._size.w){
+          self._size.w = width;
+          self.canvas.width = self._size.w;
+        };
+        if (height != self._size.h){
+          self._size.h = height;
+          self.canvas.height = self._size.h;
         };
         var lumaSize = width * height;
         var chromaSize = lumaSize >> 2;

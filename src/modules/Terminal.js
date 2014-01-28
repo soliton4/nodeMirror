@@ -302,6 +302,7 @@ define([
           var fps = par.fps || "5";
           var quality = par.q || "5";
           var vidid = par.vidid;
+          var targetrate = par.targetrate;
           
           x11Fun.x11size().then(function(size){
             
@@ -311,7 +312,7 @@ define([
               "-f","x11grab",          // Grab screen
               "-r",fps,              // Framerate
               "-s", "" + size.x + "x" + size.y,   // Capture size
-              //"-s", "1024x768",   // Capture size
+              //"-s", "600x480",   // Capture size
               "-i",":0+" + 0 + "," + 0, // Capture offset
               "-g","0",                // All frames are i-frames
               "-me_method","zero",     // Motion algorithms off
@@ -319,13 +320,17 @@ define([
               "-vcodec", "libx264",      // vp8 encoding / ogg encoding
               "-preset","ultrafast",
               "-tune","zerolatency",
-              //"-b:v","100000",             // Target bit rate
+              //"-b:v","1000000",             // Target bit rate
               //"-b:v","1M",             // Target bit rate
               "-an",
               //"-crf","20",             // Quality
               "-t", "180", // 3 min
               "-f", "h264"             // File format
             ];
+            if (targetrate && targetrate != "0"){
+              params.push("-b:v");
+              params.push(targetrate);             // Quantization
+            };
             params.push("-qmin");
             params.push("1");             // Quantization
             params.push("-qmax");
@@ -383,7 +388,12 @@ define([
                 var hit = function(offset){
                   foundHit = true;
                   bufAr.push(data.slice(0, offset));
-                  socket.emit("x264test", {i: i++, frame: Buffer.concat(bufAr).toString("base64")});
+                  socket.emit("x264test", {
+                    i: i++
+                    , frame: Buffer.concat(bufAr).toString("base64")
+                    //, o: Buffer.concat(bufAr)
+                  });
+                  //socket.emit("x264test", Buffer.concat(bufAr));
                   bufAr = [];
                   bufAr.push(data.slice(offset));
                 };
@@ -580,7 +590,8 @@ define([
         };
       });
       this.socket.on("x264test", function(data){
-        console.log(data.i);
+        //console.log(data.i);
+        //debugger;
         self.x264Data(data.frame);
       });
     };

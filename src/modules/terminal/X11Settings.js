@@ -94,8 +94,14 @@ define([
         , onChange: onChangeFun
         
       }), new NumberSpinner({
-        label: "quality"
+        label: "Quality"
         , setting: "x11quality"
+        , valueSet: valueSetFun
+        , onChange: onChangeFun
+        
+      }), new NumberSpinner({
+        label: "target Bitrate"
+        , setting: "x11targetrate"
         , valueSet: valueSetFun
         , onChange: onChangeFun
         
