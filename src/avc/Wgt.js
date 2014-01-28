@@ -38,7 +38,7 @@ define([
     , y: 360
     }
     , config: {
-      filter: "original",
+      //filter: "original",
       //filterHorLuma: "optimized",
       //filterVerLumaEdge: "optimized",
       //getBoundaryStrengthsA: "optimized"
