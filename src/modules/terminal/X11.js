@@ -288,10 +288,10 @@ define([
     
     , _cleanUp: function(){
       var self = this;
-            if (self.video){
-              domConstruct.destroy(self.video);
-              self.module.x11vidkill(self.vidid);
-            };
+      if (self.video){
+        domConstruct.destroy(self.video);
+        self.module.x11vidkill(self.vidid);
+      };
       if (self.avc){
         self.avc.destroy();
       };
@@ -342,7 +342,9 @@ define([
               }, 1000 * 175);
             };
             //var frameData = base64.toUint8Array(data);
-            self.avc.decode(base64.toUint8Array(data));
+            try{
+              self.avc.decode(base64.toUint8Array(data));
+            }catch(e){};
 
             return true;
           }, {

@@ -66,5 +66,9 @@ define([
     , onHide: function(){
       this._hidden = true;
     }
+    , destroy: function(){
+      this.terminal.destroy();
+      this.inherited(arguments);
+    }
   });
 });

@@ -46,7 +46,7 @@ define([
         "resize": [],
         "data": []
       };
-      this.socket.on(this.eventid, function(data){
+      this.sHandle = this.socket.on(this.eventid, function(data){
         array.forEach(self._on[data.event], function(fun){
           try{
             fun(data.data);
@@ -55,6 +55,7 @@ define([
           };
         });
       });
+      
     }
     , on: function(parWhat, parFun){
       this._on[parWhat].push(parFun);
@@ -70,6 +71,9 @@ define([
         event: "resize"
         , data: parData
       });
+    }
+    , destroy: function(){
+      this.sHandle.disconnect();
     }
   });
   

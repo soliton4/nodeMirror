@@ -62,21 +62,23 @@ define([
         if (!buffer) {
           return;
         };
-        if (width != self._size.w){
-          self._size.w = width;
-          self.canvas.width = self._size.w;
-        };
-        if (height != self._size.h){
-          self._size.h = height;
-          self.canvas.height = self._size.h;
-        };
-        var lumaSize = width * height;
-        var chromaSize = lumaSize >> 2;
-        
-        self.webGLCanvas.YTexture.fill(buffer.subarray(0, lumaSize));
-        self.webGLCanvas.UTexture.fill(buffer.subarray(lumaSize, lumaSize + chromaSize));
-        self.webGLCanvas.VTexture.fill(buffer.subarray(lumaSize + chromaSize, lumaSize + 2 * chromaSize));
-        self.webGLCanvas.drawScene();
+        try{
+          if (width != self._size.w){
+            self._size.w = width;
+            self.canvas.width = self._size.w;
+          };
+          if (height != self._size.h){
+            self._size.h = height;
+            self.canvas.height = self._size.h;
+          };
+          var lumaSize = width * height;
+          var chromaSize = lumaSize >> 2;
+
+          self.webGLCanvas.YTexture.fill(buffer.subarray(0, lumaSize));
+          self.webGLCanvas.UTexture.fill(buffer.subarray(lumaSize, lumaSize + chromaSize));
+          self.webGLCanvas.VTexture.fill(buffer.subarray(lumaSize + chromaSize, lumaSize + 2 * chromaSize));
+          self.webGLCanvas.drawScene();
+        }catch(e){};
       };
       
       this.avc = new Avc();
