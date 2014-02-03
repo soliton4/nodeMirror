@@ -36,7 +36,7 @@ Administrate your Server and edit your Code from where ever you are.
   
 nodeMirror is a IDE utilizing CodeMirror.net, pty.js and other cool libraries.  
   
-I wrote it to fit the needs of a Developer, especialy me, and to make maximal usage of the CodeMirror Editor library.  
+I wrote it to fit the needs of a Developer, especially me, and to make maximal usage of the CodeMirror Editor library.  
 Giving you a powerful IDE and Admin tool.  
 
 Ever asked yourself which Editor you should choose? This is trying to answer that Question once and for all ;)
