@@ -86,6 +86,7 @@ function inherit(base, properties) {
 }
   return {"assert": assert,
 "text": text,
-"inherit": inherit
+"inherit": inherit,
+          "error": error
 };
 });
