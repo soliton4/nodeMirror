@@ -16,11 +16,9 @@ helperDefine(["avc/util", "avc/glUtils", "avc/sylvester"], function(_util, _glUt
 var assert = _util.assert;
 var text = _util.text;
 var inherit = _util.inherit;
-  var error = _util.error;
 var makePerspective = _glUtils.makePerspective;
 var Matrix = _sylvester.Matrix;
 var $V = _sylvester.$V;
-//var error = function(){};
 /*
  * This file wraps several WebGL constructs and provides a simple, single texture based WebGLCanvas as well as a
  * specialized YUVWebGLCanvas that can handle YUV->RGB conversion. 
