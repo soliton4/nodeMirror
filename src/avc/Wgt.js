@@ -88,7 +88,9 @@ define([
     }
     
     , decode: function(data){
-      this.avc.decode(data);
+      try{
+        this.avc.decode(data);
+      }catch(e){};
     }
     /*, decodeBase64: function(data){
       

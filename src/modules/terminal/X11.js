@@ -23,6 +23,7 @@ define([
   , "dijit/form/DropDownButton"
   , "sol/base64"
   , "require" //"avc/Wgt"
+  , "dojo/dom-geometry"
   
 ], function(
   declare
@@ -49,6 +50,7 @@ define([
   , DropDownButton
   , base64
   , require //AvcWgt
+  , domGeom
     
 ){
   var AvcWgt;
@@ -213,8 +215,18 @@ define([
       
       var eventNode = this.eventDiv.domNode;
       
+      var offsetCreator = function(evt){
+        if (evt.offsetX === undefined){
+          var pos = domGeom.position(eventNode, true);
+          evt.offsetX = evt.pageX - pos.x;
+          evt.offsetY = evt.pageY - pos.y;
+        };
+        return evt;
+      };
+      
       on(eventNode, "mousedown", function(evt){
         event.stop(evt);
+        evt = offsetCreator(evt);
         self.module.mouseEvent({
           type: "mousedown"
           , x: evt.offsetX
@@ -224,10 +236,12 @@ define([
       });
       on(eventNode, "click", function(evt){
         event.stop(evt);
+        //evt = offsetCreator(evt);
         self.keyBoard.focus();
       });
       on(eventNode, "mouseup", function(evt){
         event.stop(evt);
+        evt = offsetCreator(evt);
         self.module.mouseEvent({
           type: "mouseup"
           , x: evt.offsetX
@@ -237,6 +251,7 @@ define([
       });
       on(eventNode, "mousemove", function(evt){
         event.stop(evt);
+        evt = offsetCreator(evt);
         self.module.mouseEvent({
           type: "mousemove"
           , x: evt.offsetX
@@ -245,6 +260,7 @@ define([
       });
       on(eventNode, "mouseover", function(evt){
         event.stop(evt);
+        evt = offsetCreator(evt);
         self.module.mouseEvent({
           type: "mousemove"
           , x: evt.offsetX
