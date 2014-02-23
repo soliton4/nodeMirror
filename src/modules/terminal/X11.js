@@ -356,14 +356,22 @@ define([
           
           
         }else{
+          console.log("doing stuff");
           var newVideo = domConstruct.create("video", {
             "class": "x11Video"
             , "src": "x11.stream?vidid=" + newVidid + "&format=" + format + "&fps=" + fps + "&q=" + quality
-            , "autoplay": "autoplay"
+            //, "autoplay": "autoplay"
             , "type": "video/" + format
           });
           domConstruct.place(newVideo, self.div2.domNode);
+          //domConstruct.place(newVideo, self.eventDiv.domNode);
+          //return;
           on(newVideo, "canplay", function(){
+            if (newVideo.doneThat){
+              return;
+            };
+            newVideo.doneThat = true;
+            console.log("stuff got real");
             if (self._destroyed){
               return false;
             };
@@ -371,6 +379,7 @@ define([
             self._cleanUp();
             self.vidid = newVidid;
             self.video = newVideo;
+            self.videoPlaying = false;
             self.lastCurrentTime = 0;
             self.progressCounter = 0;
             self.video.play();
@@ -380,8 +389,20 @@ define([
               self.createVideo();
             }, 1000 * 175);
           });
-          on(newVideo, "ended", lang.hitch(self, "createVideo"));
-          on(newVideo, "error", lang.hitch(self, "createVideo"));
+          return;
+          on(newVideo, "ended", lang.hitch(self, function(){
+            console.log("ended");
+            self.createVideo();
+          }));
+          /*on(newVideo, "playing", lang.hitch(self, function(){
+            console.log("playing");
+            self.videoPlaying = true;
+          }));*/
+          
+          on(newVideo, "error", lang.hitch(self, function(){
+            console.log("error evt");
+            self.createVideo();
+          }));
           
         };
       });
@@ -398,12 +419,20 @@ define([
       };
       setTimeout(lang.hitch(this, "playFun"), 100);
       try{
-        this.video.play();
-        for (var i = 0; i < 20; ++i){
-          this.video.currentTime += 0.1;
+        if (this.video){
+          //if (!this.videoPlaying){
+            this.video.play();
+            //this.videoPlaying = true;
+            for (var i = 0; i < 20; ++i){
+              this.video.currentTime += 0.1;
+            };
+          //};
         };
       }catch(e){
-      }
+      };
+      if (this.video){
+        console.log(this.video.currentTime);
+      };
       if (this.video){
         if (this.video.currentTime == this.lastCurrentTime){
           this.progressCounter++;
@@ -415,7 +444,7 @@ define([
         return;
         //this.progressCounter++;
       };
-      if ((this.progressCounter > 10 * 5 && !this.creationProcess) || this.progressCounter > 10 * 20){
+      if ((this.progressCounter > 250 && !this.creationProcess) || this.progressCounter > 450){
         this.createVideo();
       };
     }
