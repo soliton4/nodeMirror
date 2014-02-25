@@ -3,31 +3,31 @@
     <style>
       .x {
         /*z-index: 0;*/
-        position: absolute;
-        top: 10px;
+        /*background-color: red;*/
+        /*top: 10px;
         display: block;
         left: 20px;
         background-color: red;
-        z-index: 999;
-        
+        z-index: 999;*/
+        position: relative;
       }
       .x:before{
         position: absolute;
         display: block;
-        top: 0px;
-        left: 0px;
-        width: 20px;
-        height: 30px;
+        bottom: -2px;
+        left: -4px;
+        width: 16px;
+        height: 19px;
         background-color: yellow;
         content: "";
         z-index: -100;
+        background-image: url(/file/src/image/cursor/16.gif)
       }
     </style>
   </head>
   <body>
-    <div class="x">
-      bla bla bla
+    zxxx asdfe <span class="x">bla bla bla
       
-    </div>
+    </span>
   </body>
 </html>

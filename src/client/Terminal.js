@@ -31,6 +31,11 @@ define([
           domClass.add(self.domNode, "seeunicorns");
         };
       });
+      config.get("seepinkpies").then(function(seepinkpies){
+        if (seepinkpies){
+          domClass.add(self.domNode, "seepinkpies");
+        };
+      });
       this.addChild(this.terminal);
       var term = this.terminal;
       

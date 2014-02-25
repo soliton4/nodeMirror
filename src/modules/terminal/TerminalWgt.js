@@ -67,7 +67,8 @@ define([
         cols: 80,
         rows: 30,
         useStyle: true,
-        screenKeys: true
+        screenKeys: true,
+        cursorBlink: this.seepinkpies ? false : true
       });
       
       this.terminal.open(this.domNode);

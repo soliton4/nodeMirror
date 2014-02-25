@@ -38,6 +38,7 @@ define([
       , "debug": true
       , "restart": true
       , "seeunicorns": true
+      , "seepinkpies": true
       , "music": true
       , "webpath": "/"
       , "theme": "claro"

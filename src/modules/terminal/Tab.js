@@ -17,6 +17,10 @@ define([
   , domClass
   , tabMixin
 ){
+  var seepinkpies = false;
+  config.get("seepinkpies").then(function(parSeepinkpies){
+    seepinkpies = parSeepinkpies;
+  });
   return declare([BorderContainer, tabMixin], {
     title: "Terminal"
     , closable: true
@@ -32,6 +36,7 @@ define([
       this.inherited(arguments);
       this.terminalWgt = new Terminal({
         region: "center"
+        , seepinkpies: seepinkpies
       });
       config.get("seeunicorns").then(function(seeunicorns){
         if (seeunicorns){
@@ -39,6 +44,10 @@ define([
           domClass.add(self.terminalWgt.domNode, "seeunicorns");
         };
       });
+      if (seepinkpies){
+        domClass.add(self.domNode, "seepinkpies");
+        domClass.add(self.terminalWgt.domNode, "seepinkpies");
+      };
       this.addChild(this.terminalWgt);
       var term = this.terminalWgt;
       

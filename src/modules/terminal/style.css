@@ -13,3 +13,17 @@
   display: none;
   height: 0px;
 }
+.seepinkpies .terminalWidget .terminal-cursor {
+  background-color: transparent;
+  position: relative;
+}
+.seepinkpies .terminalWidget .terminal-cursor:before {
+  position: absolute;
+  display: block;
+  bottom: -2px;
+  left: -4px;
+  width: 19px;
+  height: 22px;
+  content: "";
+  background-image: url(../../image/cursor/pie.gif);
+}
