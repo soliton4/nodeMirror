@@ -527,6 +527,8 @@ define([
           , "copyKey": "ctrl"
           , "ALT": "alt"
           , "CAPS_LOCK": "Caps_Lock"
+          , "HOME": "Home"
+          , "END": "End"
         };
 
         socket.on("x11key", function(evt){
