@@ -244,7 +244,7 @@ define([
               "-tune","zerolatency",
               //"-b:v","100000",             // Target bit rate
               //"-b:v","1M",             // Target bit rate
-              "-threads", "4",
+              "-threads", "8",
               "-an",
               "-crf","20",             // Quality
               "-t", "180", // 3 min

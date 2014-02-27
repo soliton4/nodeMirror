@@ -26,4 +26,5 @@
   height: 22px;
   content: "";
   background-image: url(../../image/cursor/pie.gif);
+  opacity: 0.85;
 }
