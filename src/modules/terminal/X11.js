@@ -24,6 +24,7 @@ define([
   , "sol/base64"
   , "require" //"avc/Wgt"
   , "dojo/dom-geometry"
+  , "dojo/has"
   
 ], function(
   declare
@@ -51,6 +52,7 @@ define([
   , base64
   , require //AvcWgt
   , domGeom
+  , has
     
 ){
   var AvcWgt;
@@ -224,6 +226,30 @@ define([
         return evt;
       };
       
+      on(eventNode, "mousewheel", function(evt){
+        event.stop(evt);
+        var e = evt;
+        var scroll = e[(!has("mozilla") ? "wheelDelta" : "detail")] * (!has("mozilla") ? 1 : -1);
+        //console.log(scroll);
+        evt = offsetCreator(evt);
+        if (scroll > 0){
+          self.module.mouseEvent({
+            type: "wheelup"
+            , x: evt.offsetX
+            , y: evt.offsetY
+          });
+          
+        }else{
+          self.module.mouseEvent({
+            type: "wheeldown"
+            , x: evt.offsetX
+            , y: evt.offsetY
+          });
+          
+        };
+      });
+      
+      
       on(eventNode, "mousedown", function(evt){
         event.stop(evt);
         evt = offsetCreator(evt);
@@ -372,7 +398,7 @@ define([
           
           
         }else{
-          console.log("doing stuff");
+          //console.log("doing stuff");
           var newVideo = domConstruct.create("video", {
             "class": "x11Video"
             , "src": "x11.stream?vidid=" + newVidid + "&format=" + format + "&fps=" + fps + "&q=" + quality
@@ -387,7 +413,7 @@ define([
               return;
             };
             newVideo.doneThat = true;
-            console.log("stuff got real");
+            //console.log("stuff got real");
             if (self._destroyed){
               return false;
             };
@@ -447,7 +473,7 @@ define([
       }catch(e){
       };
       if (this.video){
-        console.log(this.video.currentTime);
+        //console.log(this.video.currentTime);
       };
       if (this.video){
         if (this.video.currentTime == this.lastCurrentTime){

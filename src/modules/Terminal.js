@@ -461,13 +461,19 @@ define([
         var execMouseFun = function(evt){
           var params;
           var xdotool;
-          if (evt.type == "mousedown" || evt.type == "mouseup" || evt.type == "mousemove"){
+          if (evt.type == "mousedown" || evt.type == "mouseup" || evt.type == "mousemove" || evt.type == "wheeldown" || evt.type == "wheelup"){
             params = ["mousemove", "" + evt.x, "" + evt.y];
             xdotool = spawn('xdotool', params);
             lastpos = "" + evt.x + " " + evt.y;
             x11executing = true;
             if (evt.type == "mousedown" || evt.type == "mouseup"){
               params = [evt.type, "" + evt.button];
+              x11queue.push({
+                params: params
+                , log: evt.type + "" + evt.x + " " + evt.y
+              });
+            }else if (evt.type == "wheeldown" || evt.type == "wheelup"){
+              params = ["click", evt.type == "wheeldown" ? "5" : "4"];
               x11queue.push({
                 params: params
                 , log: evt.type + "" + evt.x + " " + evt.y
