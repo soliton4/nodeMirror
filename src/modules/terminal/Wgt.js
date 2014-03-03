@@ -6,6 +6,7 @@ define([
   , "./Tab"
   , "dojo/_base/array"
   , "./X11"
+  , "client/connection"
 ], function(
   declare
   , Tree
@@ -14,6 +15,7 @@ define([
   , Tab
   , array
   , X11
+  , connection
 ){
   return declare([
     Tree
@@ -43,6 +45,17 @@ define([
       };
       var self = this;
       this.inherited(arguments);
+      self._updateList();
+      connection.on("connect", function(socket){
+        self._updateList();
+        socket.on("terminal/listChanged", function(){
+          self._updateList();
+        });
+      });
+    }
+    
+    , _updateList: function(){
+      var self = this;
       self.module.getList().then(function(parList){
         self.listChanged(parList);
       });

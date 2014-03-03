@@ -14,6 +14,7 @@ define([
   , "main/serverOnly!dojo/node!fs"
   , "modules/base/Base"
   , "main/serverOnly!main/x11Fun"
+  , "dojo/aspect"
 ], function(
   declare
   , Deferred
@@ -30,6 +31,7 @@ define([
   , fs
   , Base
   , x11Fun
+  , aspect
 ){
   
   var pty;
@@ -77,6 +79,9 @@ define([
     }
   });
   
+    var static = {
+      listChanged: function(){}
+    };
   
   var Terminal = declare([Base], {
     //, keepBuildRendering: true
@@ -92,6 +97,14 @@ define([
         self.handleConnection(socket, session);
       });
       self.handleConnection = _handleConnection;
+      
+      if (has("server-modules")){
+        terminal.onListChange(lang.hitch(this, "_listChanged"));
+      };
+    }
+    
+    , _listChanged: function(){
+      static.listChanged();
     }
     
     , provideSideBarWidgetPs: function(){
@@ -197,6 +210,14 @@ define([
     _handleConnection = function(parSocket, session){
       var socket = parSocket;
       
+      var listChangedHandle = aspect.after(static, "listChanged", function(){
+        socket.emit("terminal/listChanged");
+      });
+      
+      socket.on("disconnect", function(){
+        console.log("disconnecting");
+        listChangedHandle.remove();
+      });
       
       socket.on("terminal/getList", function(callback){
         terminal.getList(callback);
