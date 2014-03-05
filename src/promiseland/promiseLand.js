@@ -1,6 +1,6 @@
 // promiseLand
 //
-// Copyright Matthias Behrens 2013
+// Copyright Matthias Behrens 2014
 //
 //
 // promiseLand is a very promising Language
@@ -82,6 +82,97 @@
     
     var require = requireFun;
     
+    /*var PromiseBase = function(){
+      this._thenAr = [];
+      this._elseAr = [];
+    };
+    PromiseBase.prototype = {
+      then: function(thenFun, elseFun){
+        if (thenFun){
+          this._thenAr.push(thenFun);
+        };
+        if (elseFun){
+          this._thenAr.push(elseFun);
+        };
+      }
+    };*/
+    
+    var Promise2 = function(){
+      
+      var thenAr = [];
+      var elseAr = [];
+      var thenFun = function(parThenFun, parElseFun){
+        if (parThenFun){
+          thenAr.push(parThenFun);
+        };
+        if (parElseFun){
+          elseAr.push(parElseFun);
+        };
+      };
+      
+      this.resolve = function(value){
+        thenFun = function(parThenFun){
+          try{
+            parThenFun(value);
+          }catch(e){
+            // maybe we are ignoring to much here, lets check later
+          };
+        };
+        if (!thenAr) return;
+        var i = 0;
+        var l = thenAr.lenth;
+        for (i; i < l; ++i){
+          try{
+            thenAr[i](value);
+          }catch(e){
+            // will those errors ocur? if so what do we do with them?
+          }
+        };
+        thenAr = undefined; // why not delete?
+        elseAr = undefined;
+      };
+      this.reject = function(value){
+        thenFun = function(u, parElseFun){
+          try{
+            parElseFun(value);
+          }catch(e){
+            // maybe we are ignoring to much here, lets check later
+          };
+        };
+        if (!elseAr) return;
+        var i = 0;
+        var l = elseAr.lenth;
+        for (i; i < l; ++i){
+          try{
+            elseAr[i](value);
+          }catch(e){
+            // will those errors ocur? if so what do we do with them?
+          }
+        };
+        thenAr = undefined; // why not delete?
+        elseAr = undefined;
+      };
+      
+      this.then = function(par1, par2){
+        thenFun(par1, par2);
+      };
+      this.promise = {
+        then: this.then
+      };
+      /* so this should be possible
+        var p = Promise();
+        var ps = p.then;
+        ps(thenfun...);
+        //alternative:
+        ps.then(thenfun...); // so the thenFun is a promise itself;
+      */
+      this.then.then = this.then;
+    };
+    
+    
+    
+    
+    
     var Promise = function(){
       var self = this;
       this.promise = {
@@ -90,6 +181,7 @@
         }
       };
     };
+    
     var _Promise = {
       then: function(sFun, rFun){
         var thenAr = [];
@@ -170,25 +262,17 @@
     };
     Promise.prototype = _Promise;
     
+    Promise = Promise2;
     
-    /*var MakePromise = function(){};
-    MakePromise.prototype = new Promise();
-    MakePromise.prototype.constructor = MakePromise;
-    MakePromise.prototype.resolve = function(value){
-        var thenAr = [];
-        var rejectAr = [];
-        var thenFun = function(sFun, rFun){
-          if (sFun){
-            thenAr.push(sFun);
-          };
-          if (rFun){
-            rejectAr.push(rFun);
-          };
-        };
-        this.then = thenFun;
-        thenFun(sFun, rFun);
-      }
-    */
+    
+    /*var functionPromise = function(promise){
+      
+      var f = function(thenFun, elseFun){
+        promise.then(thenFun, elseFun);
+      };
+      f.then = promise.then;
+      return f;
+    };*/
     
     var _parser;
     var _parserPs;

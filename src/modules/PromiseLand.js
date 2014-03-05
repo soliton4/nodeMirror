@@ -51,7 +51,9 @@ define([
   
   return declare([Text], {
     
-    remoteFunctions: lang.mixin({}, Base.remoteFunctions, { testPs: true} )
+    remoteFunctions: lang.mixin({}, Base.remoteFunctions, { 
+      //testPs: true
+    } )
     
     , "class": "content text promiseLand"
     

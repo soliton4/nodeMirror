@@ -41,7 +41,30 @@
       };
     };
     
+    var somethingsWrong = function(what){
+      throw(what);
+    };
+    
+    var parseValue = function(parValue){
+      if (!parValue){
+        somethingsWrong({
+          msg: "empty value"
+        });
+        return "";
+      };
+      if (parValue.type == "NumericLiteral"){
+        return "" + parValue.value;
+      }else{
+        somethingsWrong({
+          msg: "unknown value type: " + parValue.type
+        });
+        return "";
+      };
+      
+    };
+    
     var variableStatement = function(element){
+      var resStr = "";
       var declarations = element.declarations;
       if (!declarations){
         parseError("missing declarations");
@@ -63,6 +86,7 @@
           unknownType(declarations[i]);
         };
       };
+      return resStr;
       
     };
     
@@ -81,7 +105,85 @@
         };
       };
       resStr += ")";
+      return resStr;
     };
+    
+    var parseFunction = function(par){
+      //type: "Function", name: null, params: Array[0], elements: Array[1]}
+      var resStr = "function";
+      if (par.name){
+        resStr += " " + par.name;
+      };
+      resStr += "(";
+      if (par.params && par.params.length){
+        var i = 0;
+        var l = par.params.length;
+        for (i; i < l; ++i){
+          if (i){
+            resStr += ", ";
+          };
+          resStr += par.params[i];
+        };
+      };
+      resStr += "){\n";
+      resStr += parseProgElements(par.elements);
+      resStr += "}";
+      return resStr;
+    };
+    
+    var assignmentExpression = function(entry){
+      //{type: "AssignmentExpression", operator: "=", left: Object, right: Object}
+      var resStr = "";
+      resStr += parseExpression(entry.left);
+      resStr += " " + entry.operator + " ";
+      resStr += parseExpression(entry.right);
+      return resStr;
+    };
+    
+    var objectLiteral = function(par){
+      //{type: "ObjectLiteral", properties: Array[2]}
+      var resStr = "{";
+      var i = 0;
+      var l = (par.properties && par.properties.length) || 0;
+      for (i; i < l; ++i){
+        if (i){
+          resStr += ",\n";
+        };
+        var prop = par.properties[i];
+        if (prop.type == "PropertyAssignment"){
+          resStr += "\"" + prop.name + "\": " + parseExpression(prop.value);
+        }else{
+          somethingsWrong({
+            msg: "unknown property assignment: " + prop.type
+          });
+        };
+      };
+      resStr += "}";
+      return resStr;
+    };
+    
+    var arrayLiteral = function(par){
+      var resStr = "[";
+      var i = 0;
+      var l = (par.elements && par.elements.length) || 0;
+      for (i; i < l; ++i){
+        if (i){
+          resStr += ", ";
+        };
+        resStr += parseExpression(par.elements[i]);
+      };
+      resStr += "]";
+      return resStr;
+    };
+    
+    var returnStatement = function(par){
+      resStr = "return";
+      if (par.value){
+        resStr += " " + parseExpression(par.value);
+      };
+      return resStr;
+    };
+
     
     var parseExpression = function(value){
       var resStr = "";
@@ -106,6 +208,31 @@
           resStr += functionCall(value);
           break;
           
+        case "Function":
+          resStr += parseFunction(value);
+          break;
+          
+        case "EmptyStatement":
+          // why does this exist?
+          break;
+          
+        case "AssignmentExpression":
+          resStr += assignmentExpression(value);
+          break;
+          
+        case "ObjectLiteral":
+          resStr += objectLiteral(value);
+          break;
+          
+        case "ReturnStatement":
+          resStr += returnStatement(value);
+          break;
+          
+          
+        case "ArrayLiteral":
+          resStr += arrayLiteral(value);
+          break;
+          
         default:
           unknownType(value);
       };
@@ -128,6 +255,48 @@
       return parseProgElements(entry.elements);
     };
     
+    var loaderStr = function(){
+      return "(function(){\n\
+  var defineFun;\n\
+  var requireFun;\n\
+  \n\
+  if (typeof exports == \"object\" && typeof module == \"object\"){ // CommonJS\n\
+    requireFun = function(modulesAr, callback){\n\
+      var i = 0;\n\
+      var l = modulesAr.length;\n\
+      var args = [];\n\
+      for (i; i < l; ++i){\n\
+        args.push(require(modulesAr[i]));\n\
+      };\n\
+      callback.apply(callback, args);\n\
+    };\n\
+    defineFun = function(requireAr, callback){\n\
+      requireFun(requireAr, function(){\n\
+        module.exports = callback.apply(callback, arguments);\n\
+      });\n\
+    };\n\
+    \n\
+  }else if (typeof define == \"function\" && define.amd){ // AMD\n\
+    defineFun = define;\n\
+    requireFun = require;\n\
+    \n\
+  }else{ // Plain browser env\n\
+    alert(\"not working out!\");\n\
+    \n\
+  };\n\
+  \n\
+  defineFun([\"promiseland\"], function(promiseLand){\n";
+    };
+    
+    var promiseLandRequireStr = function(){
+      return "var __Promise = promiseLand.Promise;\nvar module = new __Promise();\n";
+    };
+    
+    var loaderEndStr = function(){
+      return "return module.promise.then;});\n})();";
+    };
+    
+    
     var parser = {
       parse: function(promiseLandCodeStr){
         var p = new promiseLand.Promise();
@@ -135,19 +304,29 @@
         promiseLand._getParser().then(function(parser){
           console.log(parser);
           var parsedAr = parser.parse(promiseLandCodeStr);
-          
-          var i = 0;
-          var l = parsedAr.length;
           var resStr = "";
-          for (i; i < l; ++i){
-            if (parsedAr[i].type == "Program"){
-              resStr += parseProgram(parsedAr[i]);
+          resStr += loaderStr();
+          resStr += promiseLandRequireStr();
+          if (parsedAr.length === undefined){
+            if (parsedAr.type == "Program"){
+              resStr += parseProgram(parsedAr);
             }else{
               unknownType(parsedAr[i]);
             };
+            
+          }else{
+            var i = 0;
+            var l = parsedAr.length;
+            for (i; i < l; ++i){
+              if (parsedAr[i].type == "Program"){
+                resStr += parseProgram(parsedAr[i]);
+              }else{
+                unknownType(parsedAr[i]);
+              };
+            };
           };
+          resStr += loaderEndStr();
           p.resolve(resStr);
-          
         });
         console.log("returning promise");
         return p.promise;

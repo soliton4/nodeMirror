@@ -1,2 +1,21 @@
 var x;
 var y = 1;
+function(b, c){
+  var a = 1;
+  setTimeout(function(){
+    x = 2;
+    
+  }, 1000);
+  return;
+};
+y = 2;
+b = 3;
+x = {
+  a: 1,
+  b: "xxx",
+  c: function(){
+    a = 2;
+    return a;
+  },
+  x: [a, 1, "", {}, []]
+};
