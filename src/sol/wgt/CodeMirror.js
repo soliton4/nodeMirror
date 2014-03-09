@@ -151,6 +151,7 @@ define([
       var helper = this.mirror.getHelper(CodeMirror.Pos(0, 0), "lint");
       if (helper){
         if (parValue){
+          //notes: eslint / plato
           this.mirror.setOption("lint", {options: {
             laxcomma: true
           , laxbreak: true
@@ -159,10 +160,15 @@ define([
           , newcap: false
           , "-W032": true
           , "-W069": true
+          //  , es5: true
+          //, "-W070": false
+          //, "+W070": true
+            //, trailing: true
+          
           }});
         }else{
           this.mirror.setOption("lint", parValue);
-        }
+        };
       }else{
         this.mirror.setOption("lint", false);
       };

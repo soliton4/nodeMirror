@@ -280,7 +280,7 @@ CharacterEscapeSequence
   / NonEscapeCharacter
 
 SingleEscapeCharacter
-  = char_:['"\\bfnrtv] {
+  = char_:[\'"\\bfnrtv] {
       return char_
         .replace("b", "\b")
         .replace("f", "\f")
@@ -703,6 +703,7 @@ UnaryOperator
   / "-"
   / "~"
   /  "!"
+  /  "*" // promiseland modification
 
 MultiplicativeExpression
   = head:UnaryExpression
@@ -1464,7 +1465,7 @@ FunctionDeclaration
         elements: elements
       };
     }
-
+// promiseland adding __?
 FunctionExpression
   = FunctionToken __ name:Identifier? __
     "(" __ params:FormalParameterList? __ ")" __

@@ -29,6 +29,8 @@
   
   defineFun(["promiseland"], function(promiseLand){
     
+    var currentPromise;
+    
     var unknownType = function(entry){
       throw {
         msg: "unknown type - " + entry.type
@@ -79,7 +81,7 @@
           resStr += declarations[i].name;
           if (declarations[i].value){
             resStr += " = ";
-            resStr += parseValue(declarations[i].value);
+            resStr += parseExpression(declarations[i].value);
           };
           resStr += ";\n";
         }else{
@@ -228,6 +230,15 @@
           resStr += returnStatement(value);
           break;
           
+        case "UnaryExpression":
+          if (value.operator == "*"){
+            resStr += parseExpression(value.expression);
+            resStr += ".then(function(_value)){";
+            break;
+          };
+          resStr += value.operator;
+          resStr += parseExpression(value.expression);
+          break;
           
         case "ArrayLiteral":
           resStr += arrayLiteral(value);
@@ -245,13 +256,40 @@
       var i = 0;
       var l = elements.length;
       for (i; i < l; ++i){
-        resStr += parseExpression(elements[i]);
+        var promiseCode = {};
+        var codeStr = parseExpression(elements[i], promiseCode);
+        if (promiseCode.promising){
+          resStr += promiseCode.declaration;
+          resStr += promiseCode.name + ".then(function(" + promiseCode.name + "){";
+        }else{
+          resStr += codeStr;
+        };
         resStr += ";\n";
       };
       return resStr;
     };
     
+    var findPromises = function(par){
+      if (!par){
+        return false;
+      };
+      if (par.type == "UnaryExpression" && par.operator == "*"){
+        par.promising = true;
+      };
+      var i;
+      for (i in par){
+        if (findPromises(par[i])){
+          par.promising = true;
+        };
+      };
+      if (par.promising){
+        return true;
+      };
+      return false;
+    };
+    
     var parseProgram = function(entry){
+      findPromises(entry);
       return parseProgElements(entry.elements);
     };
     
