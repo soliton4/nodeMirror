@@ -270,7 +270,7 @@
     };
     
     var findPromises = function(par){
-      if (!par){
+      if (!par || typeof par == "string"){
         return false;
       };
       if (par.type == "UnaryExpression" && par.operator == "*"){

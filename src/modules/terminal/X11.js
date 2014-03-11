@@ -25,6 +25,7 @@ define([
   , "require" //"avc/Wgt"
   , "dojo/dom-geometry"
   , "dojo/has"
+  , "dojo/text!modules/terminal/h264iframe.html.txt"
   
 ], function(
   declare
@@ -53,9 +54,12 @@ define([
   , require //AvcWgt
   , domGeom
   , has
+  , iframeText
     
 ){
   var AvcWgt;
+  var h264rows = 2;
+  var h264cols = 2;
     
   var EventDiv = declare([_WidgetBase, resizeMixin], {
     "class": "x11EventDiv"
@@ -67,6 +71,14 @@ define([
       };
       return ret;
     }
+    , buildRendering: function(){
+      this.inherited(arguments);
+      var coverDiv = domConstruct.create("div", {
+        "class": "overlay"
+      });
+      domConstruct.place(coverDiv, this.domNode);
+    }
+    
   });
 
   var WrapperDiv = declare([_WidgetBase, resizeMixin], {
@@ -336,6 +348,14 @@ define([
       };
       if (self.avc){
         self.avc.destroy();
+        delete self.avc;
+      };
+      if (self.avcIframes){
+        var i = 0;
+        for (i; i < self.avcIframes; ++i){
+          domConstruct.destroy(self.avcIframes[i]);
+        };
+        delete self.avcIframes;
       };
       if (self.vidid){
         self.module.stopX264(self.vidid);
@@ -364,7 +384,32 @@ define([
         var newVidid = Math.floor(Math.random() * 1000000000);
         if (format == "h264"){
           var first = true;
-          self.module.registerX264StreamFunction(function(data){
+          var frames = [];
+          var col = 0;
+          var colwidth = Math.ceil(self.size.x / h264cols);
+          var rowheight = Math.ceil(self.size.y / h264rows);
+          for (col; col < h264cols; ++col){
+            var x = col * colwidth;
+            var width = colwidth;
+            if (x + width > self.size.x){
+              width = self.size.x - x;
+            };
+            var row = 0;
+            for (row; row < h264rows; ++row){
+              var y = row * rowheight;
+              var height = rowheight;
+              if (y + height > self.size.y){
+                height = self.size.y - y;
+              };
+              frames.push({
+                x: x,
+                y: y,
+                w: width,
+                h: height
+              });
+            };
+          };
+          self.module.registerX264StreamFunction(function(data, index){
             if (self._destroyed){
               return false;
             };
@@ -372,20 +417,41 @@ define([
               self._cleanUp();
               self.vidid = newVidid;
               first = false;
-              self.avc = new AvcWgt({
+              /*self.avc = new AvcWgt({
                 size: {
                   w: self.size.x
                   , h: self.size.y
                 }
               });
-              self.avc.placeAt(self.eventDiv.domNode);
+              self.avc.placeAt(self.eventDiv.domNode);*/
+              self.avcIframes = [];
+              var i = 0;
+              for (i; i < frames.length; ++i){
+                var avciframe = document.createElement('iframe');
+                domConstruct.place(avciframe, self.eventDiv.domNode);
+                domStyle.set(avciframe, "position", "absolute");
+                domStyle.set(avciframe, "top", frames[i].y + "px");
+                domStyle.set(avciframe, "left", frames[i].x + "px");
+                domStyle.set(avciframe, "height", frames[i].h + "px");
+                domStyle.set(avciframe, "width", frames[i].w + "px");
+                domStyle.set(avciframe, "border", "0px");
+                avciframe.contentWindow.document.open();
+                avciframe.contentWindow.document.write(iframeText);
+                avciframe.contentWindow.document.close();
+                self.avcIframes.push(avciframe);
+                avciframe.contentWindow.postMessage(frames[i], '*');
+              };
+              //self.avcIframe.src = 'data:text/html;charset=utf-8,' + encodeURI(iframeText);
+              //domConstruct.place(self.avcIframe, self.eventDiv.domNode);
+              
               self.vidTimeout = setTimeout(function(){
                 self.createVideo();
               }, 1000 * 175);
             };
-            //var frameData = base64.toUint8Array(data);
             try{
-              self.avc.decode(base64.toUint8Array(data));
+              //self.avcIframe.contentWindow.postMessage(data, '*');
+              self.avcIframes[index].contentWindow.postMessage(data, '*');
+              //self.avc.decodeRaw(base64.toUint8Array(data));
             }catch(e){};
 
             return true;
@@ -394,6 +460,7 @@ define([
             , q: quality
             , vidid: newVidid
             , targetrate: targetrate
+            , frames: frames
           });
           
           

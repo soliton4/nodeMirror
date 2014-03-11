@@ -82,25 +82,12 @@
     
     var require = requireFun;
     
-    /*var PromiseBase = function(){
-      this._thenAr = [];
-      this._elseAr = [];
-    };
-    PromiseBase.prototype = {
-      then: function(thenFun, elseFun){
-        if (thenFun){
-          this._thenAr.push(thenFun);
-        };
-        if (elseFun){
-          this._thenAr.push(elseFun);
-        };
-      }
-    };*/
-    
+    var Promise;
     var Promise2 = function(){
       
       var thenAr = [];
       var elseAr = [];
+      
       var thenFun = function(parThenFun, parElseFun){
         if (parThenFun){
           thenAr.push(parThenFun);
@@ -108,6 +95,7 @@
         if (parElseFun){
           elseAr.push(parElseFun);
         };
+        //return returnPromise;
       };
       
       this.resolve = function(value){
@@ -120,7 +108,7 @@
         };
         if (!thenAr) return;
         var i = 0;
-        var l = thenAr.lenth;
+        var l = thenAr.length;
         for (i; i < l; ++i){
           try{
             thenAr[i](value);
@@ -141,7 +129,7 @@
         };
         if (!elseAr) return;
         var i = 0;
-        var l = elseAr.lenth;
+        var l = elseAr.length;
         for (i; i < l; ++i){
           try{
             elseAr[i](value);
@@ -156,9 +144,10 @@
       this.then = function(par1, par2){
         thenFun(par1, par2);
       };
-      this.promise = {
+      /*this.promise = {
         then: this.then
-      };
+      };*/
+      this.promise = this.then;
       /* so this should be possible
         var p = Promise();
         var ps = p.then;
@@ -173,94 +162,6 @@
     
     
     
-    var Promise = function(){
-      var self = this;
-      this.promise = {
-        then: function(s, r){
-          self.then(s, r);
-        }
-      };
-    };
-    
-    var _Promise = {
-      then: function(sFun, rFun){
-        var thenAr = [];
-        var rejectAr = [];
-        
-        this.thenAr = thenAr;
-        this.rejectAr = rejectAr;
-        
-        var thenFun = function(sFun, rFun){
-          if (sFun){
-            thenAr.push(sFun);
-          };
-          if (rFun){
-            rejectAr.push(rFun);
-          };
-        };
-        this.then = thenFun;
-        thenFun(sFun, rFun);
-      },
-      resolve: function(value){
-        this.then = function(fun){
-          if (fun){
-            fun(value);
-          };
-        };
-        this.resolve = function(){
-          throw {
-            msg: "double resolve"
-          };
-        };
-        this.reject = function(){
-          throw {
-            msg: "double reject"
-          };
-        };
-        if (this.thenAr){
-          var i = 0;
-          var l = this.thenAr.length;
-          for (i; i < l; ++i){
-            try{
-              this.thenAr[i](value);
-            }catch(e){
-            };
-          };
-          delete this.thenAr;
-          delete this.rejectAr;
-        };
-      },
-      reject: function(value){
-        this.then = function(fun1, fun){
-          if (fun){
-            fun(value);
-          };
-        };
-        this.resolve = function(){
-          throw {
-            msg: "double resolve"
-          };
-        };
-        this.reject = function(){
-          throw {
-            msg: "double reject"
-          };
-        };
-        if (this.rejectAr){
-          var i = 0;
-          var l = this.rejectAr.length;
-          for (i; i < l; ++i){
-            try{
-              this.rejectAr[i](value);
-            }catch(e){
-            };
-          };
-          delete this.thenAr;
-          delete this.rejectAr;
-        };
-      }
-    };
-    Promise.prototype = _Promise;
     
     Promise = Promise2;
     
@@ -274,7 +175,6 @@
       return f;
     };*/
     
-    var _parser;
     var _parserPs;
     
     var promiseLand = {
@@ -288,7 +188,6 @@
         _parserPs = p.promise;
         require(["./_parser"], function(parser){
           console.log("x1");
-          _parser = parser;
           p.resolve(parser);
         });
         return _parserPs;

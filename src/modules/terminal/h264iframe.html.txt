@@ -1,0 +1,86 @@
+<html>
+  <head>
+    <style>
+      body {
+        overflow: hidden;
+        padding: 0px;
+        border: 0px;
+        margin: 0px;
+      }
+    </style>
+    <script>
+      
+      window.onmessage = function(e){
+        if (e.data){
+          if (e.data.h && e.data.w){
+            window.avcframedata = e.data;
+          };
+        };
+      };
+
+          var loadModule = "modules/terminal/h264iframe";
+          window._nodeMirrorGlobal = {
+            webpath: "/"
+          };
+          
+          // Configuration Object for Dojo Loader:
+    	  dojoConfig = {
+            baseUrl: "/", // Where we will put our packages
+            async: 1, // We want to make sure we are using the "modern" loader
+            locale: 'en-us',
+            // While it is possible to use config-tlmSiblingOfDojo to tell the
+            // loader that your packages share the same root path as the loader,
+            // this really isn't always a good idea and it is better to be
+            // explicit about our package map.
+            packages: [{
+              name: "dojo",
+              location: "dojo"
+            },{
+                name: "dijit",
+                location: "dijit"
+            },{
+                name: "dojox",
+                location: "dojox"
+            },{
+                name: "main",
+                location: "main"
+            },{
+                name: "client",
+                location: "client"
+            },{
+                name: "sol",
+                location: "sol"
+            },{
+                name: "dgrid",
+                location: "dgrid"
+            },{
+                name: "jshint",
+                location: "jshint"
+            },{
+                name: "peg",
+                location: "peg"
+            },{
+                name: "codemirror",
+                location: "codemirror"
+            },{
+                name: "promiseland",
+                location: "promiseland"
+            },{
+                name: "audio",
+                location: "audio"
+            },{
+                name: "video",
+                location: "video"
+            },{
+                name: "avc",
+                location: "avc"
+            }],
+            deps: [ loadModule ] // And array of modules to load on "boot"
+          };
+	</script>
+    <script src="dojo/dojo.js"></script>
+  </head>
+  <body>
+  
+  </body>
+</html>

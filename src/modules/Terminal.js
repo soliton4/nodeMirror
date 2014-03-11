@@ -15,6 +15,7 @@ define([
   , "modules/base/Base"
   , "main/serverOnly!main/x11Fun"
   , "dojo/aspect"
+  , "main/serverOnly!./terminal/AvconvRunner"
 ], function(
   declare
   , Deferred
@@ -32,6 +33,7 @@ define([
   , Base
   , x11Fun
   , aspect
+  , AvconvRunner
 ){
   
   var pty;
@@ -187,9 +189,9 @@ define([
       
     }
     
-    , x264Data: function(frame){
+    , x264Data: function(frame, i){
       if (this.x264fun){
-        if (!this.x264fun(frame)){
+        if (!this.x264fun(frame, i)){
           delete this.x264fun;
         };
       };
@@ -321,161 +323,56 @@ define([
         
         
         socket.on("x264test", function(par){
-          var i = 0;
-          var spawn  = child_process.spawn;
           
-          var fps = par.fps || "5";
-          var quality = par.q || "5";
+          var runnerParam = {
+            fps: par.fps  || "5"
+          , quality: par.q  || "5"
+          , targetrate:  par.targetrate
+          };
+          
+          var runners = [];
+          
+          var killFun = function(){
+            var i = 0;
+            for(i; i < runners.length; ++i){
+              runners[i].kill();
+            };
+            runners = [];
+          };
+          
           var vidid = par.vidid;
-          var targetrate = par.targetrate;
+          var frames = par.frames;
           
-          x11Fun.x11size().then(function(size){
-            
-          
-            var params = [
-              "-re",                   // Real time mode
-              "-f","x11grab",          // Grab screen
-              "-r",fps,              // Framerate
-              "-s", "" + size.x + "x" + size.y,   // Capture size
-              //"-s", "600x480",   // Capture size
-              "-i",":0+" + 0 + "," + 0, // Capture offset
-              "-g","0",                // All frames are i-frames
-              "-me_method","zero",     // Motion algorithms off
-              "-flags2","fast",
-              "-vcodec", "libx264",      // vp8 encoding / ogg encoding
-              "-preset","ultrafast",
-              "-tune","zerolatency",
-              //"-b:v","1000000",             // Target bit rate
-              //"-b:v","1M",             // Target bit rate
-              "-an",
-              //"-crf","20",             // Quality
-              "-t", "180", // 3 min
-              "-f", "h264"             // File format
-            ];
-            if (targetrate && targetrate != "0"){
-              params.push("-b:v");
-              params.push(targetrate);             // Quantization
+          socket.on("x264stop", function(parVidid){
+            if (vidid == parVidid || !parVidid){
+              killFun();
             };
-            params.push("-qmin");
-            params.push("1");             // Quantization
-            params.push("-qmax");
-            params.push(quality);
-            params.push("-q:v");                      // Output to STDOUT
-            params.push(quality);
-            params.push("-");                      // Output to STDOUT
-
-            var cmdStr = "";
-            cmdStr += x11videotool;
-            i = 0;
-            for (i = 0; i < params.length; ++i){
-              cmdStr += " ";
-              cmdStr += params[i];
-            };
-            console.log(cmdStr);
-
-            //avconv -re -f x11grab -r 12 -s 1024x768 -i :3+0,0 -g 1 -me_method zero -flags2 fast -vcodec libvpx -preset ultrafast -tune zerolatecy -b:v 1M -crf 40 -qmin 5 -qmax 5 -t 180 -f webm -
-            //ffmpeg -re -f x11grab -r 5 -s 1024x768 -i :0+0,0 -g 1 -me_method zero -flags2 fast -vcodec libtheora -preset ultrafast -tune zerolatecy -b:v 1M -crf 40 -q:v 6 -t 180 -f ogg -
-            var avconv;
-            try{
-              avconv = spawn(x11videotool, params);
-            }catch(e){
-              console.log("error 1");
-            };
-            var killfun = function(){
-              console.log("killing ...");
-              avconv.kill();
-              //delete nodeControl.gpregister.avconv[vidid];
-            };
-            socket.on("x264stop", function(parVidid){
-              if (vidid == parVidid || !parVidid){
-                killfun();
-              };
-            });
-            socket.on('disconnect', function () {
-              killfun();
-            });
-
-            //console.log("step 2");
-            setTimeout(function(){
-              killfun();
-            }, 190000);
-
-            i = 0;
-            var stream;
-            try{
-              stream = avconv.stdout;
-              var bufAr = [];
-              stream.on("data", function(data){
-                if (!(data && data.length)){
-                  return;
-                };
-                var foundHit = false;
-                var hit = function(offset){
-                  foundHit = true;
-                  bufAr.push(data.slice(0, offset));
-                  socket.emit("x264test", {
-                    i: i++
-                    , frame: Buffer.concat(bufAr).toString("base64")
-                    //, o: Buffer.concat(bufAr)
-                  });
-                  //socket.emit("x264test", Buffer.concat(bufAr));
-                  bufAr = [];
-                  bufAr.push(data.slice(offset));
-                };
-                
-                var b = 0;
-                var l = data.length;
-                var zeroCnt = 0;
-                for (b; b < l; ++b){
-                  if (data[b] === 0){
-                    zeroCnt++;
-                  }else{
-                    if (data[b] == 1){
-                      if (zeroCnt >= 3){
-                        hit(b - 3);
-                        break;
-                      };
-                    };
-                    zeroCnt = 0;
-                  };
-                };
-                if (foundHit){
-                  //socket.emit("x264test", {i: i++, frame: data.toString("base64")});
-                }else{
-                  bufAr.push(data);
-                };
-              });
-              stream.on("error", function(err){
-                console.log("some stream error");
-                console.log(err);
-              });
-              //stream.pipe(res);
-            }catch(e){
-              console.log("error 2");
-            }
-
-            console.log("step 3");
-            try{
-
-            stream.on("end", function(){
-              console.log("stream end");
-              try{
-                killfun();
-              }catch(e){
-                console.log("error 3");
-              }
-            });
-            stream.on("close", function(){
-              console.log("stream close");
-              try{
-                killfun();
-              }catch(e){
-                console.log("error 3.5");
-              }
-            });
-            }catch(e){};
-        
           });
+          socket.on('disconnect', function () {
+            killFun();
+          });
+
+          //console.log("step 2");
+          setTimeout(function(){
+            killFun();
+          }, 190000);
+          
+          var getStreamDataFun = function(index){
+            return function(data){
+              socket.emit("x264test", {
+                i: index,
+                frame: data
+              });
+            };
+          };
+          
+          var i = 0;
+          for (i; i < frames.length; ++i){
+            runners.push(new AvconvRunner(lang.mixin({}, runnerParam, {
+              dim: frames[i],
+              streamData: getStreamDataFun(i)
+            })));
+          };
         });
         
         var lastpos = "";
@@ -625,7 +522,7 @@ define([
       this.socket.on("x264test", function(data){
         //console.log(data.i);
         //debugger;
-        self.x264Data(data.frame);
+        self.x264Data(data.frame, data.i);
       });
     };
   };
