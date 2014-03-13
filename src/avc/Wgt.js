@@ -4,12 +4,14 @@ define([
 , "dojo/_base/declare"
 , "./canvas"
 , "dojo/dom-construct"
+, "sol/base64"
 ], function(
   Avc
 , _WidgetBase
 , declare
 , canvas
 , domConstruct
+, base64
 ){
   var YUVWebGLCanvas = canvas.YUVWebGLCanvas;
   
@@ -100,18 +102,55 @@ define([
           };
           var lumaSize = width * height;
           var chromaSize = lumaSize >> 2;
-
+          
           self.webGLCanvas.YTexture.fill(buffer.subarray(0, lumaSize));
           self.webGLCanvas.UTexture.fill(buffer.subarray(lumaSize, lumaSize + chromaSize));
           self.webGLCanvas.VTexture.fill(buffer.subarray(lumaSize + chromaSize, lumaSize + 2 * chromaSize));
           self.webGLCanvas.drawScene();
-        }catch(e){};
+        }catch(e){
+          debugger;
+        };
       };
       
-      this.avc = new Avc();
-      this.avc.configure(this.config);
-      this.avc.onPictureDecoded = onPictureDecoded;
-      
+      if (this.useWorker){
+        var lastDim = {};
+        this.worker = new Worker("avc/worker.js");
+        this.worker.addEventListener('message', function(e) {
+          var data = e.data;
+          if (data.width){
+            lastDim = data;
+            return;
+          };
+          onPictureDecoded(new Uint8Array(data), lastDim.width, lastDim.height);
+          /*var ar = e.data.picture;
+          var u8 = new Uint8Array(ar.length);
+          var l = ar.length;
+          var i = 0;
+          for (i; i < l; ++i){
+            u8[i] = ar[i];
+          };
+          onPictureDecoded(u8, e.data.width, e.data.height);*/
+          
+          //console.log('Worker said: ', e.data);
+          //setTimeout(function(){
+          //debugger;
+          //onPictureDecoded(base64.toUint8Array(e.data.picture), e.data.width, e.data.height);
+          /*var u8 = new Uint8Array(atob(e.data.picture).split("").map(function(c) {
+            return c.charCodeAt(0); 
+          }));
+          onPictureDecoded(u8, e.data.width, e.data.height);*/
+          //onPictureDecoded(atob(e.data.picture), e.data.width, e.data.height);
+          
+          //}, 10);*/
+        }, false);
+        this.onPictureDecoded = onPictureDecoded;
+        this.worker.postMessage(this.config); // Send data to our worker.
+        
+      }else{
+        this.avc = new Avc();
+        this.avc.configure(this.config);
+        this.avc.onPictureDecoded = onPictureDecoded;
+      };
     }
     
     // you can call this function with raw h264 data
@@ -154,7 +193,11 @@ define([
     
     , decode: function(data){
       try{
-        this.avc.decode(data);
+        if (this.useWorker){
+          this.worker.postMessage(data); // Send data to our worker.
+        }else{
+          this.avc.decode(data);
+        };
       }catch(e){};
     }
     /*, decodeBase64: function(data){

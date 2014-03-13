@@ -7,6 +7,7 @@ define([
   , "dojo/_base/array"
   , "dojo/_base/lang"
   , "main/serverOnly!server/files"
+  , "main/serverOnly!./text/openFiles"
   , "main/codemirror/subtypes"
   , "sol/string"
   , "main/clientOnly!sol/wgt/CodeMirror"
@@ -50,6 +51,7 @@ define([
   , array
   , lang
   , files
+  , openFiles
   , subtypes
   , solString
   , CodeMirror

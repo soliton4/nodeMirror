@@ -28,11 +28,12 @@ define([
         "-s", "" + this.dim.w + "x" + this.dim.h,   // Capture size
 
         "-i", ":0+" + this.dim.x + "," + this.dim.y, // Capture offset
-        "-g", "0",                // All frames are i-frames
-        "-me_method","zero",     // Motion algorithms off
-        "-flags2","fast",
+        //"-g", "100",                // All frames are i-frames
+        //"-me_method","zero",     // Motion algorithms off
+        //"-flags2","fast",
         "-vcodec", "libx264",      // vp8 encoding / ogg encoding
         "-preset","ultrafast",
+        //"-preset","fast",
         "-tune","zerolatency",
         //"-b:v","1000000",             // Target bit rate
         //"-b:v","1M",             // Target bit rate
@@ -41,10 +42,11 @@ define([
         "-t", "180", // 3 min
         "-f", "h264"             // File format
       ];
-      if (this.targetrate && this.targetrate != "0"){
+      //if (this.targetrate && this.targetrate != "0"){
         params.push("-b:v");
-        params.push(this.targetrate);             // Quantization
-      };
+        //params.push(this.targetrate);             // Quantization
+        params.push("2M");             // Quantization
+      //};
       params.push("-qmin");
       params.push("1");             // Quantization
       params.push("-qmax");

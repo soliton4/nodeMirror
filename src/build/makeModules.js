@@ -552,5 +552,18 @@ modulizer.convertFile(avcSrcPath + "canvas.js", {
   }
 }, avcDestPath + "canvas.js", errFun);
     
+    var fileReadOptions = {encoding: "utf8"};
+    fs.readFile(avcSrcPath + "util.js", fileReadOptions, function(err, utiljs){
+      fs.readFile(avcSrcPath + "avc-codec.js", fileReadOptions, function(err, avcCodecjs){
+        fs.readFile(avcSrcPath + "avc.js", fileReadOptions, function(err, avcjs){
+          fs.readFile(avcDestPath + "workerTemplate.js", fileReadOptions, function(err, workerTemplatejs){
+            var js = "importScripts('workerutil.js');\nimportScripts('workeravccodec.js');\n" + avcjs + "\n" + workerTemplatejs;
+            fs.writeFile(avcDestPath + "workerutil.js", utiljs);
+            fs.writeFile(avcDestPath + "workeravccodec.js", avcCodecjs);
+            fs.writeFile(avcDestPath + "worker.js", js);
+          });
+        });
+      });
+    });
     
 });

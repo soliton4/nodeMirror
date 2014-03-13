@@ -10,10 +10,14 @@
     </style>
     <script>
       
+      window.frameBufferAr = [];
+      
       window.onmessage = function(e){
         if (e.data){
           if (e.data.h && e.data.w){
             window.avcframedata = e.data;
+          }else{
+            window.frameBufferAr.push(e.data);
           };
         };
       };

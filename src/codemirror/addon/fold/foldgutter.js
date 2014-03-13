@@ -110,7 +110,6 @@ helperDefine(["codemirror/CodeMirror"], function(CodeMirror){
                 linesAr[i].node = line.node;
                 linesAr[i].dim = line.dim;
                 linesAr[i].node.style.backgroundColor = "white";
-                linesAr[i].node.style.backgroundColor = "black";
                 //debugger;
                 linesAr[i].node.style.marginLeft = line.dim.gutterTotalWidth;
               };

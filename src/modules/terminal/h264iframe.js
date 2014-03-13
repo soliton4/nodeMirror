@@ -13,11 +13,19 @@ define([
           size: {
             w: window.avcframedata.w
             , h: window.avcframedata.h
-          }
+          },
+          useWorker: true
         });
         wgt.placeAt(document.body);
+        var i = 0;
+        for (i; i < window.frameBufferAr.length; ++i){
+          wgt.decodeRaw(base64.toUint8Array(window.frameBufferAr[i]));
+        };
+        delete window.frameBufferAr;
         window.onmessage = function(e){
-          wgt.decodeRaw(base64.toUint8Array(e.data));
+          setTimeout(function(){
+            wgt.decodeRaw(base64.toUint8Array(e.data));
+          }, 1);
         };
       };
     };
