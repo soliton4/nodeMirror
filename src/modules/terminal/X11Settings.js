@@ -105,6 +105,22 @@ define([
         , valueSet: valueSetFun
         , onChange: onChangeFun
         
+      }), new Select({
+        options: [{
+          label: "no extra thread"
+          , value: "0"
+        }, {
+          label: "one worker thread"
+          , value: "1"
+        }, {
+          label: "split video in 4 threads"
+          , value: "4"
+        }]
+        , label: "h264 threaded rendering"
+        , setting: "x11h264threads"
+        , valueSet: valueSetFun
+        , onChange: onChangeFun
+        
       })];
       
       var settingsMap = {};

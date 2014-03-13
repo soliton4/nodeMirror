@@ -58,8 +58,6 @@ define([
     
 ){
   var AvcWgt;
-  var h264rows = 2;
-  var h264cols = 2;
     
   var EventDiv = declare([_WidgetBase, resizeMixin], {
     "class": "x11EventDiv"
@@ -68,15 +66,17 @@ define([
       if (this._contentBox && this.wrapper){
         this.wrapper.set("box", this._contentBox);
         this.wrapper.applyBoxChange();
+        domStyle.set(this.coverDiv, "height", this._contentBox.h + "px");
+        domStyle.set(this.coverDiv, "width", this._contentBox.w + "px");
       };
       return ret;
     }
     , buildRendering: function(){
       this.inherited(arguments);
-      var coverDiv = domConstruct.create("div", {
+      this.coverDiv = domConstruct.create("div", {
         "class": "overlay"
       });
-      domConstruct.place(coverDiv, this.domNode);
+      domConstruct.place(this.coverDiv, this.domNode);
     }
     
   });
@@ -350,19 +350,29 @@ define([
         self.avc.destroy();
         delete self.avc;
       };
+      
+      var i = 0;
       if (self.avcIframes){
-        var i = 0;
-        for (i; i < self.avcIframes; ++i){
+        for (i = 0; i < self.avcIframes; ++i){
           domConstruct.destroy(self.avcIframes[i]);
         };
         delete self.avcIframes;
       };
+      
+      if (self.avcs){
+        for (i = 0; i < self.avcIframes; ++i){
+          self.avcs[i].destroy();
+        };
+        delete self.avcs;
+      };
+      
       if (self.vidid){
         self.module.stopX264(self.vidid);
       };
     }
     
     , createVideo: function(){
+      console.log("createVideo");
       var self = this;
       if (this._destroyed){
         return;
@@ -371,7 +381,7 @@ define([
       this.creationProcess = true;
       
       
-      config.get("x11format", "x11fps", "x11quality", "x11targetrate").then(function(par){
+      config.get("x11format", "x11fps", "x11quality", "x11targetrate", "x11h264threads").then(function(par){
         if (self._destroyed){
           return false;
         };
@@ -379,10 +389,22 @@ define([
         var fps = par.x11fps;
         var quality = par.x11quality;
         var targetrate = par.x11targetrate;
+        var h264threads = par.x11h264threads;
         
         self.clearVidTimeout();
         var newVidid = Math.floor(Math.random() * 1000000000);
         if (format == "h264"){
+          var h264rows = 1;
+          var h264cols = 1;
+          var useThreads = false;
+          if (h264threads == "4"){
+            h264rows = 2;
+            h264cols = 2;
+            useThreads = true;
+          }else if(h264threads == "1"){
+            useThreads = true;
+          };
+          
           var first = true;
           var frames = [];
           var col = 0;
@@ -424,22 +446,31 @@ define([
                 }
               });
               self.avc.placeAt(self.eventDiv.domNode);*/
-              self.avcIframes = [];
+              self.avcs = [];
               var i = 0;
               for (i; i < frames.length; ++i){
-                var avciframe = document.createElement('iframe');
-                domConstruct.place(avciframe, self.eventDiv.domNode);
-                domStyle.set(avciframe, "position", "absolute");
-                domStyle.set(avciframe, "top", frames[i].y + "px");
-                domStyle.set(avciframe, "left", frames[i].x + "px");
-                domStyle.set(avciframe, "height", frames[i].h + "px");
-                domStyle.set(avciframe, "width", frames[i].w + "px");
-                domStyle.set(avciframe, "border", "0px");
-                avciframe.contentWindow.document.open();
-                avciframe.contentWindow.document.write(iframeText);
-                avciframe.contentWindow.document.close();
-                self.avcIframes.push(avciframe);
-                avciframe.contentWindow.postMessage(frames[i], '*');
+                var avc = new AvcWgt({
+                  size: {
+                    w: frames[i].w
+                    , h: frames[i].h
+                  },
+                  useWorker: useThreads
+                });
+                //var avciframe = document.createElement('iframe');
+                //domConstruct.place(avciframe, self.eventDiv.domNode);
+                avc.placeAt(self.eventDiv.domNode);
+                
+                domStyle.set(avc.domNode, "position", "absolute");
+                domStyle.set(avc.domNode, "top", frames[i].y + "px");
+                domStyle.set(avc.domNode, "left", frames[i].x + "px");
+                //domStyle.set(avciframe, "height", frames[i].h + "px");
+                //domStyle.set(avciframe, "width", frames[i].w + "px");
+                //domStyle.set(avciframe, "border", "0px");
+                //avciframe.contentWindow.document.open();
+                //avciframe.contentWindow.document.write(iframeText);
+                //avciframe.contentWindow.document.close();
+                self.avcs.push(avc);
+                //avciframe.contentWindow.postMessage(frames[i], '*');
               };
               //self.avcIframe.src = 'data:text/html;charset=utf-8,' + encodeURI(iframeText);
               //domConstruct.place(self.avcIframe, self.eventDiv.domNode);
@@ -450,7 +481,8 @@ define([
             };
             try{
               //self.avcIframe.contentWindow.postMessage(data, '*');
-              self.avcIframes[index].contentWindow.postMessage(data, '*');
+              //self.avcIframes[index].contentWindow.postMessage(data, '*');
+              self.avcs[index].decodeRaw(base64.toUint8Array(data));
               //self.avc.decodeRaw(base64.toUint8Array(data));
             }catch(e){};
 

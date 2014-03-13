@@ -41,11 +41,11 @@ var Avc = (function avc() {
       // console.info(buffer.length);
     }
 
-    _broadwayOnHeadersDecoded = function () {
+    window._broadwayOnHeadersDecoded = function () {
 
     };
 
-    _broadwayOnPictureDecoded = function ($buffer, width, height) {
+    window._broadwayOnPictureDecoded = function ($buffer, width, height) {
       var buffer = this.pictureBuffers[$buffer];
       if (!buffer) {
         buffer = this.pictureBuffers[$buffer] = toU8Array($buffer, (width * height * 3) / 2);

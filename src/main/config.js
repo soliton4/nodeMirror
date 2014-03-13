@@ -51,6 +51,7 @@ define([
       , "x11fps": 5
       , "x11quality": 5
       , "x11targetrate": 0
+      , "x11h264threads": "0"
     }
     , saveable: {
       "theme": true
@@ -62,6 +63,7 @@ define([
     , "x11fps": true
     , "x11quality": true
     , "x11targetrate": true
+    , "x11h264threads": true
     }
     
     , constructor: function(){
