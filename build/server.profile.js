@@ -49,12 +49,6 @@ var profile = (function(){
             name: "xstyle",
             location: "xstyle" // to avoid error msg
         }, {
-          name: "audio"
-        , location: "audio"
-        }, {
-          name: "video"
-        , location: "video"
-        }, {
           name: "promiseland"
         , location: "promiseland"
         }],
@@ -114,6 +108,7 @@ var profile = (function(){
                 , "promiseland"
                 , "promiseland/parser"
                 , "promiseland/main"
+                , "modules/terminal/AvconvRunner"
                 ]
             }
         }

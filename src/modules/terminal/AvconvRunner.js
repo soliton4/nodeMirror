@@ -74,8 +74,8 @@ define([
       };
       var killFun = lang.hitch(this, "kill");
       setTimeout(function(){
-        killfun();
-      }, 190000);
+        killFun();
+      }, (this.duration + 10) * 1000);
       var self = this;
       
       var stream;
@@ -101,7 +101,7 @@ define([
         stream.on("end", function(){
           console.log("stream end");
           try{
-            killfun();
+            killFun();
           }catch(e){
             console.log("error 3");
           }
@@ -109,7 +109,7 @@ define([
         stream.on("close", function(){
           console.log("stream close");
           try{
-            killfun();
+            killFun();
           }catch(e){
             console.log("error 3.5");
           }

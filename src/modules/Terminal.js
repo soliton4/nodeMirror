@@ -81,7 +81,7 @@ define([
     }
   });
   
-    var static = {
+    var staticStuff = {
       listChanged: function(){}
     };
   
@@ -106,7 +106,7 @@ define([
     }
     
     , _listChanged: function(){
-      static.listChanged();
+      staticStuff.listChanged();
     }
     
     , provideSideBarWidgetPs: function(){
@@ -212,7 +212,7 @@ define([
     _handleConnection = function(parSocket, session){
       var socket = parSocket;
       
-      var listChangedHandle = aspect.after(static, "listChanged", function(){
+      var listChangedHandle = aspect.after(staticStuff, "listChanged", function(){
         socket.emit("terminal/listChanged");
       });
       

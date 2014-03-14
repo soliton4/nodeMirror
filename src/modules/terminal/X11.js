@@ -338,6 +338,10 @@ define([
         clearTimeout(this.vidTimeout);
         delete this.vidTimeout;
       };
+      if (self.nothinghappensTimeout){
+        clearTimeout(self.nothinghappensTimeout);
+        delete this.nothinghappensTimeout;
+      };
     }
     
     , _cleanUp: function(){
@@ -437,6 +441,14 @@ define([
             if (self._destroyed){
               return false;
             };
+            
+            if (self.nothinghappensTimeout){
+              clearTimeout(self.nothinghappensTimeout);
+            };
+            self.nothinghappensTimeout = setTimeout(function(){
+              self.createVideo();
+            }, 10000); // ten sec
+            
             //console.log("frame");
             if (first){
               self._cleanUp();

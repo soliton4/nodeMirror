@@ -103,3 +103,6 @@ cp ../release/client/avc/glUtils.js ../release/nodeMirror/src/avc/
 cp ../release/client/avc/util.js ../release/nodeMirror/src/avc/
 cp ../release/client/avc/sylvester.js ../release/nodeMirror/src/avc/
 cp ../release/client/avc/Wgt.js ../release/nodeMirror/src/avc/
+cp ../release/client/avc/worker.js ../release/nodeMirror/src/avc/
+cp ../release/client/avc/workeravccodec.js ../release/nodeMirror/src/avc/
+cp ../release/client/avc/workerutil.js ../release/nodeMirror/src/avc/
