@@ -324,10 +324,12 @@ define([
         
         socket.on("x264test", function(par){
           
+          var duration = par.duration || 180;
           var runnerParam = {
             fps: par.fps  || "5"
           , quality: par.q  || "5"
           , targetrate:  par.targetrate
+          , duration: par.duration
           };
           
           var runners = [];
@@ -343,9 +345,14 @@ define([
           var vidid = par.vidid;
           var frames = par.frames;
           
-          socket.on("x264stop", function(parVidid){
+          var stopper = socket.on("x264stop", function(parVidid){
+            console.log("stopping vidid:" + parVidid);
             if (vidid == parVidid || !parVidid){
               killFun();
+              try{
+                //console.log(stopper);
+                //stopper.remove();
+              }catch(e){};
             };
           });
           socket.on('disconnect', function () {
@@ -355,7 +362,7 @@ define([
           //console.log("step 2");
           setTimeout(function(){
             killFun();
-          }, 190000);
+          }, (duration + 10) * 1000);
           
           var getStreamDataFun = function(index){
             return function(data){

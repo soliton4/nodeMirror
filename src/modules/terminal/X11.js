@@ -380,6 +380,8 @@ define([
       
       this.creationProcess = true;
       
+      var x11duration = 180;
+      
       
       config.get("x11format", "x11fps", "x11quality", "x11targetrate", "x11h264threads").then(function(par){
         if (self._destroyed){
@@ -435,6 +437,7 @@ define([
             if (self._destroyed){
               return false;
             };
+            //console.log("frame");
             if (first){
               self._cleanUp();
               self.vidid = newVidid;
@@ -477,7 +480,7 @@ define([
               
               self.vidTimeout = setTimeout(function(){
                 self.createVideo();
-              }, 1000 * 175);
+              }, 1000 * (x11duration - 5));
             };
             try{
               //self.avcIframe.contentWindow.postMessage(data, '*');
@@ -493,6 +496,7 @@ define([
             , vidid: newVidid
             , targetrate: targetrate
             , frames: frames
+            , duration: x11duration
           });
           
           
@@ -528,13 +532,13 @@ define([
             self.clearVidTimeout();
             self.vidTimeout = setTimeout(function(){
               self.createVideo();
-            }, 1000 * 175);
+            }, 1000 * (x11duration - 5));
           });
           return;
-          on(newVideo, "ended", lang.hitch(self, function(){
+          /*on(newVideo, "ended", lang.hitch(self, function(){
             console.log("ended");
             self.createVideo();
-          }));
+          }));*/
           /*on(newVideo, "playing", lang.hitch(self, function(){
             console.log("playing");
             self.videoPlaying = true;

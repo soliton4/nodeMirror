@@ -18,6 +18,7 @@ define([
   return declare([], {
     fps: "5"
     , quality: "5"
+    , duration: 180
     , constructor: function(par){
       declare.safeMixin(this, par);
       
@@ -39,7 +40,7 @@ define([
         //"-b:v","1M",             // Target bit rate
         "-an",
         //"-crf","20",             // Quality
-        "-t", "180", // 3 min
+        "-t", "" + this.duration, // 3 min
         "-f", "h264"             // File format
       ];
       //if (this.targetrate && this.targetrate != "0"){

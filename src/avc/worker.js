@@ -65,7 +65,7 @@ var Avc = (function avc() {
     },
     configure: function (config) {
       // patchOptimizations(config, patches);
-      console.info("Broadway Configured: " + JSON.stringify(config));
+      //console.info("Broadway Configured: " + JSON.stringify(config));
     }
   };
   
@@ -79,12 +79,12 @@ function patchOptimizations(config, patches) {
     if (patch) {
       var option = config[name];
       if (!option) option = "original";
-      console.info(name + ": " + option);
+      //console.info(name + ": " + option);
       assert (option in patch.options);
       var fn = patch.options[option].fn;
       if (fn) {
         scope[patch.original] = Module.patch(null, patch.name, fn);
-        console.info("Patching: " + patch.name + ", with: " + option);
+        //console.info("Patching: " + patch.name + ", with: " + option);
       }
     }
   }
