@@ -19,6 +19,7 @@
   left: 0px;
   opacity: 0;
   z-index: 100;
+  cursor: url(../../image/cursor/x11.png), auto;
 }
 .seepinkpies .terminalWidget .terminal-cursor {
   background-color: transparent;
