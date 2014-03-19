@@ -328,7 +328,8 @@ define([
           var runnerParam = {
             fps: par.fps  || "5"
           , quality: par.q  || "5"
-          , targetrate:  par.targetrate
+          , maxrate:  par.maxrate
+          , preset: par.preset
           , duration: par.duration
           };
           
@@ -368,7 +369,7 @@ define([
             return function(data){
               socket.emit("x264test", {
                 i: index,
-                frame: data
+                frame: data.toString("base64")
               });
             };
           };

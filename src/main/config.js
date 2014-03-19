@@ -50,7 +50,8 @@ define([
       , "x11format": "ogg"
       , "x11fps": 5
       , "x11quality": 5
-      , "x11targetrate": 0
+      , "x11maxrate": "100k"
+      , "x11preset": "medium"
       , "x11h264threads": "0"
     }
     , saveable: {
@@ -62,7 +63,8 @@ define([
     , "x11format": true
     , "x11fps": true
     , "x11quality": true
-    , "x11targetrate": true
+    , "x11maxrate": true
+    , "x11preset": true
     , "x11h264threads": true
     }
     

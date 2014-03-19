@@ -357,14 +357,14 @@ define([
       
       var i = 0;
       if (self.avcIframes){
-        for (i = 0; i < self.avcIframes; ++i){
+        for (i = 0; i < self.avcIframes.length; ++i){
           domConstruct.destroy(self.avcIframes[i]);
         };
         delete self.avcIframes;
       };
       
       if (self.avcs){
-        for (i = 0; i < self.avcIframes; ++i){
+        for (i = 0; i < self.avcs.length; ++i){
           self.avcs[i].destroy();
         };
         delete self.avcs;
@@ -387,14 +387,15 @@ define([
       var x11duration = 180;
       
       
-      config.get("x11format", "x11fps", "x11quality", "x11targetrate", "x11h264threads").then(function(par){
+      config.get("x11format", "x11fps", "x11quality", "x11maxrate", "x11h264threads", "x11preset").then(function(par){
         if (self._destroyed){
           return false;
         };
         var format = par.x11format;
         var fps = par.x11fps;
         var quality = par.x11quality;
-        var targetrate = par.x11targetrate;
+        var maxrate = par.x11maxrate;
+        var preset = par.x11preset;
         var h264threads = par.x11h264threads;
         
         self.clearVidTimeout();
@@ -478,27 +479,15 @@ define([
                 domStyle.set(avc.domNode, "position", "absolute");
                 domStyle.set(avc.domNode, "top", frames[i].y + "px");
                 domStyle.set(avc.domNode, "left", frames[i].x + "px");
-                //domStyle.set(avciframe, "height", frames[i].h + "px");
-                //domStyle.set(avciframe, "width", frames[i].w + "px");
-                //domStyle.set(avciframe, "border", "0px");
-                //avciframe.contentWindow.document.open();
-                //avciframe.contentWindow.document.write(iframeText);
-                //avciframe.contentWindow.document.close();
                 self.avcs.push(avc);
-                //avciframe.contentWindow.postMessage(frames[i], '*');
               };
-              //self.avcIframe.src = 'data:text/html;charset=utf-8,' + encodeURI(iframeText);
-              //domConstruct.place(self.avcIframe, self.eventDiv.domNode);
               
               self.vidTimeout = setTimeout(function(){
                 self.createVideo();
               }, 1000 * (x11duration - 5));
             };
             try{
-              //self.avcIframe.contentWindow.postMessage(data, '*');
-              //self.avcIframes[index].contentWindow.postMessage(data, '*');
               self.avcs[index].decodeRaw(base64.toUint8Array(data));
-              //self.avc.decodeRaw(base64.toUint8Array(data));
             }catch(e){};
 
             return true;
@@ -506,7 +495,8 @@ define([
             fps: fps
             , q: quality
             , vidid: newVidid
-            , targetrate: targetrate
+            , maxrate: maxrate
+            , preset: preset
             , frames: frames
             , duration: x11duration
           });
@@ -516,7 +506,7 @@ define([
           //console.log("doing stuff");
           var newVideo = domConstruct.create("video", {
             "class": "x11Video"
-            , "src": "x11.stream?vidid=" + newVidid + "&format=" + format + "&fps=" + fps + "&q=" + quality
+            , "src": "x11.stream?vidid=" + newVidid + "&format=" + format + "&fps=" + fps + "&q=" + quality + "&maxrate=" + maxrate + "&preset=" + preset
             //, "autoplay": "autoplay"
             , "type": "video/" + format
           });

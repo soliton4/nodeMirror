@@ -99,9 +99,119 @@ define([
         , valueSet: valueSetFun
         , onChange: onChangeFun
         
-      }), new NumberSpinner({
-        label: "target Bitrate"
-        , setting: "x11targetrate"
+      }), new Select({
+        options: [{
+          label: "50 kb/s"
+          , value: "50k"
+        }, {
+          label: "75 kb/s"
+          , value: "75k"
+        }, {
+          label: "100 kb/s"
+          , value: "100k"
+        }, {
+          label: "150 kb/s"
+          , value: "150k"
+        }, {
+          label: "200 kb/s"
+          , value: "200k"
+        }, {
+          label: "250 kb/s"
+          , value: "250k"
+        }, {
+          label: "300 kb/s"
+          , value: "300k"
+        }, {
+          label: "400 kb/s"
+          , value: "400k"
+        }, {
+          label: "500 kb/s"
+          , value: "500k"
+        }, {
+          label: "750 kb/s"
+          , value: "750k"
+        }, {
+          label: "1 mb/s"
+          , value: "1000k"
+        }, {
+          label: "1.5 mb/s"
+          , value: "1500k"
+        }, {
+          label: "2 mb/s"
+          , value: "2000k"
+        }, {
+          label: "2.5 mb/s"
+          , value: "2500k"
+        }, {
+          label: "3 mb/s"
+          , value: "3000k"
+        }, {
+          label: "4 mb/s"
+          , value: "4000k"
+        }, {
+          label: "5 mb/s"
+          , value: "5000k"
+        }, {
+          label: "7.5 mb/s"
+          , value: "7500k"
+        }, {
+          label: "10 mb/s"
+          , value: "10m"
+        }, {
+          label: "15 mb/s"
+          , value: "15m"
+        }, {
+          label: "20 mb/s"
+          , value: "20m"
+        }, {
+          label: "25 mb/s"
+          , value: "25m"
+        }, {
+          label: "30 mb/s"
+          , value: "30m"
+        }, {
+          label: "40 mb/s"
+          , value: "40m"
+        }, {
+          label: "50 mb/s"
+          , value: "50m"
+        }, {
+          label: "75 mb/s"
+          , value: "75m"
+        }, {
+          label: "100 mb/s"
+          , value: "100m"
+        }, {
+          label: "150 mb/s"
+          , value: "150m"
+        }, {
+          label: "200 mb/s"
+          , value: "200m"
+        }, {
+          label: "250 mb/s"
+          , value: "250m"
+        }, {
+          label: "unlimited"
+          , value: "unlimited"
+        }]
+        , label: "max Bitrate"
+        , setting: "x11maxrate"
+        , valueSet: valueSetFun
+        , onChange: onChangeFun
+        
+      }), new Select({
+        options: [{
+          label: "low latency / high bandwith or low quality"
+          , value: "ultrafast"
+        }, {
+          label: "medium"
+          , value: "medium"
+        }, {
+          label: "bandwith optimization / high quality"
+          , value: "veryslow"
+        }]
+        , label: "latency / quality"
+        , setting: "x11preset"
         , valueSet: valueSetFun
         , onChange: onChangeFun
         

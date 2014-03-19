@@ -95,6 +95,9 @@ cp ../release/client/style/style.css ../release/nodeMirror/src/style/
 mkdir ../release/nodeMirror/src/image
 cp ../src/image/* ../release/nodeMirror/src/image/
 
+mkdir ../release/nodeMirror/src/image/cursor
+cp ../src/image/cursor/* ../release/nodeMirror/src/image/cursor/
+
 mkdir ../release/nodeMirror/src/avc
 cp ../release/client/avc/Avc.js ../release/nodeMirror/src/avc/
 cp ../release/client/avc/avc-codec.js ../release/nodeMirror/src/avc/

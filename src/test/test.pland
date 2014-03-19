@@ -1,14 +1,20 @@
 var x;
+var y;
+var z = *y;
+var a;
 var y = 1;
-function(b, c){
+function funname(b, c){
   var a = 1;
+  a = *x;
+  somefun(*a);
+  x = y[somefun(*a)];
   setTimeout(function(){
     x = 2;
     
   }, 1000);
-  return;
+  return a;
 };
-y = 2;
+/*y = 2;
 b = 3;
 x = {
   a: 1,
@@ -20,4 +26,6 @@ x = {
   x: [a, 1, "", {}, []]
 };
 
+
 x = b;
+*/
