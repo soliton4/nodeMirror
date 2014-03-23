@@ -1200,6 +1200,32 @@ InitialiserNoIn
 EmptyStatement
   = ";" { return { type: "EmptyStatement" }; }
 
+
+FunctionDeclaration
+  =  FunctionToken __ name:Identifier __
+    "(" __ params:FormalParameterList? __ ")" __
+    "{" __ elements:FunctionBody __ "}" {
+      return {
+        type:     "Function",
+        name:     name,
+        params:   params !== "" ? params : [],
+        elements: elements
+      };
+    }
+// promiseland adding __?
+FunctionExpression
+  =  FunctionToken?  __ name:Identifier? __
+    "(" __ params:FormalParameterList? __ ")" __
+    "{" __ elements:FunctionBody __ "}" {
+      return {
+        type:     "Function",
+        name:     name !== "" ? name : null,
+        params:   params !== "" ? params : [],
+        elements: elements
+      };
+    }
+
+
 ExpressionStatement
   = !("{" / FunctionToken) expression:Expression EOS { return expression; }
 
@@ -1454,29 +1480,6 @@ DebuggerStatement
 
 /* ===== A.5 Functions and Programs ===== */
 
-FunctionDeclaration
-  = FunctionToken __ name:Identifier __
-    "(" __ params:FormalParameterList? __ ")" __
-    "{" __ elements:FunctionBody __ "}" {
-      return {
-        type:     "Function",
-        name:     name,
-        params:   params !== "" ? params : [],
-        elements: elements
-      };
-    }
-// promiseland adding __?
-FunctionExpression
-  = FunctionToken __ name:Identifier? __
-    "(" __ params:FormalParameterList? __ ")" __
-    "{" __ elements:FunctionBody __ "}" {
-      return {
-        type:     "Function",
-        name:     name !== "" ? name : null,
-        params:   params !== "" ? params : [],
-        elements: elements
-      };
-    }
 
 FormalParameterList
   = head:Identifier tail:(__ "," __ Identifier)* {

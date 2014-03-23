@@ -1,31 +1,35 @@
-var x;
-var y;
-var z = *y;
 var a;
-var y = 1;
-function funname(b, c){
-  var a = 1;
-  a = *x;
-  somefun(*a);
-  x = y[somefun(*a)];
-  setTimeout(function(){
-    x = 2;
-    
-  }, 1000);
-  return a;
-};
-/*y = 2;
-b = 3;
-x = {
-  a: 1,
-  b: "xxx",
-  c: function(){
-    a = 2;
-    return a;
-  },
-  x: [a, 1, "", {}, []]
+var b = *a;
+var c;
+var d = {
+  a: a
+  , b: "haha"
+}
+var e = {
+  x: *f
+  , b: *g
+}
+x = e;
+x = *e;
+x.member = e;
+x[y] = bla;
+x[*y] = bla;
+a = [x, "bla", 1.1];
+b = [x, *x, *y];
+function x(){
+  a = 1;
 };
 
+x = (){
+  a = b1 || c1;
+  a = b2 || *c2;
+  a = *b3 || c3;
+  a = *b4 || *c4;
+}
 
-x = b;
-*/
+braketstest = (){
+  a = (a + b);
+  a = ((a + b) * c);
+  a = ((a1 + b1) * *c);
+}
+

@@ -1,54 +1,49 @@
-(function(){
-  var defineFun;
-  var requireFun;
-  
-  if (typeof exports == "object" && typeof module == "object"){ // CommonJS
-    requireFun = function(modulesAr, callback){
-      var i = 0;
-      var l = modulesAr.length;
-      var args = [];
-      for (i; i < l; ++i){
-        args.push(require(modulesAr[i]));
-      };
-      callback.apply(callback, args);
-    };
-    defineFun = function(requireAr, callback){
-      requireFun(requireAr, function(){
-        module.exports = callback.apply(callback, arguments);
-      });
-    };
-    
-  }else if (typeof define == "function" && define.amd){ // AMD
-    defineFun = define;
-    requireFun = require;
-    
-  }else{ // Plain browser env
-    alert("not working out!");
-    
-  };
-  
-  defineFun(["promiseland"], function(promiseLand){
-var __Promise = promiseLand.Promise;
-var module = new __Promise();
-var x;
-;
-var y;
-;
-var z = y.then(function(_value)){;
-;
+var _returnPs = new Promise();
 var a;
-;
-var y = 1;
-;
-function funname(b, c){
-var a = 1;
-;
-a = x.then(function(_value)){;
-setTimeout(function(){
-x = 2;
-}, 1000);
-return a;
+a.then(function(__UNIQUENAME1){var b = __UNIQUENAME1;
+var c;
+var d = {"a": a,
+"b": "haha"};
+f.then(function(__UNIQUENAME2){g.then(function(__UNIQUENAME3){var e = {"x": __UNIQUENAME2,
+"b": __UNIQUENAME3};
+x = e;
+e.then(function(__UNIQUENAME4){x = __UNIQUENAME4;
+x["member"] = e;
+x[y] = bla;
+y.then(function(__UNIQUENAME5){x[__UNIQUENAME5] = bla;
+a = [x, "bla", 1.1];
+x.then(function(__UNIQUENAME6){y.then(function(__UNIQUENAME7){b = [x, __UNIQUENAME6, __UNIQUENAME7];
+function x(){
+a = 1;
 };
 ;
-return module.promise.then;});
-})();
+x = function(){
+var _returnPs = new Promise();
+try{a = (b1||c1);
+var __UNIQUENAME8 = new Promise();
+var __UNIQUENAME9 = b2;
+if (__UNIQUENAME9){ __UNIQUENAME8.resolve(__UNIQUENAME9) }else{ c2.then(function(__UNIQUENAME10){__UNIQUENAME8.resolve(__UNIQUENAME10);
+});};
+__UNIQUENAME8.then(__UNIQUENAME11){a = __UNIQUENAME11;
+b3.then(function(__UNIQUENAME12){a = (__UNIQUENAME12||c3);
+b4.then(function(__UNIQUENAME15){var __UNIQUENAME13 = new Promise();
+var __UNIQUENAME14 = __UNIQUENAME15;
+if (__UNIQUENAME14){ __UNIQUENAME13.resolve(__UNIQUENAME14) }else{ c4.then(function(__UNIQUENAME16){__UNIQUENAME13.resolve(__UNIQUENAME16);
+});};
+__UNIQUENAME13.then(__UNIQUENAME17){a = __UNIQUENAME17;
+}catch(__returnError){
+_returnPs.reject(__returnError);
+};
+return _returnPs;
+}});});});});;
+braketstest = function(){
+var _returnPs = new Promise();
+try{a = (a+b);
+a = ((a+b)*c);
+c.then(function(__UNIQUENAME18){a = ((a1+b1)*__UNIQUENAME18);
+}catch(__returnError){
+_returnPs.reject(__returnError);
+};
+return _returnPs;
+}});;
+});});});});});});});

@@ -257,6 +257,7 @@ define([
                            console.log("killing ...");
                            delete nodeControl.gpregister.avconv[vidid];
                            runner.kill();
+                           res.close();
                          };
                          //console.log("step 2");
                          setTimeout(function(){
@@ -294,6 +295,107 @@ define([
                          console.log("step out");
 
                        });
+
+                     });
+                     
+                     // --- x11 audio
+                     
+                     mirror.get(relativeStr + "x11.audio", function(req, res){
+                       req.connection.setTimeout(0);
+
+                       var runner;
+                       var killfun = function(){
+                         setTimeout(function(){
+                           killfun();
+                         }, 30000);
+                       };
+                       
+
+                       var format = req.query.format || "ogg";
+                       var bitrate = req.query.bitrate || "256";
+                       //var preset = req.query.preset || "medium";
+
+                       console.log("format: " + format);
+                       var vidid = req.query.vidid || "1"; 
+
+                       nodeControl.gpregister.avconv[vidid] = function(){
+                         killfun();
+                       };
+                       
+
+                       //res.header("Content-Type", "text/text");
+                       res.header("Content-Type", "audio/" + format);
+
+                       /*fs.readFile("/home/sol/projects/nodeMirror/src/test/testpipe.opus", function(err, data){
+                         if (err){
+                           res.write("error");
+                           res.end();
+                           return;
+                         };
+                         res.write(data);
+                         res.end();
+                       });
+                       return;*/
+
+                         
+                         var streamDataFun = function(data){
+                           //console.log("stream data");
+                             try{
+                               res.write(data);
+                             }catch(e){
+                               console.log("pipe error");
+                             };
+                         };
+                         
+                         runner = new AvconvRunner(lang.mixin({}, {
+                           type: "audio"
+                           , format: format
+                           , bitrate: bitrate
+                           //, preset: preset
+                         }, {
+                           streamData: streamDataFun
+                         }));
+
+                         killfun = function(){
+                           console.log("killing ...");
+                           delete nodeControl.gpregister.avconv[vidid];
+                           runner.kill();
+                         };
+                         //console.log("step 2");
+                         setTimeout(function(){
+                           killfun();
+                         }, 190000);
+
+                         try{
+                           res.on("error", function(err){
+                             console.log("some res error");
+                             console.log(err);
+                           });
+                         }catch(e){
+                           console.log("error 2");
+                         }
+
+                         console.log("step 3");
+                         try{
+                           res.on("end", function(){
+                             try{
+                               killfun();
+                             }catch(e){
+                               console.log("error 4");
+                             }
+                           });
+                           res.on("close", function(){
+                             try{
+                               killfun();
+                             }catch(e){
+                               console.log("error 5");
+                             }
+                           });
+                         }catch(e){
+                           console.log("error 6");
+                         }
+                         console.log("step out");
+                         
 
                      });
 

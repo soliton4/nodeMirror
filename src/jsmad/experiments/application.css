@@ -1,0 +1,268 @@
+* {
+  padding: 0;
+  -moz-user-select: -moz-none;
+}
+
+html {
+  font: 18px/27px 'TeXGyreHerosBold';
+  color: white;
+}
+
+body {
+  width: 35em;
+  margin: 2em auto;
+  background: url("images/noise.png") #3c3c46;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+span.even {
+  color: #bc4;
+}
+
+h1, h2 {
+  text-shadow: #1f2329 0 1px 0;
+}
+
+#outer {
+  position: absolute;
+  width: 36em;
+  margin-left: -18em;
+  left: 50%;
+  top: 20%;
+  margin-top: -125px;
+}
+
+#content {
+  font: 100% 'TeXGyreHerosRegular';
+}
+
+h2.slogan {
+  width: 100%;
+  left: 0;
+  text-align: center;
+}
+
+h1.logo {
+  font: 5em 'TeXGyreHerosBold';
+  color: white;
+  margin-bottom: 0.6em;
+  text-align: center;
+}
+
+h1.lovelogo {
+  width: 100%;
+  text-align: center;
+  font: 3.4em 'TeXGyreHerosBold';
+}
+
+h1 a, h1 a:visited{
+  color: white;
+  text-decoration: none;
+}
+
+em {
+  font-style: normal;
+  color: #bc4;
+}
+
+a:visited {
+  color: #444;
+}
+
+button:hover, input[type=submit]:hover, input[type=button]:hover, select:focus
+{
+  background-color: rgb(106, 120, 145);
+}
+
+button:active, input[type=submit]:active, input[type=button]:active
+{
+  background-color: rgb(37, 41, 47);
+  background-image: -webkit-gradient(
+    linear,
+    left top,
+    left bottom,
+    color-stop(0.00, rgba(0, 0, 0, 0.3)),
+    color-stop(0.50, rgba(0, 0, 0, 0.0))
+  );
+  background-image: -webkit-linear-gradient(
+    top,
+    rgba(0, 0, 0, 0.3) 0%,
+    rgba(0, 0, 0, 0.0) 50%
+  );
+  background-image: -moz-linear-gradient(
+    top,
+    rgba(0, 0, 0, 0.3) 0%,
+    rgba(0, 0, 0, 0.0) 50%
+  );
+  background-image: linear-gradient(
+    top,
+    rgba(0, 0, 0, 0.3) 0%,
+    rgba(0, 0, 0, 0.0) 50%
+  );
+  border-color: rgb(36, 40, 46);
+  border-bottom-color: rgb(81, 83, 91);
+}
+
+textarea.code {
+  display: block;
+  margin-left: 10px;
+  margin-right: 10px;
+  font-size: 75%;
+  min-height: 40px;
+  max-width: 90%;
+  min-width: 90%;
+}
+
+textarea.code:disabled {
+  color: #fff;
+}
+
+.avatar, .avatar img {
+  width: 80px;
+  height: 80px;
+}
+
+.avatar {
+  display: inline-block;
+  border: 2px solid white;
+  vertical-align: middle;
+  border-radius: 0.15em;
+  background: white;
+}
+
+.avatar img {
+  border-radius: 0.15em;
+  margin-bottom: 2px;
+}
+
+h2.slogan {
+  font-size: 1.7em; 
+  bottom: 6%;
+}
+
+form {
+  width: 100%;
+  text-align: center;
+}
+
+ul.steps {
+  font-size: 1.6em;
+  width: 12em;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+ul.steps li {
+  padding: 0.3em;
+  list-style-type: none;
+  border-bottom: 1px solid white;
+  color: #ddd;
+  box-shadow: 0 0 35px #111111 inset;
+  background: #222;
+}
+
+ul.steps li a {
+  color: #ddd;
+  text-decoration: none;
+}
+
+ul.steps li:first-child {
+  border-radius: 8px 8px 0 0;
+}
+
+ul.steps li:last-child {
+  border: none;
+  border-radius: 0 0 8px 8px;
+}
+
+ul.steps li:hover {
+  cursor: pointer;
+  color: white;
+  background: #444;
+}
+
+ul.steps span {
+  display: inline-block;
+  vertical-align: middle;
+  width: 1.8em;
+  height: 1.8em;
+  font-size: 0.8em;
+  text-align: center;
+  padding: 0;
+  color: white;
+  text-shadow: -1px -1px 2px #444, 2px 2px 2px #222;
+}
+
+ul.steps span img {
+  height: 1.8em;
+}
+
+#signup form {
+  position: relative;
+  margin: 10% 0;
+  text-align: center;
+}
+
+#signup button {
+  font-size: 2.2em;
+  width: 9em;
+  height: 2.7em;
+  padding-right: 0.6em;
+  padding-top: 0.3em;
+  padding-bottom: 0;
+  padding-left: 0;
+}
+
+#signup button img {
+  vertical-align: middle;
+  margin-bottom: 0.3em;
+  margin-right: 0.3em;
+}
+
+h2.greeting, h2.status {
+  margin-top: 0.1em;
+  margin-bottom: 1.3em;
+}
+
+div.player, .dashboard {
+  border: 2px solid #CCC;
+  padding-top: 1em;
+  padding-left: 1.2em;
+  border-radius: 0.4em;
+  background-color: #111;
+}
+
+div.signout form input[type=submit] {
+  border: none;
+  background: transparent;
+  color: #A44;
+  font-size: 100%;
+  float: right;
+  margin-bottom: 0.5em;
+  margin-right: 0.5em;
+  box-shadow: none;
+  padding: 0;
+  
+}
+
+div.signout form input[type=submit]:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+div.clear {
+  clear: both;
+}
+
+iframe.player {
+  border: none;
+  width: 220px;
+  height: 350px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  overflow: hidden;
+  margin-bottom: 10px;
+  scrolling: no;
+}
