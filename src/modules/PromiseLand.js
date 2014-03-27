@@ -34,7 +34,7 @@ define([
   , domStyle
   , domConstruct
   , domGeo
-  , promiseLand
+  , promiseland
   , parser
 ){
   
