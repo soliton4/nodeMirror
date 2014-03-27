@@ -10,6 +10,11 @@
 [submodule "src/util"]
 	path = src/util
 	url = https://github.com/dojo/util.git
+    
+[submodule "src/promiseLand"]
+	path = src/promiseLand
+	url = https://github.com/soliton4/promiseLand.git
+    
 [submodule "generic-js/CodeMirror-original"]
 	path = generic-js/CodeMirror-original
 	url = https://github.com/marijnh/CodeMirror
