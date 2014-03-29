@@ -15,7 +15,7 @@ define([
   , "main/clientOnly!dojo/dom-style"
   , "main/clientOnly!dojo/dom-construct"
   , "main/clientOnly!dojo/dom-geometry"
-  , "promiseland/promiseLand"
+  , "promiseland/promiseland"
   , "promiseland/parser"
 ], function(
   declare
