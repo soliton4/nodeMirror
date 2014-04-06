@@ -16,7 +16,6 @@ define([
   , "main/clientOnly!dojo/dom-construct"
   , "main/clientOnly!dojo/dom-geometry"
   , "promiseland/promiseland"
-  , "promiseland/parser"
 ], function(
   declare
   , Base
@@ -35,7 +34,6 @@ define([
   , domConstruct
   , domGeo
   , promiseland
-  , parser
 ){
   
   var additionalSubtypes = {
@@ -114,8 +112,10 @@ define([
     , testPs: function(par, parCode){
       var def = this.def();
       
-      parser.parse(parCode).then(function(jsStr){
-        def.resolve(jsStr);
+      var parser = new promiseland.Parser();
+      
+      parser.parse(parCode).then(function(result){
+        def.resolve(result.javascript);
       });
       //def.resolve("xxx");
       return def;

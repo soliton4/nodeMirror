@@ -95,19 +95,36 @@ define([
 
                    //EasyZip = easyZip.EasyZip;
 
-                   var mirror = express();
+                   var mirror;
+                   if (nodeMirrorConfig.app){
+                     mirror = nodeMirrorConfig.app;
+                   }else{
+                     mirror = express();
+                   };
 
-                   var server = http.createServer(mirror);
+                   var server;
+                   if (nodeMirrorConfig.server){
+                     server = nodeMirrorConfig.server;
+                   }else{
+                     server = http.createServer(mirror);
+                   };
+                   
+                   var auth;
 
                    if (nodeMirrorConfig.username){
-                     mirror.use(express.basicAuth(nodeMirrorConfig.username, nodeMirrorConfig.password));
+                     auth = express.basicAuth(nodeMirrorConfig.username, nodeMirrorConfig.password);
+                     mirror.use(relativeStr, auth);
+                   }else{
+                     auth = express.basicAuth(function(user, pass) {
+                       return true;
+                     });
                    };
 
                    var cookieParser = express.cookieParser('my session secret');
                    var sessionStore = new connect.middleware.session.MemoryStore();
 
-                   mirror.use(cookieParser);
-                   mirror.use(express.session({
+                   mirror.use(relativeStr, cookieParser);
+                   mirror.use(relativeStr, express.session({
                      store: sessionStore,
                      cookie : {
                        path : '/',
@@ -116,27 +133,29 @@ define([
                      }
                    }));
 
+console.log(relativeStr);
+                   mirror.use(relativeStr, express.bodyParser());
 
-                   mirror.use(express.bodyParser());
-
-                   mirror.put(relativeStr + 'apicall', function(req, res){
+                   mirror.put(relativeStr + 'apicall', auth, function(req, res){
                      try{
                        remoteCaller.serverCall(req.body).then(function(par){
                          res.send({ result: par });
+                         //console.log("success");
                        });
                      }catch(e){
                        console.log(e);
-                       res.close();
+                       //console.log(req);
+                       res.end();
                      };
                    });
 
-                   mirror.put(relativeStr + "reconnect", function(req, res){
+                   mirror.put(relativeStr + "reconnect", auth, function(req, res){
                      //console.log("----------------- recon request");
                      res.setHeader('Content-Type', "application/json");
                      res.send({ reconnected: true });
                    });
 
-                   mirror.get(relativeStr + 'download', function(req, res){
+                   mirror.get(relativeStr + 'download', auth, function(req, res){
                      console.log("download:" + req.query.id);
                      var filenameStr = nameTranslator.fileName(req.query.id);
                      console.log(filenameStr);
@@ -144,15 +163,7 @@ define([
                        console.log(parContentType);
                        if (parContentType == "inode/directory"){
                          // creating archives
-                         //var zip = new EasyZip();
 
-                         // add local file
-                         /*zip.zipFolder(filenameStr, function(){
-              //res.setHeader('Content-Length', data.length);
-              res.setHeader('Content-Disposition', "attachment; filename=\"" + fileName.single(filenameStr) + ".zip\"");
-              zip.writeToResponse(res, fileName.single(filenameStr) + ".zip");
-              res.end();
-            });*/
                          var zip = new AdmZip();
                          zip.addLocalFolder(filenameStr);
                          res.setHeader('Content-Disposition', "attachment; filename=\"" + fileName.single(filenameStr) + ".zip\"");
@@ -176,7 +187,7 @@ define([
                    });
 
                    /*jshint sub:true*/
-                   mirror.get(relativeStr, function(req, res){
+                   mirror.get(relativeStr, auth, function(req, res){
                      res.setHeader('Content-Type', "text/html");
                      fs.readFile(nodeMirrorConfig["static"] + "/index.html", function(err, data){
                        if (err){
@@ -189,7 +200,7 @@ define([
                      });
                    });
 
-                   mirror.use(express.limit(100000000000));
+                   mirror.use(relativeStr, express.limit(100000000000));
 
                    // access to the choosen directory
                    mirror.use(relativeStr + "file/", express["static"](dirStr));
@@ -201,7 +212,7 @@ define([
                    if (nodeMirrorConfig.x11terminal){
 
                      // x11 forwarding
-                     mirror.get(relativeStr + "x11.stream", function(req, res){
+                     mirror.get(relativeStr + "x11.stream", auth, function(req, res){
                        req.connection.setTimeout(0);
 
                        var runner;
@@ -300,7 +311,7 @@ define([
                      
                      // --- x11 audio
                      
-                     mirror.get(relativeStr + "x11.audio", function(req, res){
+                     mirror.get(relativeStr + "x11.audio", auth, function(req, res){
                        req.connection.setTimeout(0);
 
                        var runner;
@@ -419,8 +430,9 @@ define([
                    mirror.use(relativeStr, express["static"](nodeMirrorConfig["static"]));
 
 
-
-                   server.listen(nodeMirrorConfig.port);
+                   if (!nodeMirrorConfig.server){
+                     server.listen(nodeMirrorConfig.port);
+                   }
                    
                    var nodeMirror = dojoConfig.nodeMirrorNodeModule;
                    var socketIo = nodeMirror.getSocketIo(nodeMirrorConfig.socketIoPreRelease);
@@ -455,6 +467,12 @@ define([
                      return;
 
                    });
+                   
+                   if (nodeMirrorConfig.callback){
+                     try{
+                       nodeMirrorConfig.callback();
+                     }catch(e){};
+                   };
 
                  });
        }); 

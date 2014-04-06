@@ -105,9 +105,12 @@ var profile = (function(){
                 , "modules/Video"
                 , "modules/Audio"
                 , "modules/PromiseLand"
-                , "promiseland"
+                //, "promiseland"
                 , "promiseland/parser"
                 , "promiseland/main"
+                , "promiseland/promiseland"
+                , "promiseland/_parser"
+                , "promiseland/md5"
                 , "modules/terminal/AvconvRunner"
                 ]
             }

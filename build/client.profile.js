@@ -180,6 +180,12 @@ var profile = (function(){
                 , "modules/Audio"
                 , "modules/PromiseLand"
                 , "modules/promiseLand/Tester"
+                , "promiseland/main"
+                , "promiseland/promiseland"
+                //, "promiseland/parser"
+                //, "promiseland/_parser" // causes weird error
+                , "promiseland/md5"
+                , "promiseland/main"
               ]
               , boot: true
               , customBase: true

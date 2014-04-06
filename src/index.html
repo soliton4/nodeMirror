@@ -6,8 +6,8 @@
       <script src="{{{relativeStr}}}socket.io/socket.io.js"></script>
     
     <!-- pdf.js -->
-      <script src="{{{relativeStr}}}pdf/generic/build/pdf.js"></script>
-      <script src="{{{relativeStr}}}pdf/generic/web/compatibility.js"></script>
+      <!--<script src="{{{relativeStr}}}pdf/generic/build/pdf.js"></script>
+      <script src="{{{relativeStr}}}pdf/generic/web/compatibility.js"></script>-->
       
     <!-- dojo -->
       <!-- config -->
@@ -75,6 +75,21 @@
             },{
                 name: "avc",
                 location: "avc"
+            },{
+                name: "debug",
+                location: "debug"
+            },{
+                name: "term",
+                location: "term"
+            },{
+                name: "modules",
+                location: "modules"
+            },{
+                name: "put-selector",
+                location: "put-selector"
+            },{
+                name: "xstyle",
+                location: "xstyle"
             }],
             deps: [ loadModule ] // And array of modules to load on "boot"
           };

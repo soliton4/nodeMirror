@@ -109,3 +109,10 @@ cp ../release/client/avc/Wgt.js ../release/nodeMirror/src/avc/
 cp ../release/client/avc/worker.js ../release/nodeMirror/src/avc/
 cp ../release/client/avc/workeravccodec.js ../release/nodeMirror/src/avc/
 cp ../release/client/avc/workerutil.js ../release/nodeMirror/src/avc/
+
+mkdir ../release/nodeMirror/src/promiseland
+cp ../release/client/promiseland/main.js ../release/nodeMirror/src/promiseland/
+cp ../release/client/promiseland/promiseland.js ../release/nodeMirror/src/promiseland/
+cp ../release/client/promiseland/parser.js ../release/nodeMirror/src/promiseland/
+cp ../release/client/promiseland/_parser.js ../release/nodeMirror/src/promiseland/
+cp ../release/client/promiseland/md5.js ../release/nodeMirror/src/promiseland/
