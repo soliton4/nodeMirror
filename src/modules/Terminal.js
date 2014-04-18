@@ -128,6 +128,11 @@ define([
               , x11terminal: x11terminal
             });
             def.resolve(self.wgt);
+            config.get("x11-autostart").then(function(autostart){
+              if (autostart){
+                self.wgt.openX11Tab();
+              };
+            });
           });
         };
       });

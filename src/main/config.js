@@ -53,6 +53,9 @@ define([
       , "x11maxrate": "100k"
       , "x11preset": "medium"
       , "x11h264threads": "0"
+      , "hide-sidebar": false
+      , "hide-contenttabs": false
+      , "x11-autostart": false
     }
     , saveable: {
       "theme": true

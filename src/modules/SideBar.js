@@ -39,13 +39,19 @@ define([
             region: "left"
             , layoutPriority: 10
           });
-          gui.addChild(self.wgt);
-          self.stub = new Stub({
-            region: "left"
-            , sideBarWgt: self.wgt
-            , layoutPriority: 9
+          config.get("hide-sidebar").then(function(hideSidebar){
+            if (!hideSidebar){
+              gui.addChild(self.wgt);
+            };
+            self.stub = new Stub({
+              region: "left"
+              , sideBarWgt: self.wgt
+              , layoutPriority: 9
+            });
+            if (!hideSidebar){
+              gui.addChild(self.stub);
+            };
           });
-          gui.addChild(self.stub);
         });
       };
       

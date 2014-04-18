@@ -7,6 +7,7 @@ define([
   , "dojo/_base/array"
   , "./X11"
   , "client/connection"
+  , "main/config"
 ], function(
   declare
   , Tree
@@ -16,6 +17,7 @@ define([
   , array
   , X11
   , connection
+  , config
 ){
   return declare([
     Tree
@@ -61,6 +63,28 @@ define([
       });
     }
     
+    , openX11Tab: function(){
+      var self = this;
+      config.get("hide-contenttabs").then(function(hideTabs){
+        var tabs = moduleLoader.getModule("modules/ContentTabs");
+        var tab = new X11({
+          "module": self.module
+          , "region": "center"
+        });
+        if (hideTabs){
+          var gui = moduleLoader.getModule("modules/Gui");
+          gui.addChild(tab);
+        }else{
+          tabs.addChild(tab);
+        };
+        tab.on("close", function(){
+          delete self.tabs["x11"];
+        });
+        tabs.selectChild(tab);
+        self.tabs["x11"] = tab;
+      });
+    }
+    
     , onClick: function(item, node, evt){
       var self = this;
       var tabs = moduleLoader.getModule("modules/ContentTabs");
@@ -82,15 +106,7 @@ define([
           self._addTerm(term.termid);
         });
       }else if (item.id == "x11"){
-        var tab = new X11({
-          "module": self.module
-        });
-        tabs.addChild(tab);
-        tab.on("close", function(){
-          delete self.tabs["x11"];
-        });
-        tabs.selectChild(tab);
-        self.tabs["x11"] = tab;
+        self.openX11Tab();
         
       }else if (item.id == "x264"){
         var tab = new X264({

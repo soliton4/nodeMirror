@@ -83,9 +83,13 @@ define([
           , controllerWidget: (self.tabPosition == "top" || self.tabPosition == "bottom") && !self.nested ?
 							ScrollingTabController : TabController
         });
-        gui.addChild(self.wgt);
-        self._setChilds();
-        def.resolve();
+        config.get("hide-contenttabs").then(function(hideTabs){
+          if (!hideTabs){
+            gui.addChild(self.wgt);
+          };
+          self._setChilds();
+          def.resolve();
+        });
       });
       return def.promise;
     }
