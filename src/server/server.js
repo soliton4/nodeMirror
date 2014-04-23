@@ -115,26 +115,26 @@ define([
                    
                    var auth;
 
-                   /*if (nodeMirrorConfig.username){
+                   if (nodeMirrorConfig.username){
                      console.log("username present");
                      auth = express.basicAuth(nodeMirrorConfig.username, nodeMirrorConfig.password);
                      use(relativeStr, auth);
                    }else{
                      auth = undefined; /*express.basicAuth(function(user, pass) {
                        return true;
-                     });* /
-                   };*/
+                     });*/
+                   };
                    
                    var get = function(par1, par2, par3, par4){
                      if (auth){
-                       mirror.get(par1, auth, par2, par3, par4);
+                       mirror.get(par1, auth, par2);
                      }else{
                        mirror.get(par1, par2);
                      };
                    };
                    var put = function(par1, par2, par3, par4){
                      if (auth){
-                       mirror.put(par1, auth, par2, par3, par4);
+                       mirror.put(par1, auth, par2);
                      }else{
                        mirror.put(par1, par2);
                      };
@@ -152,10 +152,10 @@ define([
                        maxAge : null
                      }
                    }));
-
-console.log(relativeStr);
+                   
+                   console.log(relativeStr);
                    use(relativeStr, express.bodyParser());
-
+                   
                    put(relativeStr + 'apicall', function(req, res){
                      try{
                        remoteCaller.serverCall(req.body).then(function(par){
