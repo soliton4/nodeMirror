@@ -109,22 +109,42 @@ define([
                      server = http.createServer(mirror);
                    };
                    
+                   var use = function(par1, par2, par3, par4){
+                     mirror.use(par1, par2);
+                   };
+                   
                    var auth;
 
-                   if (nodeMirrorConfig.username){
+                   /*if (nodeMirrorConfig.username){
+                     console.log("username present");
                      auth = express.basicAuth(nodeMirrorConfig.username, nodeMirrorConfig.password);
-                     mirror.use(relativeStr, auth);
+                     use(relativeStr, auth);
                    }else{
-                     auth = express.basicAuth(function(user, pass) {
+                     auth = undefined; /*express.basicAuth(function(user, pass) {
                        return true;
-                     });
+                     });* /
+                   };*/
+                   
+                   var get = function(par1, par2, par3, par4){
+                     if (auth){
+                       mirror.get(par1, auth, par2, par3, par4);
+                     }else{
+                       mirror.get(par1, par2);
+                     };
+                   };
+                   var put = function(par1, par2, par3, par4){
+                     if (auth){
+                       mirror.put(par1, auth, par2, par3, par4);
+                     }else{
+                       mirror.put(par1, par2);
+                     };
                    };
 
                    var cookieParser = express.cookieParser('my session secret');
                    var sessionStore = new connect.middleware.session.MemoryStore();
 
-                   mirror.use(relativeStr, cookieParser);
-                   mirror.use(relativeStr, express.session({
+                   use(relativeStr, cookieParser);
+                   use(relativeStr, express.session({
                      store: sessionStore,
                      cookie : {
                        path : '/',
@@ -134,9 +154,9 @@ define([
                    }));
 
 console.log(relativeStr);
-                   mirror.use(relativeStr, express.bodyParser());
+                   use(relativeStr, express.bodyParser());
 
-                   mirror.put(relativeStr + 'apicall', auth, function(req, res){
+                   put(relativeStr + 'apicall', function(req, res){
                      try{
                        remoteCaller.serverCall(req.body).then(function(par){
                          res.send({ result: par });
@@ -149,13 +169,13 @@ console.log(relativeStr);
                      };
                    });
 
-                   mirror.put(relativeStr + "reconnect", auth, function(req, res){
+                   put(relativeStr + "reconnect", function(req, res){
                      //console.log("----------------- recon request");
                      res.setHeader('Content-Type', "application/json");
                      res.send({ reconnected: true });
                    });
 
-                   mirror.get(relativeStr + 'download', auth, function(req, res){
+                   get(relativeStr + 'download', function(req, res){
                      console.log("download:" + req.query.id);
                      var filenameStr = nameTranslator.fileName(req.query.id);
                      console.log(filenameStr);
@@ -187,7 +207,7 @@ console.log(relativeStr);
                    });
 
                    /*jshint sub:true*/
-                   mirror.get(relativeStr, auth, function(req, res){
+                   get(relativeStr, function(req, res){
                      res.setHeader('Content-Type', "text/html");
                      fs.readFile(nodeMirrorConfig["static"] + "/index.html", function(err, data){
                        if (err){
@@ -200,10 +220,10 @@ console.log(relativeStr);
                      });
                    });
 
-                   mirror.use(relativeStr, express.limit(100000000000));
+                   use(relativeStr, express.limit(100000000000));
 
                    // access to the choosen directory
-                   mirror.use(relativeStr + "file/", express["static"](dirStr));
+                   use(relativeStr + "file/", express["static"](dirStr));
 
 
                    nodeControl.gpregister.avconv = {};
@@ -212,7 +232,7 @@ console.log(relativeStr);
                    if (nodeMirrorConfig.x11terminal){
 
                      // x11 forwarding
-                     mirror.get(relativeStr + "x11.stream", auth, function(req, res){
+                     get(relativeStr + "x11.stream", function(req, res){
                        req.connection.setTimeout(0);
 
                        var runner;
@@ -311,7 +331,7 @@ console.log(relativeStr);
                      
                      // --- x11 audio
                      
-                     mirror.get(relativeStr + "x11.audio", auth, function(req, res){
+                     get(relativeStr + "x11.audio", function(req, res){
                        req.connection.setTimeout(0);
 
                        var runner;
@@ -427,7 +447,7 @@ console.log(relativeStr);
 
 
                    // access to app files
-                   mirror.use(relativeStr, express["static"](nodeMirrorConfig["static"]));
+                   use(relativeStr, express["static"](nodeMirrorConfig["static"]));
 
 
                    if (!nodeMirrorConfig.server){

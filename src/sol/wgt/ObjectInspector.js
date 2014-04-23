@@ -103,7 +103,13 @@ define([
             ret += "undefined";
             return ret;
           };
-          ret += "unsoported type: " + (typeof v);
+          if (typeof v === "boolean"){
+            if (v){
+              return "true";
+            };
+            return "false";
+          };
+          ret += "unsupported type: " + (typeof v);
           return ret;
         }
       };
