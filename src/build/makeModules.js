@@ -479,7 +479,7 @@ modulizer.convertFile(pegSrcPath + "PEG.js", {
   "return": "PEG"
 }, pegDestPath + "Peg.js", errFun);
 
-    
+/*    
 // avc
 var avcSrcPath = genericDir + "Broadway/Player/";
 var avcDestPath = srcDir + "avc/";
@@ -566,4 +566,7 @@ modulizer.convertFile(avcSrcPath + "canvas.js", {
       });
     });
     
+  */
+    
 });
+    

@@ -1,9 +1,11 @@
-var a = [];
+var v;
 
-a.push("x");
-a.push("y");
-a.push(function(){
-  return this[0];
-});
+var f = function(){
+  
+  v = for(var i; i < 10; ++i){};
+};
+f();
 
-console.log(a[2]());
+console.log(v);
+
+//
