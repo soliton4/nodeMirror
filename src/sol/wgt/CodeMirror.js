@@ -8,6 +8,8 @@ define([
   //, "jshint/jshint"
   , "codemirror/addon/hint/all"
   , "dojo/_base/array"
+  , "dojo/dom-style"
+  
   , "codemirror/addon/display/fullscreen"
   , "codemirror/addon/comment/comment"
 ], function(
@@ -20,7 +22,7 @@ define([
   //, JSHINT
   , allHints
   , array
-  , commentAddOn
+  , domStyle
 ){
 
   var cmOptions = {
@@ -63,9 +65,9 @@ define([
   ], {
     
     extraKeys: {
-        "F11": function(cm) {
+        /*("F11": function(cm) {
           cm.setOption("fullScreen", !cm.getOption("fullScreen"));
-        },
+        },*/
         "Esc": function(cm) {
           if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
         }
@@ -193,6 +195,10 @@ define([
       
     }
     
+    , refresh: function(){
+      this.mirror.refresh();
+    }
+    
     , setCursor: function(){
       this.mirror.getDoc().setCursor.apply(this.mirror.getDoc(), arguments);
     }
@@ -234,6 +240,12 @@ define([
     
     , _getValueAttr: function(){
       return this.mirror.getDoc().getValue();
+    }
+    
+    , _setTextsizeAttr: function(value){
+      domStyle.set(this.domNode, "font-size", value);
+      this.resize();
+      this.mirror.refresh();
     }
     
     , resize: function(changeSize){

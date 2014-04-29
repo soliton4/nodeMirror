@@ -1,16 +1,23 @@
 .codeMirrorSettingsTable {
-  width: 400px;
+  width: 650px;
 }
-
-.CodeMirror-matchingtag { 
-  background: rgba(255, 150, 0, .3);
+/*.dijitSliderBarContainerH*/
+.CodeMirror-matchingtag {
+  background: rgba(255, 150, 0, 0.3);
 }
-
 .cm-trailingspace {
-        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAACCAYAAAB/qH1jAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3QUXCToH00Y1UgAAACFJREFUCNdjPMDBUc/AwNDAAAFMTAwMDA0OP34wQgX/AQBYgwYEx4f9lQAAAABJRU5ErkJggg==);
-        background-position: bottom left;
-        background-repeat: repeat-x;
-      }
-
-
-.CodeMirror pre.CodeMirror-placeholder { opacity: 0.5; }
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAACCAYAAAB/qH1jAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3QUXCToH00Y1UgAAACFJREFUCNdjPMDBUc/AwNDAAAFMTAwMDA0OP34wQgX/AQBYgwYEx4f9lQAAAABJRU5ErkJggg==);
+  background-position: bottom left;
+  background-repeat: repeat-x;
+}
+.CodeMirror pre.CodeMirror-placeholder {
+  opacity: 0.5;
+}
+.content.text .sudofullscreen .CodeMirror-focused {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  z-index: 100;
+}

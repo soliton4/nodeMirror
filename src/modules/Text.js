@@ -21,6 +21,8 @@ define([
   , "main/clientOnly!dijit/form/Button"
   , "main/clientOnly!dijit/DropDownMenu"
   , "main/clientOnly!dijit/MenuItem"
+  , "dojo/dom-class"
+  , "dojo/dom-style"
   
   , "main/clientOnly!codemirror/mode/allModes"
   , "main/clientOnly!codemirror/addon/dialog/dialog"
@@ -65,6 +67,8 @@ define([
   , Button
   , DropDownMenu
   , MenuItem
+  , domClass
+  , domStyle
 ){
   
   var additionalSubtypes = {
@@ -167,7 +171,13 @@ define([
         , gutters: ["CodeMirror-lint-markers", "CodeMirror-linenumbers", "CodeMirror-foldgutter"]
         , placeholder: "empty File..."
         , extraKeys: {
-          "Ctrl-S": lang.hitch(this, "savePs")
+          "Ctrl-S": lang.hitch(this, "savePs"),
+          "Shift-Ctrl-F11": function(){
+            self.toggleFullscreen();
+          },
+          "Esc": function(){
+            self.endFullscreen();
+          }
         }
       }));
       this.addChild(this.mirror);
@@ -243,6 +253,32 @@ define([
       if (this._started){ return; };
       this.inherited(arguments);
       setTimeout(lang.hitch(this.mirror, "focus"), 0);
+    }
+    
+    , toggleFullscreen: function(){
+      if (this._fullscreen){
+        domClass.remove(this.mirror.domNode, "sudofullscreen");
+        this.addChild(this.mirror);
+      }else{
+        domClass.add(this.mirror.domNode, "sudofullscreen");
+        this.mirror.placeAt(document.body);
+        domStyle.set(this.mirror.domNode, "top", "0px");
+        domStyle.set(this.mirror.domNode, "left", "0px");
+        domStyle.set(this.mirror.domNode, "width", "100%");
+        domStyle.set(this.mirror.domNode, "height", "100%");
+      };
+      this._fullscreen = !this._fullscreen;
+      this.mirror.resize();
+      this.mirror.refresh();
+      this.mirror.focus();
+    }
+    , endFullscreen: function(){
+      domClass.remove(this.mirror.domNode, "sudofullscreen");
+      this._fullscreen = false;
+      this.addChild(this.mirror);
+      this.mirror.resize();
+      this.mirror.refresh();
+      this.mirror.focus();
     }
     
     , createMenu: function(){

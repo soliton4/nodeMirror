@@ -10,6 +10,8 @@ define([
   , "main/config"
   , "dijit/form/CheckBox"
   , "modules/text/codeMirrorSettings"
+  , "dijit/form/HorizontalSlider"
+  , "sol/convenient/Delayed"
   
   , "codemirror/keymap/emacs"
   , "codemirror/keymap/vim"
@@ -25,6 +27,8 @@ define([
   , config
   , CheckBox
   , codeMirrorSettings
+  , HorizontalSlider
+  , Delayed
 ){
   Dlg = declare([TooltipDialog], {
     buildRendering: function(){
@@ -133,6 +137,31 @@ define([
         , setting: "autoComplete"
         , valueSet: valueSetCheckBoxFun
         , onChange: onChangeCheckBoxFun
+        
+      }), new HorizontalSlider({
+        label: "Text Size"
+        , setting: "textsize"
+        , value: 10
+        , valueSet: function(parValue){
+          this.set("value", parValue);
+          this.lastValue = parValue;
+        }
+        , onChange: onChangeFun
+        , onMouseMove: function(){
+          if (!this.delayedUpdate){
+            var self = this;
+            this.delayedUpdate = new Delayed({delay: 100}, function(){
+              var v = self.get("value");
+              if (v == self.lastValue){
+                return;
+              };
+              self.onChange(v);
+            });
+          };
+          this.delayedUpdate.exec();
+        }
+        , minimum: 1
+        , maximum: 50
         
       })];
       
