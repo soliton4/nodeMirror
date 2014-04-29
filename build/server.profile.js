@@ -51,6 +51,9 @@ var profile = (function(){
         }, {
           name: "promiseland"
         , location: "promiseland"
+        }, {
+          name: "peg"
+        , location: "peg"
         }],
         staticHasFeatures: {
           "host-node": 1 // Ensure we "force" the loader into Node.js mode
@@ -112,6 +115,7 @@ var profile = (function(){
                 , "promiseland/_parser"
                 , "promiseland/md5"
                 , "modules/terminal/AvconvRunner"
+                , "peg/Peg"
                 ]
             }
         }

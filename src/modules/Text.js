@@ -21,8 +21,8 @@ define([
   , "main/clientOnly!dijit/form/Button"
   , "main/clientOnly!dijit/DropDownMenu"
   , "main/clientOnly!dijit/MenuItem"
-  , "dojo/dom-class"
-  , "dojo/dom-style"
+  , "main/clientOnly!dojo/dom-class"
+  , "main/clientOnly!dojo/dom-style"
   
   , "main/clientOnly!codemirror/mode/allModes"
   , "main/clientOnly!codemirror/addon/dialog/dialog"

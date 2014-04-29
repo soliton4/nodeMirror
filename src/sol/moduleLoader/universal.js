@@ -9,12 +9,12 @@ define([], function(){
     }
     , createModule: function(par){
       var code = this.headStr();
-      if (!par.export){
+      if (!par["export"]){
         code += "return " + par.code;
       }else{
         code += par.code;
         code += ";\n";
-        code += "return " + par.export + ";\n";
+        code += "return " + par["export"] + ";\n";
       };
       code += this.footStr();
       return code;
