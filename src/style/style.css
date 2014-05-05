@@ -5,9 +5,9 @@
 @import url('../dijit/themes/nihilo/nihilo.css');
 @import url('../dojox/editor/plugins/resources/css/Save.css');
 @import url('../dgrid/css/skins/claro.css');
-@import url('../codemirror/codemirror.css');
-@import url('../codemirror/addon/all.css');
-@import url('../codemirror/theme/all.css');
+@import url('../codemirror4/lib/codemirror.css');
+@import url('../codemirror4/addon/all.css');
+@import url('../codemirror4/theme/all.css');
 @import url('../modules/style.css');
 @import url('../client/terminal.css');
 @import url('../dgrid/css/dgrid.css');

@@ -5,9 +5,8 @@ define([
   , "dojo/_base/array"
   , "dojo/_base/lang"
   , "sol/wgt/CodeMirror"
-  , "codemirror/theme/all"
+  , "codemirror4/theme/all"
   , "main/config"
-  //, "modules/text/codeMirrorSettings"
   
 ], function(
   declare
@@ -18,7 +17,6 @@ define([
   , CodeMirror
   , allThemes
   , config
-  //, codeMirrorSettings
 ){
   
   return declare([], {

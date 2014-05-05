@@ -1,7 +1,7 @@
 define([
   "dojo/_base/declare"
   , "dijit/TooltipDialog"
-  , "main/clientOnly!codemirror/theme/all"
+  , "main/clientOnly!codemirror4/theme/all"
   , "main/clientOnly!dijit/form/Select"
   , "dojo/_base/array"
   , "dojo/_base/lang"
@@ -13,8 +13,8 @@ define([
   , "dijit/form/HorizontalSlider"
   , "sol/convenient/Delayed"
   
-  , "codemirror/keymap/emacs"
-  , "codemirror/keymap/vim"
+  , "codemirror4/keymap/emacs"
+  , "codemirror4/keymap/vim"
 ], function(
   declare
   , TooltipDialog
@@ -126,11 +126,11 @@ define([
         , valueSet: valueSetCheckBoxFun
         , onChange: onChangeCheckBoxFun
         
-      }), new CheckBox({
+      /*}), new CheckBox({
         label: "Code folding - float feature"
         , setting: "foldFloat"
         , valueSet: valueSetCheckBoxFun
-        , onChange: onChangeCheckBoxFun
+        , onChange: onChangeCheckBoxFun*/
         
       }), new CheckBox({
         label: "Ctrl+Space auto complete"

@@ -26,8 +26,8 @@ define([
   // codemirror
   
   
-  srcPath = genericDir + "CodeMirror/";
-  destPath = srcDir + "codemirror/";
+  srcPath = srcDir + "codemirror4/";
+  destPath = srcDir + "codemirror4/";
 
 var errFun = function(err){
   if (err){
@@ -36,7 +36,7 @@ var errFun = function(err){
 };
   
   
-  modulizer.convertFile(srcPath + "lib/codemirror.js", {
+  /*modulizer.convertFile(srcPath + "lib/codemirror.js", {
     "return": "CodeMirror"
   }, destPath + "CodeMirror.js", errFun);
 
@@ -55,9 +55,9 @@ var errFun = function(err){
     }]
     , "return": "CodeMirror.modeInfo"
   }, srcDir + "main/codemirror/meta.js", errFun);
+  */
   
-  
-  fs.readFile(srcPath + "lib/codemirror.css", function(err, data){
+  /*fs.readFile(srcPath + "lib/codemirror.css", function(err, data){
     if (err){
       console.log(err);
       return;
@@ -68,7 +68,7 @@ var errFun = function(err){
         console.log(err);
       };
     });
-  });
+  });*/
 
 var standardConfig = {
   require: [{
@@ -128,10 +128,10 @@ var standardConfig = {
   var modeDir = srcPath + "mode";
   var modeDestDir = destPath + "mode";
   
-  var del = new Deferred();
+  //var del = new Deferred();
   
   // delete all in mode dir
-  fs.readdir(modeDestDir, function(err, data){
+  /*fs.readdir(modeDestDir, function(err, data){
     if (err){
       console.log(err);
       return;
@@ -141,9 +141,9 @@ var standardConfig = {
       if (solString.endsWith(parFileName, ".js")){
         var def = new Deferred();
         defs.push(def);
-        fs.unlink(modeDestDir + "/" + parFileName, function(){
+        /*fs.unlink(modeDestDir + "/" + parFileName, function(){
           def.resolve();
-        });
+        });* /
       };
     });
     if (defs.length){
@@ -153,11 +153,12 @@ var standardConfig = {
     }else{
       del.resolve();
     };
-  });
+  });*/
   
-  var allModesStr = "define([\"codemirror/CodeMirror\"";
+  var allModesStr = "define([";
+  var allModesStarted = false;
   
-  del.then(function(){
+  //del.then(function(){
     
     fs.readdir(modeDir, function(err, data){
       if (err){
@@ -174,6 +175,10 @@ var standardConfig = {
             def.resolve();
             return;
           };
+          if (parDirName == "dylan"){
+            def.resolve();
+            return;
+          };
           if (parStat.isDirectory()){
             var srcFile = modeDir + "/" + parDirName + "/" + parDirName + ".js";
             fs.exists(srcFile, function (exists) {
@@ -181,8 +186,12 @@ var standardConfig = {
                 def.resolve();
                 return;
               };
-              allModesStr += ", \"codemirror/mode/" + parDirName + "\"";
-              modulizer.convertFile(srcFile, getConfig(srcFile), modeDestDir + "/" + parDirName + ".js", errFun);
+              if (allModesStarted){
+                allModesStr += ", ";
+              };
+              allModesStr += "\"./" + parDirName + "/" + parDirName + "\"";
+              allModesStarted = true;
+              //modulizer.convertFile(srcFile, getConfig(srcFile), modeDestDir + "/" + parDirName + ".js", errFun);
               def.resolve();
             });
           }else{
@@ -195,7 +204,7 @@ var standardConfig = {
         fs.writeFile(modeDestDir + "/allModes.js", allModesStr);
       });
     });
-  });
+  //});
   
   var srcAddOnDir = srcPath + "addon/";
   var destAddOnDir = destPath + "addon/";
@@ -239,9 +248,9 @@ var standardConfig = {
             });
           }else{
             if (solString.endsWith(parFile, ".js")){
-              modulizer.convertFile(completeSrc + parFile, getConfig(parFile), completeDest + parFile, errFun);
+              //modulizer.convertFile(completeSrc + parFile, getConfig(parFile), completeDest + parFile, errFun);
               def.resolve();
-            }else if (solString.endsWith(parFile, ".css")){
+            }else if (parFile != "all.css" && solString.endsWith(parFile, ".css")){
               cssAddOns += "@import url(\"" + parDir + parFile + "\");\n";
               fs.readFile(completeSrc + parFile, function(err, data){
                 def.resolve();
@@ -289,7 +298,7 @@ var standardConfig = {
         if (parFile == "ambiance-mobile.css"){
           return;
         };
-        if (solString.endsWith(parFile, ".css")){
+        if (parFile != "all.css" && solString.endsWith(parFile, ".css")){
           allThemesStr += "@import url(\"" + parFile + "\");\n";
           if (allThemesJsStarted){
             allThemesJsStr += ", ";
@@ -314,7 +323,7 @@ var standardConfig = {
 // keymaps
   
   
-modulizer.convertFile(genericDir + "CodeMirror/keymap/extra.js", standardConfig
+/*modulizer.convertFile(genericDir + "CodeMirror/keymap/extra.js", standardConfig
                       , srcDir + "codemirror/keymap/extra.js", errFun);
 
 modulizer.convertFile(genericDir + "CodeMirror/keymap/emacs.js", standardConfig
@@ -322,7 +331,7 @@ modulizer.convertFile(genericDir + "CodeMirror/keymap/emacs.js", standardConfig
 
   modulizer.convertFile(genericDir + "CodeMirror/keymap/vim.js", standardConfig
                       , srcDir + "codemirror/keymap/vim.js", errFun);
-  
+  */
   
   
   
@@ -330,20 +339,12 @@ modulizer.convertFile(genericDir + "CodeMirror/keymap/emacs.js", standardConfig
   
   
   
-  var allHintsJsStr = "define([\"codemirror/CodeMirror\"";
+  var allHintsJsStr = "define([";
   var allHintsArStr = "[";
-  //var allHintsJsStr = "define([], function(){ return [";
   var allHintsJsStarted = false;
   
   var srcHintDir = srcPath + "addon/hint/";
   var destHintDir = destPath + "addon/hint/";
-  fs.mkdir(destHintDir, null, function(err){
-    if (err){
-      if (err.errno != 47){
-        console.log(err);
-        return;
-      };
-    };
     fs.readdir(srcHintDir, function(err, data){
       if (err){
         console.log(err);
@@ -354,9 +355,10 @@ modulizer.convertFile(genericDir + "CodeMirror/keymap/emacs.js", standardConfig
           //allThemesStr += "@import url(\"" + parFile + "\");\n";
           if (allHintsJsStarted){
             allHintsArStr += ", ";
+            allHintsJsStr += ", ";
           };
           allHintsArStr += "\"" + solString.cutEnd(parFile, 3) + "\"";
-          allHintsJsStr += ", \"codemirror/addon/hint/";
+          allHintsJsStr += "\"./";
           allHintsJsStr += solString.cutEnd(parFile, 3);
           allHintsJsStr += "\"";
           
@@ -376,7 +378,6 @@ modulizer.convertFile(genericDir + "CodeMirror/keymap/emacs.js", standardConfig
       allHintsJsStr += "; });";
       fs.writeFile(destHintDir + "all.js", allHintsJsStr);
     });
-  });
 
 
   
@@ -384,19 +385,12 @@ modulizer.convertFile(genericDir + "CodeMirror/keymap/emacs.js", standardConfig
   
   
   
-  var allLintsJsStr = "define([\"codemirror/CodeMirror\"";
+  var allLintsJsStr = "define([";
   var allLintsArStr = "[";
   var allLintsJsStarted = false;
   
   var srcLintDir = srcPath + "addon/lint/";
   var destLintDir = destPath + "addon/lint/";
-  fs.mkdir(destLintDir, null, function(err){
-    if (err){
-      if (err.errno != 47){
-        console.log(err);
-        return;
-      };
-    };
     fs.readdir(srcLintDir, function(err, data){
       if (err){
         console.log(err);
@@ -408,9 +402,10 @@ modulizer.convertFile(genericDir + "CodeMirror/keymap/emacs.js", standardConfig
           if (parFile != "coffeescript-lint.js"){
             if (allLintsJsStarted){
               allLintsArStr += ", ";
+              allLintsJsStr += ", ";
             };
             allLintsArStr += "\"" + solString.cutEnd(parFile, 3) + "\"";
-            allLintsJsStr += ", \"codemirror/addon/lint/";
+            allLintsJsStr += "\"./";
             allLintsJsStr += solString.cutEnd(parFile, 3);
             allLintsJsStr += "\"";
           };
@@ -431,7 +426,6 @@ modulizer.convertFile(genericDir + "CodeMirror/keymap/emacs.js", standardConfig
       allLintsJsStr += "; });";
       fs.writeFile(destLintDir + "all.js", allLintsJsStr);
     });
-  });
 
   
   

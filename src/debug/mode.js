@@ -1,6 +1,6 @@
 define([
   "dojo/_base/declare"
-  , "codemirror/CodeMirror"
+  , "codemirror4/lib/codemirror"
 ], function(
   declare
   , CodeMirror

@@ -33,6 +33,7 @@ define([
     , ".cuf": "text/x-fortran"
     , ".cu": "text/x-c"
     , ".pland": "text/promiseland"
+    , ".plnd": "text/promiseland"
   };
 
   var forceTextExtensions = {
@@ -43,6 +44,7 @@ define([
     , ".cuf": "text/x-fortran"
     , ".cu": "text/x-c"
     , ".pland": "text/promiseland"
+    , ".plnd": "text/promiseland"
   };
   
   var files;

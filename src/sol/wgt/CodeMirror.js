@@ -4,14 +4,16 @@ define([
   , "dijit/_WidgetBase"
   , "dojo/dom-geometry"
   , "sol/convenient/Delayed"
-  , "codemirror/CodeMirror"
-  //, "jshint/jshint"
-  , "codemirror/addon/hint/all"
+  , "codemirror4/lib/codemirror"
+  , "codemirror4/addon/hint/all"
   , "dojo/_base/array"
   , "dojo/dom-style"
+  , "jshint/jshint"
+  , "codemirror/lint/csslint"
+  , "codemirror/lint/jsonlint"
   
-  , "codemirror/addon/display/fullscreen"
-  , "codemirror/addon/comment/comment"
+  , "codemirror4/addon/display/fullscreen"
+  , "codemirror4/addon/comment/comment"
 ], function(
   declare
   , lang
@@ -23,8 +25,15 @@ define([
   , allHints
   , array
   , domStyle
+  , jshint
+  , CSSLint
+  , jsonlint
 ){
-
+  
+  CodeMirror.JSHINT = jshint;
+  window.CSSLint = CSSLint;
+  window.jsonlint = jsonlint;
+  
   var cmOptions = {
     lineNumbers: false
     , mode: undefined
