@@ -15,6 +15,10 @@
 	path = src/promiseland
 	url = https://github.com/soliton4/promiseland.git
     
+[submodule "src/sol"]
+	path = src/sol
+	url = https://github.com/soliton4/sol-amd.git
+    
 [submodule "generic-js/CodeMirror-original"]
 	path = generic-js/CodeMirror-original
 	url = https://github.com/marijnh/CodeMirror
