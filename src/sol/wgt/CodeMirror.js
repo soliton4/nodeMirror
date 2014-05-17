@@ -109,6 +109,7 @@ define([
     , buildRendering: function(){
       this.inherited(arguments);
       this.mirror = new CodeMirror(this.domNode);
+      this.mirror.setOption("mode", undefined);
       if (this.value){
         this.mirror.setValue(this.value);
       };

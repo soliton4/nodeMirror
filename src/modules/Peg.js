@@ -147,7 +147,7 @@ define([
       var parserCode;
       
       try {
-        parserCode = Peg.buildParser(parCode, {output: "source", trackLineAndColumn: true});
+        parserCode = Peg.buildParser(parCode, {output: "source", trackLineAndColumn: true, cache: true});
         parserCode = moduleUniversal.createModule({
           code: parserCode
         });

@@ -80,13 +80,13 @@ define([
       this.getJsDlg.show();
       var parserCode = this.parent.mirror.get("value");
       
-      this.getJsDlg.mirror.set("value", Peg.buildParser(parserCode, {output: "source", trackLineAndColumn: true}));
+      this.getJsDlg.mirror.set("value", Peg.buildParser(parserCode, {output: "source", trackLineAndColumn: true, cache: true}));
     }
     
     , parse: function(){
       if (!this.parserCode){
         this.parserCode = this.parent.mirror.get("value");
-        this.parser = Peg.buildParser(this.parserCode, {trackLineAndColumn: true});
+        this.parser = Peg.buildParser(this.parserCode, {trackLineAndColumn: true, cache: true});
       };
       
       try{
@@ -100,7 +100,7 @@ define([
     }
     , parserCodeChanged: function(){
       this.parserCode = this.parent.mirror.get("value");
-      this.parser = Peg.buildParser(this.parserCode, {trackLineAndColumn: true});
+      this.parser = Peg.buildParser(this.parserCode, {trackLineAndColumn: true, cache: true});
     }
   });
 });

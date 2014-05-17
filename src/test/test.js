@@ -1,10 +1,11 @@
-var v;
-
-var f = function(){
+var v = function(){
   
-  v = for(var i; i < 10; ++i){};
+  var x;
+} +  function(){
+  
+  var y;
 };
-f();
+
 
 console.log(v);
 
