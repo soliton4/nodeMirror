@@ -40,3 +40,6 @@
 [submodule "generic-js/Broadway"]
 	path = generic-js/Broadway
 	url = https://github.com/mbebenita/Broadway
+[submodule "generic-js/peg8/pegjs"]
+	path = generic-js/peg8/pegjs
+	url = https://github.com/soliton4/pegjs.git
