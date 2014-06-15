@@ -14,15 +14,32 @@
   
   function validator(text, options) {
     var output = [];
+    
     parser.parse(text).then(function(r){
+      var i;
+      var l;
+      var w;
       if (r && r.warnings){
-        var i = 0;
-        var l = r.warnings.length;
+        i = 0;
+        l = r.warnings.length;
         for (i; i < l; ++i){
-          var w = r.warnings[i];
+          w = r.warnings[i];
           output.push({
             message: w.msg,
             severity: "warning",
+            from: CodeMirror.Pos(w.line - 1, w.column - 1),
+            to: CodeMirror.Pos(w.line - 1, w.column + 1)
+          });
+        };
+      };
+      if (r && r.errors){
+        i = 0;
+        l = r.errors.length;
+        for (i; i < l; ++i){
+          w = r.errors[i];
+          output.push({
+            message: w.msg,
+            severity: "error",
             from: CodeMirror.Pos(w.line - 1, w.column - 1),
             to: CodeMirror.Pos(w.line - 1, w.column + 1)
           });

@@ -20,7 +20,7 @@
     "optimist": "*",
     "runtime-configuration": "*",
     "less": "*",
-    "session.socket.io": "*",
+    "session.socket.io": "0.9.x",
     "connect": "*",
     "npm": "*",
     "extend": "*",
