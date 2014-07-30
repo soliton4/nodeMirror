@@ -1,0 +1,7 @@
+var othermodule = require "path/to/other/module";
+
+*othermodule.promiseFun();
+
+return {
+  name: "my module"
+};

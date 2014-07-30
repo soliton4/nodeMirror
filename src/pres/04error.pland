@@ -1,0 +1,28 @@
+try{
+
+var result;
+
+if (*userinput()){
+  result = *readFile();
+  
+}else{
+  result = *postProcess(*readFromNetwork());
+  
+};
+
+restOfProgram(result);
+
+}catch(e){
+  handleError(e);
+};
+
+
+
+
+
+
+
+
+
+
+// show compileall

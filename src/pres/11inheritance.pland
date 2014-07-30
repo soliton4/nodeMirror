@@ -1,0 +1,18 @@
+
+class C1 {
+  a(){
+    return 1;
+  },
+  b: 3
+};
+
+class C2 extends C1 {
+  a(){
+    return inherited() + 1;
+  }
+};
+
+var a = new C2();
+
+console.log(a.b);
+console.log(a.a());

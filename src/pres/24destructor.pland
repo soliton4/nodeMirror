@@ -1,0 +1,26 @@
+var cnt = 0;
+
+class type track C1 {
+  constructor: (){
+    cnt++;
+    this.concnt = cnt;
+  },
+  concnt: 0,
+  destroy: (){
+    cnt--;
+  }
+};
+
+((){
+  C1 a;
+  a = new C1();
+  console.log(a.concnt);
+
+  a = new C1();
+  console.log(a.concnt);
+
+  a = new C1();
+  console.log(a.concnt);
+})()
+
+console.log("overall cnt: " + cnt);

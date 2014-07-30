@@ -1,0 +1,8 @@
+var myModule = {
+  somthing: "something",
+  someFun: (){
+    console.log("some fun");
+  }
+};
+
+return myModule;

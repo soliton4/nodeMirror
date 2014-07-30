@@ -1,0 +1,10 @@
+var src = require "./26dynamicSrc";
+
+
+var fun = <{ types: { C1: src.C1, C2: src.C2 } }> function(){
+  C1 v;
+  C2 instance = new C2();
+  v = instance.m;
+};
+
+fun();

@@ -1,0 +1,20 @@
+class type C1 {
+  a: 1,
+  b: 2,
+  c: (){
+    console.log("do something") ;
+  }
+};
+
+class type C2 {
+  a: 1,
+  b: 2,
+  c: (){
+    console.log("do something") ;
+  }
+};
+
+C1 a = new C1();
+C2 b = new C2();
+
+a = b;

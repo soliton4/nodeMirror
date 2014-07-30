@@ -1,0 +1,18 @@
+var cnt = 0;
+
+class type C1 {
+  constructor: (){
+    cnt++;
+    this.concnt = cnt;
+  },
+  concnt: 0
+};
+
+C1 a;
+a = new C1();
+console.log(a.concnt);
+
+a = new C1();
+console.log(a.concnt);
+
+console.log(cnt);

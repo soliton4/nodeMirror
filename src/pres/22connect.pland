@@ -1,0 +1,21 @@
+class type Emitter {
+  event: (amount){}
+};
+
+class type Reciever {
+  eventSlot: (amount){
+    this.amount += amount;
+  },
+  
+  amount: 1
+};
+
+Emitter e = new Emitter();
+
+Reciever r = new Reciever();
+
+var c = connect e.event r.eventSlot;
+
+e.event(2);
+
+console.log(r.amount); // --> 3

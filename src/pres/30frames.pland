@@ -1,0 +1,19 @@
+var fs;
+
+exFun() exclusive "server" {
+  fs = require "fs";
+};
+
+exFun();
+
+
+var serverFun = () frame "server" {
+  var cb = new Callback();
+  var filenameStr = __dirname + "/test.txt"
+  
+  fs.readFile(filenameStr, { encoding: "utf8" }, cb);
+  return (*(cb.promise))[1];
+};
+
+console.log(*serverFun());
+

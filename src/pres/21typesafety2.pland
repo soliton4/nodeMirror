@@ -1,0 +1,25 @@
+class type C1 {
+  a: 1,
+  b: 2,
+  c: (){
+    console.log("do something") ;
+  }
+};
+
+class type C2 {
+  a: ,
+  b: 2,
+  c: (){
+    console.log("do something") ;
+  },
+  C1 typedMember: ,
+};
+
+C1 a = new C1();
+C2 b = new C2();
+
+b.typedMember = a;
+
+b.typedMember = b;
+
+b.typedMember = 1;
