@@ -253,7 +253,7 @@ define([
     }
     
     , _setTextsizeAttr: function(value){
-      domStyle.set(this.domNode, "font-size", value);
+      domStyle.set(this.domNode, "font-size", value + "px");
       this.resize();
       this.mirror.refresh();
     }
