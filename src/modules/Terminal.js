@@ -95,10 +95,10 @@ define([
     , constructor: function(){
       var self = this;
       this.socketDef = new Deferred();
+      self.handleConnection = _handleConnection;
       connection.on("connect", function(socket, session){
         self.handleConnection(socket, session);
       });
-      self.handleConnection = _handleConnection;
       
       if (has("server-modules")){
         terminal.onListChange(lang.hitch(this, "_listChanged"));

@@ -111,8 +111,6 @@ cp ../release/client/avc/workeravccodec.js ../release/nodeMirror/src/avc/
 cp ../release/client/avc/workerutil.js ../release/nodeMirror/src/avc/
 
 mkdir ../release/nodeMirror/src/promiseland
-cp ../release/client/promiseland/main.js ../release/nodeMirror/src/promiseland/
-cp ../release/client/promiseland/promiseland.js ../release/nodeMirror/src/promiseland/
-cp ../release/client/promiseland/parser.js ../release/nodeMirror/src/promiseland/
-cp ../release/client/promiseland/_parser.js ../release/nodeMirror/src/promiseland/
-cp ../release/client/promiseland/md5.js ../release/nodeMirror/src/promiseland/
+cp ../src/promiseland/main.js ../release/nodeMirror/src/promiseland/
+cp ../src/promiseland/promiseland.js ../release/nodeMirror/src/promiseland/
+cp ../src/promiseland/modules ../release/nodeMirror/src/promiseland/ -R

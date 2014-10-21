@@ -264,7 +264,7 @@ CodeMirror.defineMode("promiseland", function(config, parserConfig) {
   function pushlex(type, info) {
     var result = function() {
       var state = cx.state, indent = state.indented;
-      if (state.lexical.type == "stat") indent = state.lexical.indented;
+      //if (state.lexical.type == "stat") indent = state.lexical.indented;
       state.lexical = new JSLexical(indent, cx.stream.column(), type, null, state.lexical, info);
     };
     result.lex = true;
@@ -273,8 +273,8 @@ CodeMirror.defineMode("promiseland", function(config, parserConfig) {
   function poplex() {
     var state = cx.state;
     if (state.lexical.prev) {
-      if (state.lexical.type == ")")
-        state.indented = state.lexical.indented;
+      /*if (state.lexical.type == ")")
+        state.indented = state.lexical.indented;*/
       state.lexical = state.lexical.prev;
     }
   }
@@ -290,9 +290,11 @@ CodeMirror.defineMode("promiseland", function(config, parserConfig) {
   }
 
   function statement(type, value) {
+    var maybeop = maybeoperatorComma;
     if (type == "var") return cont(pushlex("vardef", value.length), vardef, expect(";"), poplex);
     if (type == "keyword a") return cont(pushlex("form"), expression, statement, poplex);
     if (type == "keyword b") return cont(pushlex("form"), statement, poplex);
+    if (type == "[") return cont(pushlex("]"), arrayLiteral, poplex, maybeop);
     if (type == "{") return cont(pushlex("}"), block, poplex);
     if (type == ";") return cont();
     if (type == "if") {
@@ -366,6 +368,7 @@ CodeMirror.defineMode("promiseland", function(config, parserConfig) {
     if (type == "(") return contCommasep(expressionNoComma, ")", "call", me);
     if (type == ".") return cont(property, me);
     if (type == "[") return cont(pushlex("]"), maybeexpression, expect("]"), poplex, me);
+    if (type == "{") return cont(pushlex("}"), block, poplex);
   }
   function quasi(type, value) {
     if (type != "quasi") return pass();
@@ -449,7 +452,10 @@ CodeMirror.defineMode("promiseland", function(config, parserConfig) {
     return pass(pattern, maybetype, maybeAssign, vardefCont);
   }
   function pattern(type, value) {
-    if (type == "variable") { register(value); return cont(); }
+    if (type == "variable") { 
+      register(value); 
+      return cont(); 
+    };
     if (type == "[") return contCommasep(pattern, "]");
     if (type == "{") return contCommasep(proppattern, "}");
   }
@@ -579,17 +585,22 @@ CodeMirror.defineMode("promiseland", function(config, parserConfig) {
     indent: function(state, textAfter) {
       if (state.tokenize == tokenComment) return CodeMirror.Pass;
       if (state.tokenize != tokenBase) return 0;
-      var firstChar = textAfter && textAfter.charAt(0), lexical = state.lexical;
+      
+      var firstChar = textAfter && textAfter.charAt(0);
+      var lexical = state.lexical;
+      
       // Kludge to prevent 'maybelse' from blocking lexical scope pops
-      if (!/^\s*else\b/.test(textAfter)) for (var i = state.cc.length - 1; i >= 0; --i) {
-        var c = state.cc[i];
-        if (c == poplex) lexical = lexical.prev;
-        else if (c != maybeelse) break;
-      }
-      if (lexical.type == "stat" && firstChar == "}") lexical = lexical.prev;
-      if (statementIndent && lexical.type == ")" && lexical.prev.type == "stat")
-        lexical = lexical.prev;
-      var type = lexical.type, closing = firstChar == type;
+      //if (!/^\s*else\b/.test(textAfter)) for (var i = state.cc.length - 1; i >= 0; --i) {
+      //  var c = state.cc[i];
+      //  if (c == poplex) lexical = lexical.prev;
+      //  else if (c != maybeelse) break;
+      //}
+      //if (lexical.type == "stat" && firstChar == "}") lexical = lexical.prev;
+      /*if (statementIndent && lexical.type == ")" && lexical.prev.type == "stat")
+        lexical = lexical.prev;*/
+      var type = lexical.type;
+      var closing = firstChar == type;
+      return lexical.indented + (closing ? 0 : indentUnit);
 
       if (type == "vardef") return lexical.indented + (state.lastType == "operator" || state.lastType == "," ? lexical.info + 1 : 0);
       else if (type == "form" && firstChar == "{") return lexical.indented;
@@ -602,7 +613,7 @@ CodeMirror.defineMode("promiseland", function(config, parserConfig) {
       else return lexical.indented + (closing ? 0 : indentUnit);
     },
 
-    electricChars: ":{}",
+    electricChars: "{}[]()",
     blockCommentStart: "/*",
     blockCommentEnd: "*/",
     lineComment: "//",
