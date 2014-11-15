@@ -71,7 +71,7 @@ define([
       var settingsStructure = [new Select({
         options: array.map(allThemes, function(theme){
           return {
-            label: theme
+            label: "<div class='cm-s-" + theme + " CodeMirror CodeMirrorSettingsSelect'>" + theme + " <span class='cm-operator'>+</span> <span class='cm-keyword'>keyword</span><span class='cm-bracket'>(</span><span class='cm-variable'>variable</span>.<span class='cm-property'>property</span><span class='cm-bracket'>)</span></div>"
             , value: theme
           };
         })
@@ -138,10 +138,16 @@ define([
         , valueSet: valueSetCheckBoxFun
         , onChange: onChangeCheckBoxFun
         
+      }), new CheckBox({
+        label: "hightlight current token"
+        , setting: "highlightSelectionMatches"
+        , valueSet: valueSetCheckBoxFun
+        , onChange: onChangeCheckBoxFun
+        
       }), new HorizontalSlider({
         label: "Text Size"
         , setting: "textsize"
-        , value: 10
+        , value: 13
         , valueSet: function(parValue){
           this.set("value", parValue);
           this.lastValue = parValue;
@@ -156,12 +162,14 @@ define([
                 return;
               };
               self.onChange(v);
+              console.log(v);
             });
           };
           this.delayedUpdate.exec();
         }
         , minimum: 1
         , maximum: 50
+        , discreteValues: 50
         
       })];
       

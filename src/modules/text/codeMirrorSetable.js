@@ -11,5 +11,6 @@ define([
     , foldFloat: false
     , autoComplete: true
     , keyMap: "default"
+    , highlightSelectionMatches: null
   };
 });
