@@ -42,6 +42,7 @@ define([
   , "main/clientOnly!codemirror4/addon/lint/all"
   , "main/clientOnly!codemirror4/addon/selection/active-line"
   , "main/clientOnly!codemirror4/addon/display/placeholder"
+  , "main/clientOnly!codemirror4/addon/search/match-highlighter"
   
   
 ], function(
@@ -189,7 +190,13 @@ define([
       this.ownObj(codeMirrorSettings.on("settings", function(settings){
         var s;
         for (s in settings){
-          self.mirror.set(s, settings[s]);
+          if (s == "highlightSelectionMatches"){
+            //self.mirror.set(s, settings[s] ? {showToken: /\w/} : null);
+            self.mirror.set(s, settings[s] ? {showToken: false} : null);
+            
+          }else{
+            self.mirror.set(s, settings[s]);
+          };
         };
       }));
       

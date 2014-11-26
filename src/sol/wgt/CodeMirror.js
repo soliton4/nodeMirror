@@ -51,7 +51,10 @@ define([
     , lineWrapping: false
     , keyMap: "default"
     , styleActiveLine: true
+    , highlightSelectionMatches: null
   };
+       
+       //highlightSelectionMatches: {showToken: /\w/}
   
   var hintMap = {};
   array.forEach(allHints, function(parHint){
