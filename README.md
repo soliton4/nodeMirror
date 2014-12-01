@@ -13,7 +13,7 @@ npm install node-mirror
 node node_modules/node-mirror/bin/nodeMirror.js --port 3000 --dir /home/sol/projects --username sol --password mysupersecretpassword
 ```
   
-or glboal installed
+or global installed
 ```
 nodeMirror --port 3000 --dir /home/sol/projects --username sol --password mysupersecretpassword
 ```
