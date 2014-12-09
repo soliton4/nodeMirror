@@ -52,7 +52,7 @@ define([
           var y = parseInt(ar.pop(), 10);
           var x = parseInt(ar.pop(), 10);
           def.resolve({ x: x, y: y });
-          //def.resolve({ x: 300, y: 150 });
+          //def.resolve({ x: 600, y: 400 });
           //res.end();
         });
       });
