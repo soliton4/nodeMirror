@@ -1,0 +1,38 @@
+
+what does it do
+how do i get it
+where to get more information
+
+motivation
+- a way out of callback hell
+- easily programming client / server applications
+- generally concentrate on program logic
+- making the world a better place
+
+wiki
+
+chain of thought
+callback hell
+server - client - same source
+transfering / syncing objects
+tracking objects -> destroy
+synced objects
+
+a lot of convenient stuff on the side
+
+interesting
+- writing a parser
+- getting to know js
+- js syntax goods and bads
+- strict mode
+- meta code
+- a new freedom
+- test driven development
+
+
+future
+
+direct asm.js
+extensions
+extern statements
+
