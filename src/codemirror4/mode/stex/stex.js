@@ -1,3 +1,6 @@
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: http://codemirror.net/LICENSE
+
 /*
  * Author: Constantin Jucovschi (c.jucovschi@jacobs-university.de)
  * Licence: MIT
@@ -248,7 +251,8 @@ CodeMirror.defineMode("stex", function() {
         },
         token: function(stream, state) {
             return state.f(stream, state);
-        }
+        },
+        lineComment: "%"
     };
 });
 

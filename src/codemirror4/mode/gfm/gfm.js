@@ -1,3 +1,6 @@
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: http://codemirror.net/LICENSE
+
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"), require("../markdown/markdown"), require("../../addon/mode/overlay"));
@@ -106,7 +109,8 @@ CodeMirror.defineMode("gfm", function(config, modeConfig) {
   var markdownConfig = {
     underscoresBreakWords: false,
     taskLists: true,
-    fencedCodeBlocks: true
+    fencedCodeBlocks: true,
+    strikethrough: true
   };
   for (var attr in modeConfig) {
     markdownConfig[attr] = modeConfig[attr];

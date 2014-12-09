@@ -191,8 +191,8 @@ define([
         var s;
         for (s in settings){
           if (s == "highlightSelectionMatches"){
-            //self.mirror.set(s, settings[s] ? {showToken: /\w/} : null);
-            self.mirror.set(s, settings[s] ? {showToken: false} : null);
+            self.mirror.set(s, settings[s] ? {showToken: /\w/, styleCurrent: true} : null);
+            //self.mirror.set(s, settings[s] ? {showToken: false} : null);
             
           }else{
             self.mirror.set(s, settings[s]);

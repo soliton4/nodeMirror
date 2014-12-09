@@ -1,3 +1,6 @@
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: http://codemirror.net/LICENSE
+
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
     mod(require("../../lib/codemirror"));
@@ -17,18 +20,11 @@
   var errors = [ "Missing semicolon", "Extra comma", "Missing property name",
                  "Unmatched ", " and instead saw", " is not defined",
                  "Unclosed string", "Stopping, unable to continue" ];
-  
-  
+
   function validator(text, options) {
-    var jsHintFun = CodeMirror.JSHINT;
-    if (!jsHintFun){
-      if (window && window.JSHINT && typeof window.JSHINT == "function"){
-        jsHintFun = window.JSHINT;
-      };
-    };
-    if (!jsHintFun) return [];
-    jsHintFun(text, options);
-    var errors = jsHintFun.data().errors, result = [];
+    if (!window.JSHINT) return [];
+    JSHINT(text, options);
+    var errors = JSHINT.data().errors, result = [];
     if (errors) parseErrors(errors, result);
     return result;
   }

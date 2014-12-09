@@ -30,7 +30,7 @@ define([
   , jsonlint
 ){
   
-  CodeMirror.JSHINT = jshint;
+  window.JSHINT = jshint;
   window.CSSLint = CSSLint;
   window.jsonlint = jsonlint;
   

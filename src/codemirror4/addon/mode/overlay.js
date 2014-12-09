@@ -1,3 +1,6 @@
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: http://codemirror.net/LICENSE
+
 // Utility function that allows modes to be combined. The mode given
 // as the base argument takes care of most of the normal mode
 // functionality, but a second (typically simple) mode is used, which
@@ -25,7 +28,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
         overlay: CodeMirror.startState(overlay),
         basePos: 0, baseCur: null,
         overlayPos: 0, overlayCur: null,
-        lineSeen: null
+        streamSeen: null
       };
     },
     copyState: function(state) {
@@ -38,9 +41,9 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
     },
 
     token: function(stream, state) {
-      if (stream.sol() || stream.string != state.lineSeen ||
+      if (stream != state.streamSeen ||
           Math.min(state.basePos, state.overlayPos) < stream.start) {
-        state.lineSeen = stream.string;
+        state.streamSeen = stream;
         state.basePos = state.overlayPos = stream.start;
       }
 
