@@ -1,6 +1,6 @@
 {
   "name": "node-mirror",
-  "version": "0.1.35",
+  "version": "0.1.36",
   "author": {
     "name": "Matthias Behrens",
     "email": "matthias.behrens@gmail.com"
@@ -19,7 +19,7 @@
     "adm-zip": "*",
     "optimist": "*",
     "runtime-configuration": "*",
-    "less": "*",
+    "less": "2.1.x",
     "session.socket.io": "*",
     "connect": "2.*",
     "npm": "*",

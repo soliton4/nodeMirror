@@ -139,10 +139,28 @@ define([
     
     , testPs: function(par, parCode){
       var def = this.def();
-      var parser = new(less.Parser)({
+      //console.log("step1");
+      
+      less.render(parCode,  {
+          paths: [this.getFileName(fileName.dir(par.id))], // Specify search paths for @import directives
+          filename: fileName.single(par.id) // Specify a filename, for better error messages
+          //compress: true          // Minify CSS output
+        }, function (err, output) {
+          //console.log(output.css);
+          if (err) { 
+            console.log(err);
+            def.resolve("error");
+            return;
+          }
+          //console.log("step3");
+          def.resolve(output.css);
+      });
+
+      /*var parser = new(less.Parser)({
         paths: [this.getFileName(fileName.dir(par.id))], // Specify search paths for @import directives
         filename: fileName.single(par.id) // Specify a filename, for better error messages
       });
+      console.log("step2");
       
       parser.parse(parCode, function (err, tree) {
         if (err) { 
@@ -150,8 +168,10 @@ define([
           def.resolve("error");
           return;
         }
+        console.log("step3");
         def.resolve(tree.toCSS());
       });
+      console.log("step4");*/
       return def;
     }
     
