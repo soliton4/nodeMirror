@@ -87,6 +87,8 @@ define([
                  params.push("-loop");
                  params.push("-wpredp");
                  params.push("0");
+                 //params.push("-crf");
+                 //params.push("1");
                };
                params.push("-tune");
                params.push("zerolatency");
