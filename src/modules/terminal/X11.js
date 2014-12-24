@@ -161,8 +161,8 @@ define([
         "188": "comma"
         , "190": "period"
         , "191": "slash"
-        , "186": "somicolon"
-        , "222": "quotedbl"
+        , "186": "semicolon"
+        , "222": "apostrophe"
         , "189": "minus"
         , "187": "equal"
         , "192": "grave"
@@ -171,12 +171,20 @@ define([
         , "220": "backslash"
       };
       
+      var keyMapShift = {
+        "222": "quotedbl"
+        , "186": "colon"
+      };
+      
       this.keyBoard.on("keydown", function(e){
         
         var charStr = self.keyBoard.lookupCode(e.keyCode);
         
         if (!charStr){
           charStr = keyMap[e.keyCode];
+          if (e.shiftKey && keyMapShift[e.keyCode]){
+            charStr = keyMapShift[e.keyCode];
+          };
         };
         
         if (!charStr){

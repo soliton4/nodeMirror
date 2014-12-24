@@ -104,6 +104,7 @@ define([
       };
       
       this.keyBoard.on("keydown", function(e){
+        debugger;
         
         var charStr = self.keyBoard.lookupCode(e.keyCode);
         
