@@ -408,7 +408,7 @@ define([
         
         self.clearVidTimeout();
         var newVidid = Math.floor(Math.random() * 1000000000);
-        if (format == "h264"){
+        if (format == "h264" || format == "h264asm"){
           var h264rows = 1;
           var h264cols = 1;
           var useThreads = false;
@@ -478,7 +478,8 @@ define([
                     w: frames[i].w
                     , h: frames[i].h
                   },
-                  useWorker: useThreads
+                  useWorker: useThreads,
+                  webgl: format == "h264asm" ? false : true
                 });
                 //var avciframe = document.createElement('iframe');
                 //domConstruct.place(avciframe, self.eventDiv.domNode);

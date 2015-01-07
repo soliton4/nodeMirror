@@ -1,0 +1,1 @@
+avconv -re -f x11grab -r 10 -s 1280x800 -i :0.0+0,0 -vcodec libx264 -preset ultrafast -b:v 400k -maxrate 400k -bufsize 4000k -pass 1 -coder 0 -bf 0 -flags -loop -wpredp 0 -tune zerolatency -threads 2 -an -t 180 -f h264 -s 1280x800 test.h264 

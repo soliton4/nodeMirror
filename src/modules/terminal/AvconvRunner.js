@@ -27,7 +27,9 @@ define([
            , constructor: function(par){
              declare.safeMixin(this, par);
              var self = this;
-
+             
+             //this.dim.w = 1200;
+             
              var params;
              if (this.type == "audio"){
                params = [
@@ -42,6 +44,7 @@ define([
                  "-s", "" + this.dim.w + "x" + this.dim.h,   // Capture size
 
                  "-i", ":0+" + this.dim.x + "," + this.dim.y // Capture offset
+                 //"-i", ":0.0+0,0" // Capture offset
                  //"-g", "100",                // All frames are i-frames
                ];
 
@@ -76,7 +79,7 @@ define([
                  params.push("4000k"); // we need a bufsize in order to do maxrate
                };
 
-               if (!this.format || this.format == "h264"){
+               if (!this.format || this.format == "h264" || this.format == "h264asm"){
                  params.push("-pass");
                  params.push("1");
                  params.push("-coder");
@@ -88,7 +91,7 @@ define([
                  params.push("-wpredp");
                  params.push("0");
                  //params.push("-crf");
-                 //params.push("1");
+                 //params.push("0");
                };
                params.push("-tune");
                params.push("zerolatency");
@@ -130,6 +133,7 @@ define([
                  params.push("-q:v");
                  params.push(this.quality);
                };
+               params.push("-s", "" + this.dim.w + "x" + this.dim.h);
                params.push("-");                      // Output to STDOUT
 
              };

@@ -208,6 +208,8 @@ define([
     
   });
   
+  var asmInstances = {};
+  
   
   if (has("server-modules")){
     
@@ -486,6 +488,8 @@ define([
           , "NUMPAD_PLUS": "KP_Add"
           , "NUMPAD_PERIOD": "KP_Separator"
         };
+        // keycodes can be found here: 
+        // http://cgit.freedesktop.org/xorg/proto/x11proto/plain/keysymdef.h
 
         socket.on("x11key", function(evt){
 
@@ -558,6 +562,10 @@ define([
       });
     };
   };
+  
+  
+  
+
   
   return Terminal;
   

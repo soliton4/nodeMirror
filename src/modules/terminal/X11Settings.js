@@ -79,8 +79,11 @@ define([
           label: "webm"
           , value: "webm"
         }, {
-          label: "h264"
+          label: "h264 - webGl"
           , value: "h264"
+        }, {
+          label: "h264 - asm.js (higher quality / cpu intense)"
+          , value: "h264asm"
         }]
         , label: "Format"
         , setting: "x11format"
