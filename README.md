@@ -7,7 +7,7 @@
   
 ## follow me
 
-  --> [https://twitter.com/nodeMirror](@nodeMirror)
+  --> [@nodeMirror](https://twitter.com/nodeMirror)
   
 ## Usage  
   
