@@ -853,7 +853,7 @@ var evtFun = function(data){
   avc.configure(data);
   
   evtFun = function(data){
-    avc.decode(data);
+    avc.decode(new Uint8Array(data));
   };
   
 };

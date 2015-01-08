@@ -327,7 +327,7 @@ define([
     , decode: function(data){
       try{
         if (this.useWorker){
-          this.worker.postMessage(data); // Send data to our worker.
+          this.worker.postMessage(data.buffer, [data.buffer]); // Send data to our worker.
         }else{
           this.avc.decode(data);
         };
