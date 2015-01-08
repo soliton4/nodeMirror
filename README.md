@@ -5,6 +5,10 @@
   
   --> [screenshots](#screenshots)
   
+## follow me
+
+  --> [https://twitter.com/nodeMirror](@nodeMirror)
+  
 ## Usage  
   
 ```
