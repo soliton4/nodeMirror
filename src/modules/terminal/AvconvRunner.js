@@ -88,8 +88,8 @@ define([
                  params.push("0");
                  params.push("-flags");
                  params.push("-loop");
-                 params.push("-wpredp");
-                 params.push("0");
+                 //params.push("-wpredp");
+                 //params.push("0");
                  //params.push("-crf");
                  //params.push("0");
                };
@@ -125,8 +125,8 @@ define([
                  if (this.format == "webm" || this.format == "ogg"){
                    params.push("-qmin");
                    params.push("1");             // Quantization
-                   params.push("-qmax");
-                   params.push(this.quality);
+                   //params.push("-qmax");
+                   //params.push(this.quality);
                  };
                };
                if (this.format == "ogg" && this.quality){
