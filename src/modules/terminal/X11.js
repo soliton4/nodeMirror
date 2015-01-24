@@ -408,6 +408,22 @@ define([
         
         self.clearVidTimeout();
         var newVidid = Math.floor(Math.random() * 1000000000);
+        var newAudioid = Math.floor(Math.random() * 1000000000);
+        
+        var audioFirst = true;
+        
+        /*if (!self.audioTag){
+          self.audioTag = domConstruct.create("audio", {
+            "class": "x11Audio"
+            , "src": "x11.audio"
+            , "type": "audio/ogg"
+            , preload: "none"
+          });
+          domConstruct.place(self.audioTag, self.div2.domNode);
+          self.audioTag.play();
+        };*/
+
+        
         if (format == "h264" || format == "h264asm"){
           var h264rows = 1;
           var h264cols = 1;
@@ -511,6 +527,91 @@ define([
           });
           
           
+          
+          // audio
+          
+          /*var AC = window.AudioContext || window.webkitAudioContext;
+          var context = new AC();
+          var startTime = context.currentTime;
+          self.module.registerAudioStreamingFun(function(data64, index){
+            
+            if (audioFirst){
+              self.audioId = newAudioid;
+            };
+            
+            debugger;
+            var data = base64.toUint8Array(data64).buffer;
+            context.decodeAudioData(data, function(buffer) {
+              debugger;
+              playBuffer(buffer);
+            }, function(err) {
+              debugger;
+              console.log("decodeAudioData err: "+err);
+            });
+
+            function playBuffer(buf) {
+              var source    = context.createBufferSource();
+              source.buffer = buf;
+              source.connect(context.destination);
+              source.start(startTime);
+              startTime = startTime+source.buffer.duration;
+            }
+          },{
+            audioId: newAudioid
+          });*/
+          
+          
+          /*
+          
+          var codec = new OgvJs(),
+              audioFeeder;
+
+          codec.oninitaudio = function(info) {
+            audioFeeder = new AudioFeeder();
+            audioFeeder.init(info.channels, info.rate);
+          };
+
+          var startedAudio = false;
+          
+          self.module.registerAudioStreamingFun(function(data64, index){
+            
+            if (audioFirst){
+              self.audioId = newAudioid;
+              audioFirst = false;
+            };
+            
+            try{
+            
+            var data = base64.toUint8Array(data64).buffer;
+            codec.receiveInput(data);
+            
+            // process everything immediately and stuff it into the AudioFeeder output queue
+            while (codec.process()) {
+              if (codec.audioReady && codec.decodeAudio()) {
+                var audioBuffer = codec.dequeueAudio();
+                audioFeeder.bufferData(audioBuffer);
+              };
+            }
+            //console.log(audioFeeder.getPlaybackState());
+            if (!startedAudio){
+              audioFeeder.start();
+              startedAudio = true;
+            };
+            console.log(audioFeeder.getPlaybackState());
+              
+            }catch(e){
+              console.log("audio error");
+              console.log(e);
+            }
+
+            
+          },{
+            audioId: newAudioid
+          });
+          
+          */
+          
+          
         }else{
           //console.log("doing stuff");
           var newVideo = domConstruct.create("video", {
@@ -520,8 +621,8 @@ define([
             , "type": "video/" + format
           });
           domConstruct.place(newVideo, self.div2.domNode);
-          //domConstruct.place(newVideo, self.eventDiv.domNode);
-          //return;
+          
+          
           on(newVideo, "canplay", function(){
             if (newVideo.doneThat){
               return;

@@ -159,12 +159,14 @@ define([
              
              var stream = self.avconv.stdout;
              
-             if (this.type == "audio"){
+             /*if (this.type == "audio"){
                //self.opusenc = spawn("opusenc", ["--bitrate", "256", "-", "-"]);
-               self.opusenc = spawn("opusenc", ["-", "-"]);
+               //                // opusenc --bitrate 64 --max-delay 0 --comp 0 --framesize 2.5 --hard-cbr
+
+               self.opusenc = spawn("opusenc", ["--bitrate", "128", "--max-delay", "0", "--comp", "0", "--framesize", "2.5", "--hard-cbr", "-", "-"]);
                stream = self.opusenc.stdout;
                self.stdin = self.opusenc.stdin;
-             };
+             };*/
              
              var killFun = lang.hitch(this, "kill");
              self.stream = stream;
@@ -176,17 +178,10 @@ define([
                }, (self.duration + 10) * 1000);
 
                try{
-                 if (self.type == "audio"){
+                 /*if (self.type == "audio"){
                    self.avconv.stdout.on("error", function(err){
                      console.log("avconverror");
                    });
-                   /*self.avconv.stdout.on("data", function(data){
-                     try{
-                       self.stdin.write(data);
-                     }catch(e){
-                       console.log("stream write error");
-                     };
-                   });*/
                    var startFun;
                    var pullFun = function(){
                      if (self.killed){
@@ -202,7 +197,7 @@ define([
                      setTimeout(pullFun, 100);
                    };
                    startFun();
-                 };
+                 };*/
                  stream.on("data", function(data){
                    //console.log("streamdata");
                    if (!(data && data.length)){
@@ -220,24 +215,6 @@ define([
                  console.log("error 2");
                }
 
-               /*try{
-                 stream.on("end", function(){
-                   console.log("stream end");
-                   try{
-                     killFun();
-                   }catch(e){
-                     console.log("error 3");
-                   }
-                 });
-                 stream.on("close", function(){
-                   console.log("stream close");
-                   try{
-                     killFun();
-                   }catch(e){
-                     console.log("error 3.5");
-                   }
-                 });
-               }catch(e){};*/
 
 
              //});
@@ -258,12 +235,7 @@ define([
                var data = self.stream.read();
                if (data && data.length){
                  self.streamData(data);
-               }/*else{
-                 if (self.type == "audio"){
-                   var buf = new Buffer(0);
-                   self.streamData(buf);
-                 };
-               }*/;
+               };
                startFun();
              };
              
@@ -274,7 +246,11 @@ define([
            }
 
            , kill: function(){
-             console.log("killing ...");
+             console.log("killing ... " + this.type);
+             console.log({
+               duration: this.duration,
+               type: this.type
+             });
              this.killed = true;
              if (this.avconv){
                this.avconv.kill();

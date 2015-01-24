@@ -355,7 +355,7 @@ define([
                        
 
                        //res.header("Content-Type", "text/text");
-                       res.header("Content-Type", "audio/" + format);
+                       res.header("Content-Type", "audio/wav");
 
                        /*fs.readFile("/home/sol/projects/nodeMirror/src/test/testpipe.opus", function(err, data){
                          if (err){

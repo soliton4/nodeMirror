@@ -187,6 +187,14 @@ define([
       
     }
     
+    , registerAudioStreamingFun: function(fun, par){
+      this.audioStreamfun = fun;
+      this.socketDef.then(function(socket){
+        socket.emit("audioStream", par);
+      });
+      
+    }
+    
     , stopX264: function(vidid){
       this.socketDef.then(function(socket){
         socket.emit("x264stop", vidid);
@@ -199,6 +207,16 @@ define([
         if (!this.x264fun(frame, i)){
           delete this.x264fun;
         };
+      };
+    }
+    , audioStreamData: function(data){
+      if (this.audioStreamfun){
+        console.log("stream data");
+        this.audioStreamfun(data);
+        /*if (!this.audioStreamfun(data)){
+          console.log("deleteing stream fun");
+          delete this.audioStreamfun;
+        };*/
       };
     }
     
@@ -327,6 +345,65 @@ define([
         if (!x11terminal){
           return;
         };
+        
+        
+        socket.on("audioStream", function(par){
+          
+          var duration = par.duration || 180;
+          var runnerParam = {
+            //duration: par.duration
+          };
+          
+          var runners = [];
+          
+          var killFun = function(){
+            console.log("audio kill fun");
+            var i = 0;
+            for(i; i < runners.length; ++i){
+              runners[i].kill();
+            };
+            runners = [];
+          };
+          
+          var audioId = par.audioId;
+          
+          var stopper = socket.on("audioStop", function(parAudioId){
+            if (audioId == parAudioId || !parAudioId){
+              killFun();
+              try{
+                //console.log(stopper);
+                //stopper.remove();
+              }catch(e){};
+            };
+          });
+          socket.on('disconnect', function () {
+            killFun();
+          });
+
+          //console.log("step 2");
+          setTimeout(function(){
+            killFun();
+          }, (duration + 10) * 1000);
+          
+          var getStreamDataFun = function(){
+            return function(data){
+              console.log("emitting audioStream");
+              socket.emit("audioStream", {
+                data: data.toString("base64")
+              });
+              console.log("emitting audioStream done");
+            };
+          };
+          
+          runners.push(new AvconvRunner(lang.mixin({}, runnerParam, {
+            streamData: getStreamDataFun(),
+            type: "audio",
+            format: "ogg"
+          })));
+          
+          
+        });
+
         
         
         socket.on("x264test", function(par){
@@ -559,6 +636,11 @@ define([
         //console.log(data.i);
         //debugger;
         self.x264Data(data.frame, data.i);
+      });
+      this.socket.on("audioStream", function(data){
+        //console.log(data.i);
+        //debugger;
+        self.audioStreamData(data.data);
       });
     };
   };
