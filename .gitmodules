@@ -43,3 +43,7 @@
 [submodule "generic-js/peg8/pegjs"]
 	path = generic-js/peg8/pegjs
 	url = https://github.com/soliton4/pegjs.git
+
+[submodule "generic-js/node-jscs"]
+	path = generic-js/node-jscs
+	url = https://github.com/gero3/node-jscs.git

@@ -9,6 +9,7 @@ define([
   , "sol/string"
   , "main/clientOnly!dijit/form/Button"
   , "main/clientOnly!dijit/form/ToggleButton"
+  , "main/clientOnly!./javascript/Formatter4"
 ], function(
   declare
   , Base
@@ -20,7 +21,21 @@ define([
   , solString
   , Button
   , ToggleButton
+  , Formatter
 ){
+  
+  var checker;
+  var getFormatter = function(){
+    if (!checker){
+      var Checker = Formatter();
+      checker = new Checker();
+      checker.registerDefaultRules();
+      checker.configure( {
+        preset: 'mdcs'
+      } );
+    };
+    return checker;
+  };
   
   var additionalSubtypes = {
     "javascript": true
@@ -61,8 +76,21 @@ define([
       return def;
     }
     
+    , format: function(){
+      var checker = getFormatter();
+      this.mirror.set("value", checker.formatString(this.get("content").text));
+    }
+    
     , buildRendering: function(){
       var ret = this.inherited(arguments);
+      
+      this.formatBtn = this.ownObj(new Button({
+        onClick: lang.hitch(this, "format")
+        , label: "format"
+      })); 
+      this.menu.addChild(this.formatBtn);
+      
+      
       return ret;
     }
     
