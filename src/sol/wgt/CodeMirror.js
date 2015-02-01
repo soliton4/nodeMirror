@@ -34,6 +34,8 @@ define([
   window.CSSLint = CSSLint;
   window.jsonlint = jsonlint;
   
+  var jscs;
+  
   var cmOptions = {
     lineNumbers: false
     , mode: undefined
@@ -52,6 +54,7 @@ define([
     , keyMap: "default"
     , styleActiveLine: true
     , highlightSelectionMatches: null
+    //, javascriptSyntax: "jshint"
   };
        
        //highlightSelectionMatches: {showToken: /\w/}
@@ -119,6 +122,97 @@ define([
       this.mirror.setOption("extraKeys", this.extraKeys);
       //this.widgets = [];
     }
+    
+    // helper function to set the jscs
+    // this way we do not need to create a dependency
+    , setJscs: function(parJscs){
+      jscs = parJscs;
+    }
+    
+    , _setJavascriptSyntaxAttr: function(parValue){
+      var changed = false;
+      if (parValue != this.get("javascriptSyntax")){
+        changed = true;
+      };
+      this._set("javascriptSyntax", parValue);
+      var data = {
+        errors: []
+      };
+      var self = this;
+      if (parValue == "jscs"){
+        window.JSHINT = function(text, options){
+          data.errors = [];
+          if (jscs){
+            
+            var Checker = jscs;
+            var checker = new Checker();
+            checker.registerDefaultRules();
+
+            var preset = self.get("jscsPreset") || "mdcs";
+            checker.configure( {
+              preset: preset
+            } );
+
+            var c = checker.checkString(text);
+            data.errors = c.getErrorList();
+            var e = data.errors;
+            var i = 0;
+            for (i = 0; i < e.length; ++i){
+              e[i].reason = e[i].reason || e[i].message;
+              e[i].character = e[i].character || e[i].column;
+            };
+            /*column: 53filename: "input"line: 12message: "Missing space before closing round bracket"rule: "requireSpacesInsideParentheses"*/
+          };
+        };
+        window.JSHINT.data = function(){
+          return data;
+        };
+      }else if (parValue == "jshint+jscs"){
+        window.JSHINT = function(text, options){
+          var i = 0;
+          data.errors = [];
+          if (jscs){
+            var Checker = jscs;
+            var checker = new Checker();
+            checker.registerDefaultRules();
+
+            var preset = self.get("jscsPreset") || "mdcs";
+            checker.configure( {
+              preset: preset
+            } );
+
+            var c = checker.checkString(text);
+            data.errors = c.getErrorList();
+            var e = data.errors;
+            for (i = 0; i < e.length; ++i){
+              e[i].reason = e[i].reason || e[i].message;
+              e[i].character = e[i].character || e[i].column;
+            };
+          };
+          jshint(text, options);
+          var errors = jshint.data().errors;
+          i = 0;
+          for (i = 0; i < errors.length; ++i){
+            data.errors.push(errors[i]);
+          };
+          
+        };
+        window.JSHINT.data = function(){
+          return data;
+        };
+      }else{
+        window.JSHINT = jshint;
+      };
+      if (changed){
+        // trigger linter
+        this.set("lint", this.get("lint"));
+      };
+      //JSHINT(text, options);
+      //var errors = JSHINT.data().errors;
+    }
+    
+    //, _setJscsPresetAttr: function(parValue){
+    //}
     
     , _setAutoCompleteAttr: function(parValue){
       this._set("autoComplete", parValue);

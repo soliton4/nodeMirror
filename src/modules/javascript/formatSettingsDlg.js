@@ -69,111 +69,57 @@ define([
       };
       
       var settingsStructure = [new Select({
-        options: array.map(allThemes, function(theme){
-          return {
-            label: "<div class='cm-s-" + theme + " CodeMirror CodeMirrorSettingsSelect'>" + theme + " <span class='cm-operator'>+</span> <span class='cm-keyword'>keyword</span><span class='cm-bracket'>(</span><span class='cm-variable'>variable</span>.<span class='cm-property'>property</span><span class='cm-bracket'>)</span></div>"
-            , value: theme
-          };
-        })
-        , label: "Color Theme"
-        , setting: "theme"
+        options: [{
+          label: "jshint"
+          , value: "jshint"
+        },{
+          label: "jscs"
+          , value: "jscs"
+        },{
+          label: "jshint + jscs"
+          , value: "jshint+jscs"
+        }]
+        , label: "Syntax Check"
+        , setting: "javascriptSyntax"
         , valueSet: valueSetFun
         , onChange: onChangeFun
         
       }), new Select({
         options: [{
-          label: "default"
-          , value: "default"
+          label: "airbnb"
+          , value: "airbnb"
         },{
-          label: "emacs"
-          , value: "emacs"
+          label: "crockford"
+          , value: "crockford"
         },{
-          label: "vim"
-          , value: "vim"
+          label: "google"
+          , value: "google"
+        },{
+          label: "jquery"
+          , value: "jquery"
+        },{
+          label: "mdcs"
+          , value: "mdcs"
+        },{
+          label: "wikimedia"
+          , value: "wikimedia"
+        },{
+          label: "yandex"
+          , value: "yandex"
         }]
-        , label: "Key Map"
-        , setting: "keyMap"
+        , label: "jscs preset"
+        , setting: "jscsPreset"
         , valueSet: valueSetFun
         , onChange: onChangeFun
         
       }), new CheckBox({
-        label: "close Brackets"
-        , setting: "autoCloseBrackets"
+        label: "format after loading"
+        , setting: "autoJscsFormat"
         , valueSet: valueSetCheckBoxFun
         , onChange: onChangeCheckBoxFun
-        
-      }), new CheckBox({
-        label: "match Tags"
-        , setting: "matchTags"
-        , valueSet: valueSetCheckBoxFun
-        , onChange: onChangeCheckBoxFun
-        
-      }), new CheckBox({
-        label: "show trailing Space"
-        , setting: "showTrailingSpace"
-        , valueSet: valueSetCheckBoxFun
-        , onChange: onChangeCheckBoxFun
-        
-      }), new CheckBox({
-        label: "close Tags"
-        , setting: "autoCloseTags"
-        , valueSet: valueSetCheckBoxFun
-        , onChange: onChangeCheckBoxFun
-        
-      }), new CheckBox({
-        label: "Code folding"
-        , setting: "foldGutter"
-        , valueSet: valueSetCheckBoxFun
-        , onChange: onChangeCheckBoxFun
-        
-      /*}), new CheckBox({
-        label: "Code folding - float feature"
-        , setting: "foldFloat"
-        , valueSet: valueSetCheckBoxFun
-        , onChange: onChangeCheckBoxFun*/
-        
-      }), new CheckBox({
-        label: "Ctrl+Space auto complete"
-        , setting: "autoComplete"
-        , valueSet: valueSetCheckBoxFun
-        , onChange: onChangeCheckBoxFun
-        
-      }), new CheckBox({
-        label: "hightlight current token"
-        , setting: "highlightSelectionMatches"
-        , valueSet: valueSetCheckBoxFun
-        , onChange: onChangeCheckBoxFun
-        
-      }), new HorizontalSlider({
-        label: "Text Size"
-        , setting: "textsize"
-        , value: 13
-        , valueSet: function(parValue){
-          this.set("value", parValue);
-          this.lastValue = parValue;
-        }
-        , onChange: onChangeFun
-        , onMouseMove: function(){
-          if (!this.delayedUpdate){
-            var self = this;
-            this.delayedUpdate = new Delayed({delay: 100}, function(){
-              var v = self.get("value");
-              if (v == self.lastValue){
-                return;
-              };
-              self.onChange(v);
-              console.log(v);
-            });
-          };
-          this.delayedUpdate.exec();
-        }
-        , minimum: 1
-        , maximum: 50
-        , discreteValues: 50
-        
       })];
-      
-      
+
+
       
       
       var settingsMap = {};

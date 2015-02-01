@@ -20,9 +20,12 @@ define([
     };
     settingsDef.resolve(loadedSettings);
   };
-  var getValue = function(parValue){
+  var getValue = function(parValue, parDefault){
     config.get("codemirror-" + parValue).then(function(value){
       --valCnt;
+      if (value === undefined){
+        value = parDefault;
+      };
       loadedSettings[parValue] = value;
       checkValCnt();
     });
@@ -30,7 +33,7 @@ define([
   
   for (var valname in codeMirrorSetable){
     ++valCnt;
-    getValue(valname);
+    getValue(valname, codeMirrorSetable[valname]);
   };
   --valCnt;
   checkValCnt();

@@ -12,5 +12,8 @@ define([
     , autoComplete: true
     , keyMap: "default"
     , highlightSelectionMatches: null
+    , javascriptSyntax: "jshint"
+    , jscsPreset: "mdcs"
+    , autoJscsFormat: false
   };
 });

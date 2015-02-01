@@ -10,6 +10,9 @@ define([
   , "main/clientOnly!dijit/form/Button"
   , "main/clientOnly!dijit/form/ToggleButton"
   , "main/clientOnly!./javascript/Formatter4"
+  , "main/clientOnly!./javascript/formatSettingsDlg"
+  , "main/clientOnly!dijit/form/DropDownButton"
+  , "main/config"
 ], function(
   declare
   , Base
@@ -22,19 +25,17 @@ define([
   , Button
   , ToggleButton
   , Formatter
+  , formatSettingsDlg
+  , DropDownButton
+  , config
 ){
   
-  var checker;
+  var mChecker;
   var getFormatter = function(){
-    if (!checker){
-      var Checker = Formatter();
-      checker = new Checker();
-      checker.registerDefaultRules();
-      checker.configure( {
-        preset: 'mdcs'
-      } );
+    if (!mChecker){
+      mChecker = Formatter();
     };
-    return checker;
+    return mChecker;
   };
   
   var additionalSubtypes = {
@@ -77,22 +78,67 @@ define([
     }
     
     , format: function(){
-      var checker = getFormatter();
-      this.mirror.set("value", checker.formatString(this.get("content").text));
+      var self = this;
+      config.get("codemirror-jscsPreset").then(function(preset){
+        var Checker = getFormatter();
+        var checker = new Checker();
+        checker.registerDefaultRules();
+        
+        preset = preset || "mdcs";
+        checker.configure( {
+          preset: preset
+        } );
+        self.mirror.set("value", checker.formatString(self.get("content").text));
+      });
     }
+    
+    
+    // so special implementations can override it
+    , setCodemirrorValue: function(parValue){
+      if (this.mirror && this.mirror.get("autoJscsFormat")){
+        var preset = this.mirror.get("jscsPreset") || "mdcs";
+        var Checker = getFormatter();
+        var checker = new Checker();
+        checker.registerDefaultRules();
+        
+        preset = preset || "mdcs";
+        checker.configure( {
+          preset: preset
+        } );
+        this.mirror.set("value", checker.formatString(parValue));
+      }else{
+        return this.inherited(arguments);
+      };
+    }
+
     
     , buildRendering: function(){
       var ret = this.inherited(arguments);
+      
+      
+      this.mirror.setJscs(getFormatter());
+      
+      
+      return ret;
+    }
+    
+    , createMenu: function(){
+      var menu = this.inherited(arguments);
+      this.syntaxSettingsBtn = this.ownObj(new DropDownButton({
+        label: "Format cfg.",
+        dropDown: formatSettingsDlg()
+      }));
+      menu.addChild(this.syntaxSettingsBtn);
       
       this.formatBtn = this.ownObj(new Button({
         onClick: lang.hitch(this, "format")
         , label: "format"
       })); 
-      this.menu.addChild(this.formatBtn);
+      menu.addChild(this.formatBtn);
       
-      
-      return ret;
+      return menu;
     }
+
     
     
   });

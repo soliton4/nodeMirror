@@ -301,10 +301,19 @@ define([
     , _setContentAttr: function(parContent){
       this._set("content", parContent);
       if (this.mirror){
-        this.mirror.set("value", this.content.text);
+        //this.mirror.set("value", this.content.text);
+        this.setCodemirrorValue(this.content.text);
         this.mirror.set("mode", this.content.contentType);
       };
     }
+    
+    // so special implementations can override it
+    , setCodemirrorValue: function(parValue){
+      if (this.mirror){
+        this.mirror.set("value", parValue);
+      };
+    }
+    
     , _getContentAttr: function(){
       if (this.mirror){
         this.content.text = this.mirror.get("value");
