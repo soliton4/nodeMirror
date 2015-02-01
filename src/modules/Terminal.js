@@ -16,6 +16,7 @@ define([
   , "main/serverOnly!main/x11Fun"
   , "dojo/aspect"
   , "main/serverOnly!./terminal/AvconvRunner"
+  , "main/serverOnly!dojo/_base/config"
 ], function(
   declare
   , Deferred
@@ -34,6 +35,7 @@ define([
   , x11Fun
   , aspect
   , AvconvRunner
+  , dojoConfig
 ){
   
   var pty;
@@ -263,9 +265,45 @@ define([
         if (pty || process.platform == "win32"){
           def.resolve(pty);
         }else{
-          console.log("installing");
+          console.log("installing ddd");
+          
+          /*try{
+            console.log("xxx 1");
+          npm.load({}, function (er) {
+            console.log("step 1");
+            if (er) {
+              console.log("err 1");
+              console.log(er);
+              def.reject(er);
+              return;
+            };
+            npm.commands.install(["pty.js"], function (er, data) {
+              console.log("l1");
+              if (er) {
+                console.log("err 2");
+                console.log(er);
+                def.reject(er);
+                return;
+              };
+              //console.log("success");
+              //console.log(data);
+              pty = require("pty.js");
+              //console.log(pty);
+              def.resolve(pty);
+              // command succeeded, and data might have some info
+            });
+            console.log("step 2");
+            //npm.registry.log.on("log", function (message) { .... })
+          }) ;
+          }catch(e){
+            console.log("catch");
+            console.log(e);
+          };
+          console.log("xxx 2");*/
+          
           npm.load({
             name: "pty.js"
+            , require: dojoConfig._nmrequire
             , onInstall: function(){
               console.log("install..");
               socket.emit("terminal_meta", {

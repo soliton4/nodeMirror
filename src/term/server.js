@@ -32,7 +32,7 @@ define([
           console.log("resoliving");
           def.resolve(pty);
         }else{
-          console.log("installing");
+          console.log("installing x");
           npm.load({
             name: "pty.js"
             , onInstall: function(){

@@ -11,7 +11,7 @@ define([
 ){
   
   var npmPs = new Deferred();
-  npm.load(function(err){
+  npm.load({}, function(err){
     if (err){
       console.log(err);
       npmPs.reject(err);
@@ -37,6 +37,10 @@ define([
       };
       
       try {
+        if (par.require){
+          def.resolve(par.require(par.name));
+          return;
+        };
         require(["dojo/node!" + par.name], function(module){
           def.resolve(module);
           return;
@@ -56,12 +60,21 @@ define([
           npm.commands.install([par.name], function(err, data){
             console.log("..x.");
             if (err){
+              console.log(err);
               def.reject(err);
               return;
             };
             try{
-              var pathStr = process.cwd() + "/" + data[0][1];
-              require(["dojo/node!" + pathStr], function(module){
+              //var pathStr = process.cwd() + "/" + data[0][1];
+              //require(["dojo/node!" + pathStr], function(module){
+              if (par.require){
+                console.log("got require");
+                def.resolve(par.require(par.name));
+                return;
+              };
+              require(["dojo/node!" + par.name], function(module){
+                console.log("module:");
+                console.log(module);
                 def.resolve(module);
                 return;
               });

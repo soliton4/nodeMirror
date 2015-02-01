@@ -45,6 +45,7 @@ define([
     , ".cu": "text/x-c"
     , ".pland": "text/promiseland"
     , ".plnd": "text/promiseland"
+    , ".js": "application/javascript"
   };
   
   var files;
@@ -167,7 +168,7 @@ define([
       }else if(solString.startsWith(type, "text/")){
         for (extension in forceTextExtensions){
           if (solString.endsWith(parFileName, extension)){
-            return customExtensions[extension];
+            return forceTextExtensions[extension];
           };
         };
       };
@@ -210,7 +211,7 @@ define([
           }else if(solString.startsWith(type, "text/")){
             for (extension in forceTextExtensions){
               if (solString.endsWith(parFileName, extension)){
-                type = customExtensions[extension];
+                type = forceTextExtensions[extension];
                 def.resolve(type);
                 return;
               };
