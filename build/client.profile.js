@@ -126,6 +126,8 @@ var profile = (function(){
                 , "modules/Directory"
                 , "modules/Binary"
                 , "modules/JavaScript"
+                //, "modules/javascript/Formatter4" // doesnt compile ;(
+                , "modules/javascript/formatSettingsDlg"
                 , "modules/Less"
                 , "modules/Html"
                 , "modules/binary/HexGrid"

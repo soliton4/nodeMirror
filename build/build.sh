@@ -110,6 +110,10 @@ cp ../release/client/avc/worker.js ../release/nodeMirror/src/avc/
 cp ../release/client/avc/workeravccodec.js ../release/nodeMirror/src/avc/
 cp ../release/client/avc/workerutil.js ../release/nodeMirror/src/avc/
 
+mkdir ../release/nodeMirror/src/modules
+mkdir ../release/nodeMirror/src/modules/javascript
+cp ../release/client/modules/javascript/Formatter4.js ../release/nodeMirror/src/modules/javascript/
+
 mkdir ../release/nodeMirror/src/promiseland
 cp ../src/promiseland/main.js ../release/nodeMirror/src/promiseland/
 cp ../src/promiseland/promiseland.js ../release/nodeMirror/src/promiseland/
