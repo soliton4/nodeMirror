@@ -172,6 +172,19 @@
           border-bottom: 2px solid #8ca1fa;
           text-align: left;
           padding-left: 20px;
+          position: relative;
+        }
+        
+        #startupscreen .version {
+          position: absolute;
+          right: 20px;
+          top: 0px;
+        }
+        #startupscreen .alignleft {
+          float: left;
+        }
+        #startupscreen .alignright {
+          float: right;
         }
         
         #startupscreen .startupmsg .msg2 {
@@ -180,6 +193,7 @@
           padding-right: 20px;
           width: 800px;
         }
+        
         
       </style>
   </head>
@@ -190,6 +204,7 @@
         <div class="outsideTheBox">
           <div class="msg msg1">
             Think outside the Box
+            <div class="version">0.2</div>
           </div>
           <div class="box">
             <img src="{{{relativeStr}}}image/logoBig.png" width="800" height="407">
