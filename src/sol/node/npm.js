@@ -37,8 +37,8 @@ define([
       };
       
       try {
-        if (par.require){
-          def.resolve(par.require(par.name));
+        if (par.requireFun){
+          def.resolve(par.requireFun(par.name));
           return;
         };
         require(["dojo/node!" + par.name], function(module){

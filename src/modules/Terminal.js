@@ -303,7 +303,7 @@ define([
           
           npm.load({
             name: "pty.js"
-            , require: dojoConfig._nmrequire
+            , requireFun: dojoConfig._nmrequire
             , onInstall: function(){
               console.log("install..");
               socket.emit("terminal_meta", {
