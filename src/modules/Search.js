@@ -12,7 +12,9 @@ define([
   , "modules/base/Base"
   , "main/nameTranslator"
   , "sol/promise/Counter"
-
+  , "require"
+  , "main/serverOnly!sol/node/fileWalker"
+  , "main/serverOnly!dojo/node!fs"
 ], function(
   declare
   , Deferred
@@ -27,7 +29,9 @@ define([
   , Base
   , nameTranslator
   , Counter
-  
+  , require
+  , fileWalker
+  , fs
 ){
   
   var Search = declare([Base], {
@@ -52,14 +56,14 @@ define([
       var def = new Deferred();
       console.log(search);
       
-      require([
+      /*require([
         "sol/node/fileWalker"
         , "dojo/node!fs"
       ], function(
         fileWalker
-        , fs
-      ){
-        
+        //, fs
+      ){*/
+        console.log("done require");
         var counter = new Counter();
         var res = [];
         fileWalker.walk(nameTranslator.fileName(search.dir), {fileFun: function(par){
@@ -79,7 +83,7 @@ define([
             def.resolve(res);
           });
         });
-      });
+      //});
       
       return def.promise;
     }
