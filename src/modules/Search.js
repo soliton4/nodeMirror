@@ -63,7 +63,7 @@ define([
         fileWalker
         //, fs
       ){*/
-        console.log("done require");
+        //console.log("done require");
         var counter = new Counter();
         var res = [];
         fileWalker.walk(nameTranslator.fileName(search.dir), {fileFun: function(par){
