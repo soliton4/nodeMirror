@@ -16,6 +16,7 @@ define([
   , "main/clientOnly!dojo/dom-construct"
   , "main/clientOnly!dojo/dom-geometry"
   , "promiseland/promiseland"
+  , "promiseland/modules/parser/parser"
 ], function(
   declare
   , Base
@@ -34,6 +35,7 @@ define([
   , domConstruct
   , domGeo
   , promiseland
+  , parser
 ){
   
   var additionalSubtypes = {
