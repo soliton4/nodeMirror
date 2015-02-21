@@ -1,7 +1,0 @@
-var m = new Map();
-
-if (m){
-  return {success: true};
-};
-
-return {success: false};

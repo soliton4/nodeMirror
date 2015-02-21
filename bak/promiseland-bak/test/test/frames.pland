@@ -1,7 +1,0 @@
-var fs = *(() exclusive "server" *{
-  return require "fs";
-})();
-
-var getter = () frame "server" *{
-  return fs.readFile("somefile.txt");
-};

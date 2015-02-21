@@ -1,3 +1,0 @@
-int a;
-
-return { success: true };

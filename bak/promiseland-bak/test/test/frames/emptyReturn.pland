@@ -1,7 +1,0 @@
-test() frame "server" {
-  
-};
-
-*test();
-
-return { success: true };
