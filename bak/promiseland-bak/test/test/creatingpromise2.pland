@@ -1,0 +1,5 @@
+return {
+  fun: ()*{
+    return 4;
+  }
+};

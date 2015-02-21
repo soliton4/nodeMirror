@@ -1,0 +1,491 @@
+var basics = require "./basics";
+var errorFun = basics.errorFun;
+var errorMsg = basics.errorMsg;
+var _stringEncodeStr = basics._stringEncodeStr;
+var stringEncodeStr = basics.stringEncodeStr;
+
+
+
+/* ----------------------------------------------------------------------------------------------
+    
+       Result
+       
+       code1 + code2
+       
+       code1
+       code2
+       
+       pre1
+       pre2
+       code1
+       code2
+       post2
+       post1
+       
+       
+       code1 + statment2
+       
+       pre1
+       code1
+       pre2
+       code2
+       post2
+       post1
+       
+       
+       
+       
+       assembly:
+       
+       
+       pre.pre
+       pre.code
+       code.pre
+       post.pre
+       
+       code.code
+       
+       post.code
+       post.post
+       code.post
+       pre.post
+
+       
+       assemble statement:
+       
+       -
+       
+       pre.pre
+       pre.code
+       code.pre
+       post.pre
+       code.code
+       
+       post.code
+       post.post
+       code.post
+       pre.post
+
+
+    */
+    
+    var _Result = function(par){
+      
+      if (par.codeStr){
+        this.codeStr = par.codeStr;
+      }else{
+        this.codeAr = [];
+      };
+      
+      this._cp = par.cp;
+      
+    };
+    _Result.prototype = {
+      
+      pushType: function(par){
+        this.push(par);
+        this.setType(par.getType());
+      },
+      
+      _prepCode: function(parCode, parReference, par){
+        if (typeof parCode == "string"){
+          parCode = this.newResult({
+            codeStr: parCode,
+            reference: parReference
+          });
+        };
+        var res;
+        if (par && par.stringEncode){
+          res = this.newResult();
+          res._stringEncode = true;
+          res.push(parCode);
+          parCode = res;
+        };
+        if (par && par.dynamic){
+          res = this.newResult();
+          res._dynamic = true;
+          res.push("\" + ");
+          res.push(parCode);
+          res.push(" + \"");
+          parCode = res;
+          
+        };
+        return parCode;
+      },
+      
+      push: function(parCode, parReference, par){
+        
+        if (!this.reference){
+          this.reference = parReference;
+        };
+        
+        if (!parCode){
+          return;
+        };
+        if (parReference && typeof parReference == "boolean"){
+          errorFun(undefined, errorMsg.internalWrongUseOfReference);
+        };
+        
+        if (Array.isArray(parCode)){
+          
+          var i = 0;
+          for (i = 0; i < parCode.length; ++i){
+            this.push(parCode[i]);
+          };
+          
+        }else{
+          parCode = this._prepCode(parCode, parReference, par);
+
+          if (!this.codeAr){
+            this.error(parReference || this.reference, errorMsg.internalCantAddToStringResult);
+          };
+
+          this.codeAr.push(parCode); // simple
+        };
+        
+        if (parCode.promising){
+          this.makePromising();
+        };
+        
+      }
+      
+      // keeping track of dynamic encoding and indentation
+      , _iterPar: function(par){
+        if (!par){
+          par = {
+            stringEncode: 0,
+          };
+        };
+        par = {
+          stringEncode: par.stringEncode || 0,
+          indent: par.indent || new IndentTracker(par)
+        };
+        if (this._stringEncode){
+          par.stringEncode += 1;
+        };
+        if (this._dynamic){
+          par.stringEncode -= 1;
+        };
+        return par;
+      }
+      
+      , setPromise: function(ps){
+        var self = this;
+        this.promise = ps;
+        ps.then(function(res){
+          self.replace(res);
+        });
+      }
+      , resolve: function(res){
+        this.promise.resolve(res);
+      }
+      
+      , replace: function(res){
+        if (typeof res == "string"){
+          res = this.newResult({
+            codeStr: res
+          });
+        };
+        
+        this.replacement = res;
+      }
+      
+      , getParsed: function(){
+        if (this.reference){
+          return this.reference;
+        };
+        var p;
+        if (this.preCode){
+          p = this.preCode.getParsed();
+        };
+        if (p){ return p; };
+        
+        if (this.codeAr){
+          var i = 0;
+          for (i = 0; i < this.codeAr.length; ++i){
+            p = this.codeAr[i].getParsed();
+            if (p){ return p; };
+          };
+        };
+        
+        if (this.postCode){
+          p = this.postCode.getParsed();
+        };
+        return p;
+        
+      }
+      , setParsed: function(parReference){
+        if (parReference){
+          this.reference = parReference;
+        };
+      }
+      
+      , _getPreCodeStr: function(par){
+        par = this._iterPar(par);
+        
+        var resStr = "";
+        var i;
+        /*
+            pre.pre
+            pre.code
+            code.pre
+            post.pre
+        */
+        if (this.preCode){
+          resStr += this.preCode.getPreCodeStr(par);
+          resStr += this.preCode.getCodeStr(par);
+        };
+        if (this.codeAr){
+          for (i = 0; i < this.codeAr.length; ++i){
+            resStr += this.codeAr[i].getPreCodeStr(par);
+          };
+        };
+        if (this.postCode){
+          resStr += this.postCode.getPreCodeStr(par);
+        };
+        return resStr;
+      }
+      , getPreCodeStr: function(par){
+        if (this.replacement){
+          return this.replacement.getPreCodeStr(par);
+        };
+        if (this.isStatement || this.isComplete){
+          return "";
+          
+        }else{
+          return this._getPreCodeStr(par);
+        };
+      }
+      
+      , getCodeStr: function(par){
+        if (this.replacement){
+          return this.replacement.getCodeStr(par);
+        };
+        par = this._iterPar(par);
+        
+        var resStr = "";
+        
+        var indentDst;
+        if (this._indent){
+          indentDst = par.indent.inc();
+        };
+        
+        if (this._indentPair){
+          if (this._isIndentStart){
+            indentDst = par.indent.inc();
+            this._end._indentDst = indentDst;
+          }else{
+            this._indentDst();
+          };
+        };
+        
+        var i;
+        if (this.isStatement || this.isComplete){
+          resStr += this._getPreCodeStr(par);
+        };
+        
+        if (this.codeAr && !this._newLine){
+          for (i = 0; i < this.codeAr.length; ++i){
+            resStr += this.codeAr[i].getCodeStr(par);
+          };
+          
+        }else if (this.codeStr || this._newLine){
+          var tempCodeStr;
+          if (this._newLine){
+            tempCodeStr = "\n";
+            tempCodeStr += par.indent.getStr();
+          }else{
+            tempCodeStr = this.codeStr;
+          };
+          if (par.stringEncode < 0){
+            errorFun(undefined, errorMsg.internalNegativeStringEncode);
+          };
+          for (i = 0; i < par.stringEncode; ++i){
+            tempCodeStr = _stringEncodeStr(tempCodeStr);
+          };
+          resStr += tempCodeStr;
+        };
+        
+        if (this.promiseName){
+          resStr += this.promiseName.getCodeStr(par);
+        };
+        
+        if (this.isComplete){
+          resStr += this._getPostCodeStr(par);
+        };
+        
+        if (this._indent){
+          indentDst();
+        };
+        
+        if (this.checkasm){
+          this._cp.checkAsm(this, resStr);
+        };
+        
+        return resStr;
+      }
+      
+      , _getPostCodeStr: function(par){
+        par = this._iterPar(par);
+        var resStr = "";
+        var i;
+        /*
+          post.code
+          post.post
+          code.post
+          pre.post
+        */
+        if (this.postCode){
+          resStr += this.postCode.getCodeStr(par);
+          resStr += this.postCode.getPostCodeStr(par);
+        };
+        if (this.codeAr){
+          for (i = this.codeAr.length; i; --i){
+            resStr += this.codeAr[i - 1].getPostCodeStr(par);
+          };
+        };
+        if (this.preCode){
+          resStr += this.preCode.getPostCodeStr(par);
+        };
+        return resStr;
+      }
+      , getPostCodeStr: function(par){
+        if (this.replacement){
+          return this.replacement.getPostCodeStr(par);
+        };
+        if (this.isComplete){
+          return "";
+
+        }else{
+          return this._getPostCodeStr(par);
+        };
+      }
+      
+      // get the complete compiled program
+      , getProgramCodeStr: function(par){
+        par = this._iterPar(par);
+        return this.getPreCodeStr(par) + this.getCodeStr(par) + this.getPostCodeStr(par);
+      }
+      
+      , makePromising: function(){
+        if (this.promising){
+          return;
+        };
+        this.promising = true;
+      }
+      
+      , setPromiseName: function(parCode, parReference){
+        this.makePromising();
+        this.promiseName = this.newResult({
+          codeStr: parCode,
+          reference: parReference
+        });;
+        this.hasPromiseName = true;
+      }
+      , getPromiseName: function(){
+        if (this.promising && this.hasPromiseName){
+          return this.promiseName;
+        };
+      }
+      , isPromising: function(){
+        return this.promising;
+      }
+      
+      
+      , addPre: function(parCode, parReference, par){
+        if (!parCode){
+          return;
+        };
+        parCode = this._prepCode(parCode, parReference, par);
+        if (parCode.promising){
+          this.makePromising();
+        };
+        
+        if (!this.preCode){
+          this.preCode = this.newResult();
+        };
+        
+        this.preCode.push(parCode, parReference, par);
+        
+      }
+      , addPost: function(parCode, parReference, par){
+        if (!parCode){
+          return;
+        };
+        parCode = this._prepCode(parCode, parReference, par);
+        if (parCode.promising){
+          this.makePromising();
+        };
+        
+        if (!this.postCode){
+          this.postCode = this.newResult();
+        };
+        
+        this.postCode.push(parCode, parReference, par);
+      }
+      
+      , setStatement: function(){
+        this.isStatement = true;
+      }
+      , setComplete: function(){
+        this.isComplete = true;
+      },
+      
+      newResult: function(par){
+        return new _Result({
+          cp: this._cp,
+          codeStr: par ? par.codeStr : undefined
+        });
+      },
+      
+      getType: function(par){
+        return this.providesType;
+      },
+      
+      setType: function(par){
+        if (this.providesType){
+          errorFun({}, errorMsg.multipleTypeProviding);
+        };
+        if (typeof par == "string"){
+          this.providesType = this._cp.getType(par, this.reference);
+          return;
+        };
+        this.providesType = par;
+      }
+    };
+
+class IndentTracker {
+  constructor: (par){
+    this.unit = 2;
+    if (par){
+      this.unit = par.unit || this.unit;
+    };
+    this.cnt = 0;
+  },
+  inc: (){
+    this.cnt += 1;
+    var done;
+    var self = this;
+    return (){
+      if (done) {
+        return;
+      };
+      self.cnt -= 1;
+      done = true;
+    }
+  },
+  getStr: (){
+    var i = 0;
+    var resStr = "";
+    for (i = 0; i < this.cnt; ++i){
+      var j = 0;
+      for (j = 0; j < this.unit; ++j){
+        resStr += " ";
+      };
+    };
+    return resStr;
+  }
+};
+
+
+return _Result;

@@ -1,0 +1,25 @@
+
+class type unique T1 {
+  a: 1
+};
+
+T1 v1 = new T1("x");
+
+if (v1.a !== 1){
+  return {success: false};
+};
+//alert("x");
+
+v1.a = 2;
+
+T1 v2 = new T1("x");
+
+if (v2.a === 1){
+  return {success: false};
+};
+
+if (v2.a !== 2){
+  return {success: false};
+};
+
+return {success: true};

@@ -1,0 +1,9 @@
+var x = ()*{
+  return {
+    fun: ()*{
+      return 4;
+    }
+  };
+}
+
+return *x();

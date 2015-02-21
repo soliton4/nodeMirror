@@ -1,0 +1,39 @@
+
+
+class type unique track T1 {
+  a: 1
+};
+
+T1 v1 = new T1("x");
+
+if (v1.a !== 1){
+  return {success: false};
+};
+
+v1.a = 2;
+
+T1 v2 = new T1("x");
+return {success: true};
+
+if (v2.a === 1){
+  return {success: false};
+};
+return {success: true};
+if (v2.a !== 2){
+  return {success: false};
+};
+
+return {success: true};
+v1 = new T1("y");
+v2 = new T1("y");
+
+v1 = new T1("x");
+
+return {success: true};
+
+if (v1.a !== 1){
+  return {success: false};
+};
+
+
+return {success: true};

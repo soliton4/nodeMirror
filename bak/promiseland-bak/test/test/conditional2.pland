@@ -1,0 +1,18 @@
+var somefun = ()*{
+  return 1;
+};
+
+
+
+return {
+  fun: (){
+    var a = 1;
+    if (a + 1 == 2){
+      a = a + *somefun();
+    };
+    if (a == 2){
+      return 4;
+    };
+    return 0;
+  }
+};

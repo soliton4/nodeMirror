@@ -1,0 +1,85 @@
+<{__promiseLandModule: true}>;
+
+/* simple class system */
+
+    var mixinPrototype = function(parProto, parMixin, inheritedObject, gotit){
+      if (!parMixin || !parMixin.prototype){
+        return;
+      };
+      if (!gotit){
+        gotit = {};
+      };
+      var i;
+      var proto = parMixin.prototype;
+      for (i in proto){
+        if (i === "prototype" || gotit[i]){
+          continue;
+        };
+        parProto[i] = proto[i];
+        inheritedObject[i] = parProto[i];
+        gotit[i] = true;
+      };
+      if (parMixin.prototype){
+        mixinPrototype(parProto, parMixin.prototype, inheritedObject, gotit);
+      };
+      
+    };
+
+    var getProperty = function(par, parProperty, parDefault){
+      if (par.hasOwnProperty(parProperty)){
+        return par[parProperty];
+      };
+      return parDefault;
+    };
+    
+    var createClass = function(par, parExtends, inheritedObject){
+      var constructorFun = getProperty(par, "constructor", function(){});
+      var proto = {};
+      var i;
+      var l;
+      
+      if (parExtends){
+        var realConstructorFun = constructorFun;
+        
+        if (parExtends instanceof Array){
+          l = parExtends.length;
+          var extendConstructors = [];
+          for (i = 0; i < l; ++i){
+            mixinPrototype(proto, parExtends[i], inheritedObject);
+            if (typeof parExtends[i] === "function"){
+              extendConstructors.push(parExtends[i]);
+            };
+          };
+          var cl = extendConstructors.length;
+          if (cl){
+            constructorFun = function(){
+              var i;
+              for (i = 0; i < cl; ++i){
+                extendConstructors[i].apply(this, arguments);
+              };
+              return realConstructorFun.apply(this, arguments);
+            };
+          };
+        }else{
+          mixinPrototype(proto, parExtends, inheritedObject);
+          if (typeof parExtends === "function"){
+            constructorFun = function(){
+              parExtends.apply(this, arguments);
+              return realConstructorFun.apply(this, arguments);
+            };
+          };
+        };
+        
+      };
+      
+      for (i in par){
+        proto[i] = par[i];
+      };
+      constructorFun.prototype = proto;
+      return constructorFun;
+    };
+
+
+
+return createClass;
+

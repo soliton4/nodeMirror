@@ -1,0 +1,218 @@
+
+  var testObj = require "./testObj";
+  
+  
+  var successFun = function(mod, success){
+    if (mod && mod.success){
+      success();
+    };
+  };
+  
+  var successFunDbg = function(mod, success){
+    debugger;
+    if (mod && mod.success){
+      success();
+    };
+  };
+  
+  
+  var createTest = function(parModuleName, parFun){
+    if (!parFun){
+      parFun = successFun;
+    };
+    testObj[parModuleName] = false;
+    var successFun = function(){
+      testObj[parModuleName] = true;
+    };
+    try{
+      var mod = require ("./" + parModuleName);
+      var res = parFun(mod, successFun);
+      if (res && res.then){
+        *res;
+      };
+    }catch(e){
+      console.log("something went wrong");
+    };
+  };
+  
+  var funReturning4 = function(mod, success){
+    var p = new Promise();
+    try{
+      mod.fun().then(function(value){
+        if (value == 4){
+          success();
+        };
+        p.resolve();
+      });
+    }catch(e){};
+    return p;
+  };
+  
+  var funReturning4debug = function(mod, success){
+    //debugger;
+    try{
+      mod.fun().then(function(value){
+        if (value == 4){
+          success();
+        }else{
+          console.log("error:");
+          console.log(value);
+        }
+      });
+    }catch(e){
+      console.log("error:");
+      console.log(e);
+    };
+  };
+  
+  var returning4 = function(mod, success){
+    if (mod == 4){
+      success();
+    };
+  };
+  
+  *createTest("basicmodule", function(mod, success){
+    if (typeof mod == "object"){
+      success();
+    };
+  });
+
+  *createTest("function/funExpr", successFun);
+  
+  *createTest("creatingpromise", funReturning4);
+  *createTest("creatingpromise2", funReturning4);
+  *createTest("creatingpromise3", funReturning4);
+  
+  *createTest("simpleArray", successFun);
+  *createTest("newParameter", successFun);
+  
+  *createTest("class", successFun);
+  *createTest("classInheritence", successFun);
+
+  
+  *createTest("conditional", funReturning4);
+  *createTest("conditional2", funReturning4);
+  *createTest("conditional3", funReturning4);
+  
+  *createTest("switch", successFun);
+  *createTest("switchPromising", successFun);
+  
+  *createTest("callback", funReturning4);
+  *createTest("callback2", funReturning4);
+  
+  *createTest("forloop", funReturning4);
+  *createTest("forloop2", funReturning4debug);
+  *createTest("for/forIn", successFun);
+  *createTest("for/forInP", successFun);
+  
+  *createTest("whileloop", funReturning4);
+  *createTest("whileloop2", funReturning4);
+  
+  *createTest("functionDeclaration", successFun);
+  
+  var modRes4 = function(mod, success){
+    if (mod.res == 4){
+      success();
+    };
+  };
+  *createTest("tryCatch", modRes4);
+  *createTest("tryCatch2", modRes4);
+  
+  *createTest("require", successFun);
+  
+  
+  *createTest("string", function(mod, success){
+    if (mod.a == "\n\r\u2028\u2029\"'"
+    && mod.b == "xxx\n  xxx"){
+      success();
+    };
+  });
+  
+  *createTest("simpleModule", function(mod, success){
+    if (mod && mod.member === 4){
+      success();
+    };
+  });
+  
+  *createTest("nonReturningFunction", modRes4);
+  
+  *createTest("arguments", returning4);
+  
+  
+  *createTest("requireException", successFun);
+  
+  
+  /* typesafety */
+  
+  *createTest("typesafetyassign", successFun);
+  *createTest("typesafetyMembers", successFun);
+  *createTest("typesafetyMembers2", successFun);
+  *createTest("typesafetyMembers3", successFun);
+  
+  *createTest("typesafetyDelayedDefinition", successFun);
+  
+  *createTest("typesafetyFunction", successFun);
+  *createTest("typesafetyFunction2", successFun);
+  
+  *createTest("typesafetyDynamic", successFun);
+  
+  *createTest("typesafetyMemberFunction", successFun);
+  *createTest("typesafetyMemberFunction2", successFun);
+  
+  *createTest("typesafetyConstructor", successFun);
+  *createTest("typesafetyConstructor2", successFun);
+  
+  *createTest("typesafetyDestructor", successFun);
+  *createTest("typesafetyDestructorMember", successFun);
+  *createTest("typesafetyDestructorOrder", successFun);
+  *createTest("typesafetyeDestructorCircular", successFun);
+  *createTest("typesafetyDestructorParameter", successFun);
+  *createTest("typesafetyDestructorReturn", successFun);
+  
+  
+  *createTest("typesafetyPromising", successFun);
+
+  *createTest("connect", successFun);
+  *createTest("connect2", successFun);
+
+  *createTest("extraRequire", successFun);
+  *createTest("typeUnique", successFun);
+  *createTest("typeUnique2", successFun);
+  *createTest("savable", successFun);
+  *createTest("savable2", successFun);
+
+  *createTest("leaveCatch", successFun);
+  *createTest("leaveCatchAsync", successFun);
+  *createTest("leaveTry", successFun);
+  
+  *createTest("storage/setStorageEngine", successFun);
+  *createTest("storage/meta", successFun);
+  *createTest("promise/catchAfterIf", successFun);
+  *createTest("map", successFun);
+
+  *createTest("for/forNoParam", successFun);
+  *createTest("while/doWhile", successFun);
+  *createTest("while/doWhileP", successFun);
+  *createTest("var/varList", successFun);
+
+  *createTest("int/declaration", successFun);
+  *createTest("int/initialization", successFun);
+
+//*createTest("int/initialization", successFun);
+
+  
+    var c = 0;
+    var s = 0;
+    var f = 0;
+    for (var m in testObj){
+      c++;
+      if (testObj[m]){
+        s++;
+      }else{
+        console.log(m + " failed!");
+        f++;
+      };
+    };
+    console.log("run " + c + " tests. " + s + " successful, " + f + " failed");
+
+return testObj;

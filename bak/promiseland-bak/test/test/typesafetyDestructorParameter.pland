@@ -1,0 +1,43 @@
+var failed = false;
+
+var cnt = 0;
+
+class type track C1 {
+  destroy: (){
+    cnt++;
+  }
+};
+
+var cntSupposed = (s){
+  if (cnt == s){
+    return;
+  };
+  failed = true;
+};
+
+cntSupposed(0);
+
+var f1(C1 p1){
+  cntSupposed(0);  
+};
+
+cntSupposed(0);
+
+C1 a = new C1();
+cntSupposed(0);
+
+f1(a);
+
+cntSupposed(0);
+
+a = new C1();
+
+cntSupposed(1);
+
+
+if (failed){
+  console.log("failed");
+  return {success: false};
+};
+
+return {success: true};

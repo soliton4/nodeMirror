@@ -1,0 +1,34 @@
+class type Type1 {
+  var a: 1,
+  var b: 2
+};
+
+class type Type2 {
+  var x: 3,
+  var y: 4
+  
+};
+
+try {
+  Type1 a = new Type1();
+  Type2 b = new Type2();
+  
+  b.y = 10;
+  b.x = a.a;
+  
+  if (b.y == 10 && b.x == 1 && a.a == b.x){
+    return {
+      success: true
+    };
+  }
+  
+}catch(e){
+  return {
+    success: false
+  };
+}
+
+
+return {
+  success: false
+};

@@ -1,0 +1,186 @@
+<{  __promiseLandModule: true }>;
+  
+var errorMsg = extra.errorMsg;
+
+var getModuleData;
+((){
+  getModuleData = (*extra.moduleSystemPs).getModuleData;
+})();
+
+var frames;
+var getInstanceFromTransportData;
+var getInstanceTransportData;
+var getEffectiveFunctionResultType;
+
+return (classSystem, internals){
+  
+  var privateClassSystem = internals.privateClassSystem;
+  
+  ((){
+    frames = *extra.framesPs;
+
+  })();
+
+  
+  var cs = classSystem;
+  var pcs = privateClassSystem;
+  
+  var getClass = internals.getClass;
+  var DynInstance = internals.DynInstance;
+  
+  // savable
+  
+  var storageEnginePs = new Promise();
+  
+  pcs.isSavableType = (parType){
+    if (cs.isVar(parType)){
+      return true;
+    };
+    var cDef = getClass(parType);
+    if (cDef.savable){
+      return true;
+    };
+    return false;
+  };
+
+  pcs.registerSavableClass = (parType){
+    var cDef = getClass(parType);
+    if (cDef.storageEngine){
+      var engine = cDef.storageEngine;
+    }else{
+      var engine = *storageEnginePs;
+    };
+    
+    var propertiesAr = [];
+    var properties = {};
+    var map = cDef.map;
+    var i = 0;
+    for (i = 0; i < map.membersAr.length; ++i){
+      var mDef = map.membersAr[i];
+      if (!pcs.isSavableType(mDef.type) || mDef.noSave){
+        continue;
+      };
+      var p = {
+        name: mDef.name,
+        type: mDef.type,
+        isVar: classSystem.isVar(mDef.type),
+        defaultValue: classSystem.isVar(mDef.type) ? mDef.defaultValue : pcs.stringifyInstance(mDef.type, mDef.defaultValue)
+      };
+      if (mDef.meta){
+        p.meta = mDef.meta;
+      };
+      propertiesAr.push(p);
+      properties[mDef.name] = p;
+    };
+    
+    try{
+      if (engine.registerClass){
+        cDef.storageHandler = engine.registerClass({
+          idType: cDef.idType,
+          properties: properties,
+          propertiesAr: propertiesAr,
+          moduleName: cDef.moduleName,
+          className: cDef.className,
+          moduleHash: cDef.moduleHash
+        });
+      };
+    }catch(e){};
+  };
+  
+  pcs.saveInstance = (parType, parInstance){
+    var cDef = getClass(parType);
+    var h = *cDef.storageHandler;
+    
+    var propertiesAr = [];
+    var properties = {};
+    var map = cDef.map;
+    var i = 0;
+    for (i = 0; i < map.membersAr.length; ++i){
+      var mDef = map.membersAr[i];
+      if (!pcs.isSavableType(mDef.type) || mDef.noSave){
+        continue;
+      };
+      var p = {
+        name: mDef.name,
+        type: mDef.type,
+        isVar: classSystem.isVar(mDef.type),
+        value: classSystem.isVar(mDef.type) ? parInstance[mDef.index] : pcs.stringifyInstance(mDef.type, parInstance[mDef.index])
+      };
+      propertiesAr.push(p);
+      properties[mDef.name] = p;
+    };
+    return *h.save({
+      properties: properties,
+      propertiesAr: propertiesAr
+    });
+  };
+  
+  
+  pcs.loadInstance = (parType, parInstance){
+    var cDef = getClass(parType);
+    var h = *cDef.storageHandler;
+    
+    var propertiesAr = [];
+    var properties = {};
+    var map = cDef.map;
+    var i = 0;
+    for (i = 0; i < map.membersAr.length; ++i){
+      var mDef = map.membersAr[i];
+      if (!pcs.isSavableType(mDef.type) || mDef.noSave){
+        continue;
+      };
+      var p = {
+        name: mDef.name,
+        type: mDef.type,
+        isVar: classSystem.isVar(mDef.type)
+      };
+      if (mDef.name == "id"){
+        p.value = classSystem.isVar(mDef.type) ? parInstance[mDef.index] : pcs.stringifyInstance(mDef.type, parInstance[mDef.index]);
+      };
+      propertiesAr.push(p);
+      properties[mDef.name] = p;
+    };
+    var loadVar = *h.load({
+      properties: properties,
+      propertiesAr: propertiesAr
+    });
+    if (!loadVar){
+      return;
+    };
+    
+    //load each individual member
+    for (i = 0; i < map.membersAr.length; ++i){
+      var mDef = map.membersAr[i];
+      if (!pcs.isSavableType(mDef.type) || mDef.noSave){
+        continue;
+      };
+      //parInstance
+      if (pcs.hasOwnProperty(loadVar, mDef.name)){
+        if (classSystem.isVar(mDef.type)){
+          pcs.setMemberByDefFromInstance(parType, parInstance, mDef, loadVar[mDef.name]);
+        }else{
+          
+        };
+      };
+    };
+    
+  };
+  
+  cs.setStorageEngine = (parStorageEngine, parType){
+    if (parType){
+      var type = *cs.readyPromise(parType);
+      var cDef = getClass(type);
+      cDef.storageEngine = parStorageEngine;
+      pcs.registerSavableClass(type);
+      return;
+    };
+    try{
+      storageEnginePs.resolve(parStorageEngine);
+    };
+    storageEnginePs = new Promise();
+    storageEnginePs.resolve(parStorageEngine);
+  };
+  
+  //cs.setSaveHandler = cs.setStorageEngine;
+  
+};

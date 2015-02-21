@@ -1,0 +1,70 @@
+
+var destroyed = false;
+
+var isClient = false;
+(() exclusive "client" {
+  isClient = true;
+})();
+
+
+class type sync C1 {
+  a: 1,
+  b: 2
+};
+
+C1 local;
+
+var init = () frame "server" {
+  local = new C1();
+};
+
+extraFun (C1 par1){
+  local = par1;
+};
+
+
+x(C1 par1) frame "server" {
+  local = par1;
+  //C1 v = new C1();
+  //v.b = 6;
+  //extraFun(v);
+  return local.b;
+};
+
+getLocalB() frame "server" {
+  return local.b;
+};
+
+
+if (!isClient){
+  return { success: true }; // server is ok
+};
+
+*init();
+
+if (*getLocalB() !== 2){
+  return { success: false };
+};
+
+
+C1 temp = new C1();
+if (isClient){
+  temp.b = 4;
+};
+
+*x(temp);
+
+if (*getLocalB() !== 4){
+  return { success: false };
+};
+
+
+if (isClient){
+  temp.b = 5;
+};
+
+if (*getLocalB() !== 5){
+  return { success: false };
+};
+
+return { success: true };

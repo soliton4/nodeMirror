@@ -1,0 +1,15 @@
+var result = {
+  res: 1
+};
+
+var dostuff = ()*{
+  result.res = 4;
+};
+
+var x = ()*{
+  *dostuff();
+};
+
+*x();
+
+return result;

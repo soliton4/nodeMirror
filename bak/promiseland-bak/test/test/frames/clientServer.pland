@@ -1,0 +1,27 @@
+
+var fs;
+
+(() exclusive "server" {
+  fs = require "fs";
+})();
+
+var x = () frame "server"{
+  
+  var cb = new Callback();
+  var filenameStr = __dirname + "/clientServer.txt"
+  
+  fs.readFile(filenameStr, { encoding: "utf8" }, cb);
+  return (*(cb.promise))[1];
+};
+
+var res = *x();
+
+if (res == "the test content"){
+  return {
+    success: true
+  };
+};
+
+return {
+  success: false
+};

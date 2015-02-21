@@ -1,0 +1,28 @@
+class type C1 {
+  
+  a: 1,
+  b: (){
+    this.a = 2;
+  },
+  
+  c: C1 (){
+    return this;
+  }
+  
+}
+
+C1 v1 = new C1();
+
+C1 v2 = v1.c();
+
+v1.b();
+
+if (v2.a == 2){
+  return {
+    success: true
+  };
+};
+
+return {
+  success: false
+};

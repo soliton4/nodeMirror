@@ -1,0 +1,40 @@
+<{__promiseLandModule: true}>;
+
+  // parser
+
+    var _parserPs;
+
+    var _getParser = function(){
+      if (_parserPs){
+        return _parserPs;
+      };
+      _parserPs = _getParserPromise();
+      return _parserPs;
+    };
+
+    var _getParserPromise = function(){
+      var parser = require "./parser/parser";
+      return parser;
+    };
+    
+    
+    
+    var ParserClass = function(par){
+      this.parse = function(parStr){
+        try{
+          var parser = *_getParser();
+          return *(parser.parse(parStr));
+        }catch(e){
+          if (!e.msg){
+            e.msg = e.message;
+          };
+          throw e;
+        };
+      };
+    };
+
+
+
+
+
+    promiseland.Parser = ParserClass;

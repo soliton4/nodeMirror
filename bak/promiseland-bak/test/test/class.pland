@@ -1,0 +1,21 @@
+var C1 = class {
+  constructor: (){
+    this.a = 1;
+  }
+  , b: 1
+  , doSomething: (){
+    return this.a + this.b;
+  }
+}
+
+var c = new C1();
+
+if (c.a == 1 && c.b == 1 && c.doSomething() == 2){
+  return {
+    success: true
+  };
+};
+
+  return {
+    success: false
+  };

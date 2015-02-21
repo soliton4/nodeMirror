@@ -1,0 +1,44 @@
+
+var results = {
+  
+};
+
+var finishObj = {
+  
+};
+
+var getResultPromise = (type){
+  if (results[type]){
+    return results[type];
+  };
+  results[type] = new Promise();
+  return results[type];
+};
+
+var getFinishPromise = (type){
+  if (!finishObj[type]){
+    finishObj[type] = new Promise();
+  };
+  
+  return finishObj[type];
+};
+
+var postResult = (type, res) frame "server" {
+  getResultPromise(type).resolve(res);
+};
+
+var finish = (type){
+  getFinishPromise(type).resolve();
+};
+
+var waitForFinish = (type) frame "server" {
+  *getFinishPromise(type);
+  return true;
+}
+
+return {
+  getResultPromise: getResultPromise,
+  postResult: postResult,
+  finish: finish,
+  waitForFinish: waitForFinish
+};

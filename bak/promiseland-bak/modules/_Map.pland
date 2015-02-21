@@ -1,0 +1,28 @@
+<{  __promiseLandModule: true }>;
+
+class Map {
+  constructor: (){
+    this.map = {};
+  },
+  set: (key, value){
+    this.map[key] = value
+  },
+  get: (key){
+    if (Object.prototype.hasOwnProperty.call(this.map, key)){
+      return this.map[key];
+    };
+  },
+  getArray: (){
+    var res = [];
+    var n;
+    for (n in this.map){
+      res.push({
+        key: n,
+        value: this.map[n]
+      });
+    };
+    return res;
+  }
+};
+
+return Map;

@@ -1,0 +1,51 @@
+class type Mt1 {
+  var a1: 20,
+  var a2: 30
+}
+
+
+class type Type1 {
+  var a: 1,
+  var b: 2,
+  Mt1 m1:
+};
+
+class type Type2 {
+  var x: 3,
+  var y: 4,
+  Mt1 m2:
+};
+
+try {
+  Type1 a = new Type1();
+  Type2 b = new Type2();
+  
+  b.y = 10;
+  b.x = a.a;
+  
+  a.m1 = new Mt1();
+  a.m1.a1 = 40;
+  
+  b.m2 = a.m1;
+  
+  if (b.m2 !== a.m1){
+    return {
+      success: false
+    };
+  }
+  if (b.m2.a1 == 40){
+    return {
+      success: true
+    };
+  }
+  
+}catch(e){
+  return {
+    success: false
+  };
+}
+
+
+return {
+  success: false
+};

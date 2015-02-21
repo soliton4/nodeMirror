@@ -1,0 +1,22 @@
+
+
+class type C1 {
+  C2 m1:
+};
+
+class type C2 {
+  C1 m2:,
+    a: 1
+};
+
+
+C1 v1 = new C1();
+C2 v2 = new C2();
+
+v1.m1 = v2;
+
+if (v1.m1.a == 1){
+  return { success: true };
+};
+
+return { success: false };

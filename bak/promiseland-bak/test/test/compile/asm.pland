@@ -1,0 +1,13 @@
+var x = function f(stdlib, foreign, heap) {
+    "use asm";
+
+    // this is what we're validating
+    function f() {
+      var x = 0, y = 0;
+      x = ((x|0)%(y|0))|0;
+    }
+
+    return {};
+  };
+
+

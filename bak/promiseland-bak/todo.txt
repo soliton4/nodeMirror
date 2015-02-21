@@ -1,0 +1,16 @@
+
+todo:
+- storage meta test
+- write storage postgres
+
+- adept codemirror mode for line breaking strings
+- hp build
+
+- continue int and double type
+
+- make readable indentations
+- debugger
+
+- speed up compilation (maybe new parser)
+
+- finish template code

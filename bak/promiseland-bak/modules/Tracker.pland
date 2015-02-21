@@ -1,0 +1,190 @@
+<{__promiseLandModule: true}>;
+
+
+return (destroyFun){
+  
+  var curToken;
+  
+  var bestLen = 0;
+  var best;
+  
+  var first;
+  var last;
+  
+  var rootCnt = 0;
+  
+  var bringFront = (entry){
+    entry.cut();
+    entry.newNext(first);
+    first.newPrev(entry);
+    first = entry;
+  };
+  
+  var con = (t){
+    var next;
+    var prev;
+    var entry = {
+      newNext: (parNext){
+        if (parNext){
+          next = parNext;
+        }else{
+          last = entry;
+          next = undefined;
+        };
+      },
+      newPrev: (parPrev){
+        if (parPrev){
+          prev = parPrev;
+        }else{
+          first = entry;
+          prev = undefined;
+        };
+      },
+      getNext: (){
+        return next;
+      },
+      getCon: (token){
+        return t.getCon(token);
+      },
+      cut: cut
+    };
+    
+    var cut = (){
+      if (prev){
+        prev.newNext(next);
+      };
+      if (next){
+        next.newPrev(prev);
+      };
+    };
+    
+    var len = t.quickCon();
+    if (first){
+      if ((len && len < bestLen) || !bestLen){
+        bestLen = len;
+        first.newPrev(entry);
+        next = first;
+        first = entry;
+      }else{
+        last.newNext(entry);
+        prev = last;
+        last = entry;
+      };
+    }else{
+      bestLen = len;
+      first = entry;
+      last = entry;
+    };
+    
+    var done = false;
+    
+    return (){
+      if (done){
+        return;
+      };
+      done = true;
+      cut();
+      if (last === entry){
+        last = prev;
+      };
+      if (first === entry){
+        first = next;
+      };
+      checkFun(); // we allways need to do this check because every line cut could mean it was the last connection to root
+    };
+  };
+  
+  var checkFun = (){
+    if (!getBest()){
+      var f = destroyFun;
+      destroyFun = (){};
+      f();
+    };
+  };
+  
+  var getBest = (token){
+    if (rootCnt){
+      return 1;
+    };
+    if (token){
+      curToken = token;
+    }else{
+      curToken = {};
+    };
+    if (first){
+      var b = first.getCon(curToken);
+      if (b){
+        if (!token){
+          bestLen = b;
+        };
+        return b;
+      };
+      var iterator = first.getNext();
+      var tempBestLen = 0;
+      var tempBest;
+      while(iterator){
+        var b = iterator.getCon(curToken);
+        if ((b && b < tempBestLen) || !tempBestLen){
+          tempBestLen = b;
+          tempBest = iterator;
+        };
+        iterator = iterator.getNext();
+      };
+      if (tempBestLen){
+        if (!token){
+          bringFront(tempBest);
+          bestLen = tempBestLen;
+        };
+        return tempBestLen;
+      };
+    };
+    return 0;
+  };
+  
+  
+  
+  var tracker = {
+    getCon: (token){
+      if (curToken === token){
+        return 0;
+      };
+      return getBest(token);
+    },
+    quickCon: (){
+      if (rootCnt){
+        return 2;
+      };
+      return bestLen + 1;
+    }
+  };
+  
+  /*(){
+    *promiseland.wait(2000);
+    while (rootCnt){
+      console.log("rootCnt: " + rootCnt);
+      *promiseland.wait(5000);
+    };
+  }();*/
+  
+  
+  return [tracker,
+    (){
+      ++rootCnt;
+      var done = false;
+      return (){
+        if (done){
+          return;
+        };
+        done = true;
+        if (!(--rootCnt)){
+          checkFun({});
+        };
+      };
+    },
+
+    (t){
+      return con(t);
+    }
+  ];
+
+};

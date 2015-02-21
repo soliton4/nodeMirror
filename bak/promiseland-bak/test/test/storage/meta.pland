@@ -1,0 +1,62 @@
+
+var properties;
+
+class SaveHandler {
+  registerClass: (par)*{
+    var map = new promiseland.Map();
+    properties = par.properties;
+    return {
+      save: (par)*{
+        var i = 0;
+        var o = {};
+        for (i = 0; i < par.propertiesAr.length; ++i){
+          if (par.propertiesAr[i].name == "id"){
+            continue;
+          };
+          o[par.propertiesAr[i].name] = par.propertiesAr[i].value;
+        };
+        map.set(par.properties.id.value, o);
+      },
+      load: (par)*{
+        return map.get(par.properties.id.value);
+      },
+      delete: (par)*{
+        return map.delete(par.properties.id.value);
+      }
+    };
+    
+  }
+};
+
+class type savable C1{
+  var meta {
+    type: "int"
+  } x: 1,
+  y: 2
+};
+
+promiseland.classSystem.setStorageEngine(new SaveHandler(), C1);
+
+C1 a = *(new C1("xxx"));
+*a.save();
+
+
+if (!properties){
+  return {success: false};
+};
+
+if (!properties.x){
+  return {success: false};
+};
+
+if (!properties.x.meta){
+  return {success: false};
+};
+
+
+if (properties.x.meta.type != "int"){
+  return {success: false};
+};
+
+
+return {success: true};

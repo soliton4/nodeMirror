@@ -1,0 +1,27 @@
+class type C2 {  
+  a: 2
+};
+
+C2 b = new C2();
+b.a = 3;
+
+class type C1 {
+  
+  C2 a: new C2(),
+  constructor: (C2 par1){
+    this.a = par1;
+  }
+  
+}
+
+C1 v1 = new C1(b);
+
+if (v1.a.a == 3){
+  return {
+    success: true
+  };
+};
+
+return {
+  success: false
+};

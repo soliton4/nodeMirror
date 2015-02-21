@@ -1,0 +1,27 @@
+
+var calledCnt = 0;
+
+var x = function funName(par){
+  
+  calledCnt += 1;
+  
+  if (par){
+    return;
+  };
+  
+  funName(true);
+  
+};
+
+x();
+
+try{
+  funName();
+}catch(e){};
+
+if (calledCnt == 2){
+  return {success: true};
+  
+};
+
+return {success: false};

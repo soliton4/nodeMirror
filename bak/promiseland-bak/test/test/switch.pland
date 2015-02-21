@@ -1,0 +1,29 @@
+
+var a = 1;
+
+var c1;
+var c2;
+//var c3;
+
+var f1;
+var f2;
+
+switch(a){
+  case 2:
+    f1 = true;
+  case 1:
+    c1 = true;
+  case 3:
+    c2 = true;
+    break;
+  case 4:
+    f2 = true;
+};
+
+if (c1 && c2){
+  if (!f1 && !f2){
+    return {success: true};
+  };
+};
+
+return {success: false};

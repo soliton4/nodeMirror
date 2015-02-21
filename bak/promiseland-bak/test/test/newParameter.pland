@@ -1,0 +1,14 @@
+var T = (par){
+  this.par = par;
+};
+
+var t = new T({
+  id: 4
+});
+
+if (t.par && t.par.id == 4){
+  return { success: true };
+}
+
+return { success: false };
+ 

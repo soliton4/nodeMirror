@@ -1,0 +1,122 @@
+var Map = promiseland.Map;
+var classSystem = promiseland.classSystem;
+
+var basics = require "./basics";
+var errorFun = basics.errorFun;
+var errorMsg = basics.errorMsg;
+var _stringEncodeStr = basics._stringEncodeStr;
+var stringEncodeStr = basics.stringEncodeStr;
+
+var VariableNames = basics.VariableNames;
+var mixin = basics.mixin;
+var identifierName = basics.identifierName;
+var checkIsFunction = basics.checkIsFunction;
+var getExtraFromPar = basics.getExtraFromPar;
+var statementType = basics.statementType;
+var checkPromising = basics.checkPromising;
+
+return (parInstance, par){
+  
+  var f = (par){
+    
+    
+      this.expBlockStatement = function(par){
+        var res = this.newResult();
+        par.brackets = true;
+        res.pushType(this.blockCreator(par));
+        return res;
+      };
+
+    
+      // heart of code elements
+      /*
+        openingcode
+          precode
+            expression
+          postcode
+          precode
+            expression
+          postcode
+          ...
+        closingcode
+      */
+      
+      this.blockCreator = function(par, parExtra){
+        if (!parExtra){
+          parExtra = {};
+        };
+        var res = this.newResult();
+        res.setType(statementType);
+        
+        if (par.brackets){
+          res.push("{");
+        };
+        
+        var blockRes = this.newResult();
+        
+        var sAr = [];
+        if (par instanceof Array){
+          sAr = par;
+        }else{
+          if(par["type"] == "BlockStatement"){
+            sAr = par.body;
+          }else{
+            sAr.push(this.parseExpression(par));
+          };
+        };
+        
+        if (parExtra.preCode){
+          blockRes.push(this.newLine());
+          blockRes.push(this.makeStatement(parExtra.preCode));
+        };
+        
+        var i = 0;
+        var l = sAr.length;
+        
+        for (i; i < l; ++i){
+          if (sAr[i].type == "TryStatement" && !sAr[i].block){
+            var temp = sAr[i];
+            temp.block = sAr.splice(0, i);
+            basics.findPromises(temp.block); // info about promises is lost when we splice.
+            basics.findPromises(sAr); // info about promises is lost when we splice.
+            i = 0;
+            l = sAr.length;
+          };
+        };
+        
+        i = 0;
+        l = sAr.length;
+        
+        for (i; i < l; ++i){
+          if (sAr[i].asmIgnore){
+            continue;
+          };
+          blockRes.push(this.newLine());
+          sAr[i].isRegularStatement = true;
+          blockRes.push(this.makeStatement(this.parseExpression(sAr[i])));
+        };
+        
+        if (parExtra.postCode){
+          blockRes.push(this.newLine());
+          blockRes.push(this.makeStatement(parExtra.postCode));
+        };
+        
+        if (par.brackets || par.indent){
+          blockRes = this.indent(blockRes);
+        };
+        
+        res.push(this.makeCompleteStatement(blockRes));
+        
+        if (par.brackets){
+          res.push("}");
+        };
+        
+        return res;
+      };
+
+    
+    
+  };
+  f.apply(parInstance, [par]);
+  
+};

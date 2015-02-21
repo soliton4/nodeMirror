@@ -1,0 +1,13 @@
+var y = require "./requiredModule";
+
+//console.log(y);
+
+if (y.id == 4){
+  return {
+    success: true
+  };
+}
+
+  return {
+    success: false
+  };

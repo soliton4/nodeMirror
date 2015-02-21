@@ -1,0 +1,189 @@
+<{__promiseLandModule: true}>;
+
+
+    // main promise implementation
+    // ------------------------------------------------------------------------------------------------------------------------------
+    var Promise = function(parCancelCallback){
+      
+      var thenAr = [];
+      var elseAr = [];
+      
+      var thenFun = function(parThenFun, parElseFun){
+        if (parThenFun){
+          thenAr.push(parThenFun);
+        };
+        if (parElseFun){
+          elseAr.push(parElseFun);
+        };
+        //return returnPromise;
+      };
+      
+      this.resolve = function(value){
+        thenFun = function(parThenFun){
+          try{
+            parThenFun(value);
+          }catch(e){
+            // maybe we are ignoring to much here, lets check later
+          };
+        };
+        if (!thenAr) return;
+        var i = 0;
+        var l = thenAr.length;
+        for (i; i < l; ++i){
+          try{
+            thenAr[i](value);
+          }catch(e){
+            // will those errors ocur? if so what do we do with them?
+          }
+        };
+        thenAr = undefined; // why not delete?
+        elseAr = undefined;
+      };
+      this.reject = function(value){
+        thenFun = function(u, parElseFun){
+          if(parElseFun){
+            try{
+              parElseFun(value);
+            }catch(e){
+              // maybe we are ignoring to much here, lets check later
+            };
+          };
+        };
+        if (!elseAr) return;
+        var i = 0;
+        var l = elseAr.length;
+        for (i; i < l; ++i){
+          try{
+            elseAr[i](value);
+          }catch(e){
+            // will those errors ocur? if so what do we do with them?
+          }
+        };
+        thenAr = undefined; // why not delete?
+        elseAr = undefined;
+      };
+      
+      this.then = function(par1, par2){
+        thenFun(par1, par2);
+      };
+      
+      
+      this.cancel = (parReason){
+        this.cancel = (){};
+        thenFun = (){};
+        if (parCancelCallback){
+          parCancelCallback(parReason);
+        };
+      };
+      
+      /*this.promise = {
+        then: this.then
+      };*/
+      this.promise = this.then;
+      /* so this should be possible
+        var p = Promise();
+        var ps = p.then;
+        ps(thenfun...);
+        //alternative:
+        ps.then(thenfun...); // so the thenFun is a promise itself;
+      */
+      this.then.then = this.then;
+    };
+
+promiseland.Promise = Promise;
+
+
+    var all = function(promisesAr){
+      var res = new Promise();
+      var resAr = promisesAr ? promisesAr.slice() : [];
+      
+      var check = function(){
+        if (cnt){
+          return;
+        };
+        res.resolve(resAr);
+      };
+      var cnt = 1;
+      
+      var thenFun = function(parI){
+        return function(r){
+          resAr[parI] = r;
+          --cnt;
+          check();
+        };
+      };
+      
+      var i = 0;
+      var l = resAr.length;
+      for (i; i < l; ++i){
+        ++cnt;
+        resAr[i].then(thenFun(i));
+      };
+      
+      --cnt;
+      
+      check();
+      
+      return res;
+    };
+
+promiseland.all = all;
+
+
+var Callback = function(){
+  var promise = new Promise();
+  var callback = function(){
+    promise.resolve(arguments);
+  };
+  callback.promise = promise.promise;
+  callback.callback = callback;
+  return callback;
+};
+
+promiseland.Callback = Callback;
+
+
+var CallbackErrorFirst = function(){
+  var promise = new Promise();
+  var callback = function(err, res){
+    if (err){
+      promise.reject(err);
+      return;
+    };
+    promise.resolve(res);
+  };
+  callback.promise = promise.promise;
+  callback.callback = callback;
+  return callback;
+};
+
+promiseland.CallbackErrorFirst = CallbackErrorFirst;
+
+
+// for future use
+promiseland.getPromise = function(par){
+  return par;
+};
+
+// to import promisies from outside
+promiseland.importPromise = function(par){
+  var p = new Promise();
+  par.then(function(res){
+    p.resolve(res);
+  }, function(rea){
+    p.reject(rea);
+  });
+  return p.promise;
+};
+
+// simple wait function
+promiseland.wait = function(parMs){
+  var cb = new Callback();
+  setTimeout(cb, parMs || 0);
+  return cb.promise;
+};
+
+
+
+return Promise;
+

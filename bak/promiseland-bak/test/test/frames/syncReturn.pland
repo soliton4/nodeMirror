@@ -1,0 +1,24 @@
+class type sync C1 {
+  a: 1
+};
+
+C1 a;
+var serverInit = false;
+
+C1* x(par1) frame "server" {
+  if (!serverInit){
+    a = new C1();
+    a.a = 2;
+    serverInit = true;
+  };
+  
+  return a;
+};
+
+a = *x();
+
+if (a.a == 2){
+  return { success: true };
+};
+
+return { success: false };

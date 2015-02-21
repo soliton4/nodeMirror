@@ -1,0 +1,101 @@
+<{  __promiseLandModule: true }>;
+  
+var errorMsg = extra.errorMsg;
+
+return (classSystem, internals){
+  var cs = classSystem;
+  var classHider = internals.classHider;
+  var getClass = internals.getClass;
+  var TrackedPromise = internals.TrackedPromise;
+  
+  
+  cs._createPromiseOfClass = function(parType){
+    var self = this;
+    if (this.isProvisional(parType)){
+      var pr = this._createProvisionalClass();
+      this.definitionPromise(parType).then(function(parDefinedClass){
+        self._resolveProvisional(pr, self._createPromiseOfClass(parDefinedClass));
+      });
+      return pr;
+    };
+    if (this.isVar(parType)){
+      return parType;
+    };
+
+    var track = false;
+    if (this.isTrackedClass(parType)){
+      track = true;
+    };
+
+    var map = {
+      //members: {},
+      //"extends": []
+    };
+
+    var cDef = {
+      promiseOf: true,
+      type: parType,
+      isReady: true,
+      readyPromise: new Promise(),
+      track: track,
+      map: map
+    };
+    var cf = classHider(cDef);
+
+    if (track){
+      //cDef.trackerIdx = "tracker";
+      cDef.map.trackRootIdx = "rootTrack";
+      cDef.map.trackMemberIdx = "memberTrack";
+
+      var pcDef = getClass(parType);
+      var memberTrackMemberIdx = pcDef.map.trackMemberIdx;
+
+      cDef.constructor = function(){
+        var r = new TrackedPromise(function(parTempValue, parTracker){
+          var v = parTempValue[0]; // the value
+          var l = v[memberTrackMemberIdx](parTracker);
+          parTempValue[1](); // untrack temporary
+          return l; // the lifeLine
+        });
+        return [r, r.rootTrack()];
+      };
+
+    }else{
+      cDef.constructor = Promise;
+
+    };
+
+    cDef.readyPromise.resolve(cf);
+
+    return cf;
+  };
+
+  cs.isPromiseOfClass = function(parType){
+    var cDef = getClass(parType);
+    if (cDef.promiseOf){
+      return true;
+    };
+    return false;
+  };
+
+  cs.getClassFromPromiseOf = (parType){
+    var self = this;
+    if (this.isProvisional(parType)){
+      var pr = this._createProvisionalClass();
+      this.definitionPromise(parType).then(function(parDefinedClass){
+        self._resolveProvisional(pr, self.getClassFromPromiseOf(parDefinedClass));
+      });
+      return pr;
+    };
+    if (this.isTemporaryTrackedClass(parType)){
+      return this.getClassFromPromiseOf(this.getClassFromTemporaryTracked(parType));
+    };
+    if (this.isPromiseOfClass(parType)){
+      var cDef = getClass(parType);
+      return this._createTemporaryTrackedClass(cDef.type);
+    };
+    return parType;
+  };
+  
+  
+};

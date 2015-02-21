@@ -1,0 +1,115 @@
+var stringEncodeStr = (par){
+  var s = par.replace(new RegExp("\\\\", "g"), "\\\\");
+  s = s.replace(new RegExp("\\n", "g"), "\\n");
+  s = s.replace(new RegExp("\\r", "g"), "\\r");
+  s = s.replace(new RegExp("\\\"", "g"), "\\\"");
+  s = s.replace(new RegExp("\\u2028", "g"), "\\u2028");
+  s = s.replace(new RegExp("\\u2029", "g"), "\\u2029");
+  return "\"" + s + "\"";
+};
+
+
+return {
+  stringEncodeStr: stringEncodeStr,
+  headStr: function(par){
+    var resStr = "(function(){
+  var defineFun;
+  var __requireFun;
+  
+  if (typeof exports == \"object\" && typeof module == \"object\"){ // CommonJS
+    __requireFun = function(modulesAr, callback){
+      var i = 0;
+      var l = modulesAr.length;
+      var args = [];
+      for (i; i < l; ++i){
+        args.push(require(modulesAr[i]));
+      };
+      callback.apply(callback, args);
+    };
+    defineFun = function(requireAr, callback){
+      __requireFun(requireAr, function(){
+        module.exports = callback.apply(callback, arguments);
+      });
+    };
+    
+  }else if (typeof define == \"function\" && define.amd){ // AMD
+    var _define = define;
+    __requireFun = require;
+    
+    defineFun = function(par1, par2){
+      if (par1 instanceof Array){
+        par1.unshift(\"require\");
+      }else{
+        par2 = par1;
+        par1 = [\"require\"];
+      };
+      _define(par1, function(){
+        __requireFun = arguments[0];
+        var args = [];
+        for (var i = 1; i < argsuments.length; ++i){
+          args.push(arguments[i]);
+        };
+        return par2.apply(par2, args);
+      });
+    };
+    __requireFun = require;
+    
+  }else{ // Plain browser env
+    alert(\"not working out!\");
+    
+  };
+  
+  defineFun([";
+    var namePartStr = "";
+    var paramPartStr = "";
+    var cnt = 0;
+    if (par && par.modules){
+      for (var i in par.modules){
+        if (cnt){
+          namePartStr += ", ";
+          paramPartStr += ", "
+        };
+        cnt++;
+      };
+      namePartStr += stringEncodeStr(par.modules[i]);
+      paramPartStr += i;
+    };
+    var requireNameStr = "require";
+    if (par && par.requireName){
+      requireNameStr = par.requireName;
+    };
+    resStr += namePartStr;
+    resStr += "], function("
+    resStr += paramPartStr;
+    resStr += "){ 
+    var " + requireNameStr + " = __requireFun;
+    __requireFun = undefined;
+";
+    return resStr;
+  },
+  
+  promiseLandDefinitionsStr: (){
+    return "var __Promise = promiseland.Promise;
+  var __module = new __Promise();
+  var __requireFun = function(parModule){
+    var returnPromise = new __Promise();
+    try{__require([parModule], function(m){
+    if (promiseland.isPromiseLandModule(m)){
+      m.then(function(realm){returnPromise.resolve(realm);}, function(e){returnPromise.reject(e);});
+    }else{
+      returnPromise.resolve(m);
+    };
+    });
+    }catch(e){returnPromise.reject(e);};
+  return returnPromise.promise;};
+  
+  ";
+  
+  },
+  footStr: function(){
+    return "return __module.promise.then;
+  });
+})();";
+    
+  }
+}

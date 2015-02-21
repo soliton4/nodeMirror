@@ -1,0 +1,17 @@
+var catched;
+
+var res = some.error();
+
+catch(e){
+  catched = true;
+};
+
+if (!catched){
+  return {
+    success: false
+  };
+};
+
+return {
+  success: true
+};

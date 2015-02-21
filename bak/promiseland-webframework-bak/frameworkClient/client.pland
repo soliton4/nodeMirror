@@ -1,0 +1,152 @@
+
+promiseland.addLocalFrameName("client");
+
+var Eventemitter = require "./Eventemitter";
+
+var ServerFrame = class extends promiseland.FrameBaseClass {
+  name: "server"
+};
+
+var ServerNoAuthFrame = class extends promiseland.FrameBaseClass {
+  name: "serverNoAuth"
+};
+
+
+var serverFrame = new ServerFrame();
+promiseland.addFrame(serverFrame);
+    
+var serverNoAuthFrame = new ServerNoAuthFrame();
+promiseland.addFrame(serverNoAuthFrame);
+
+var wait = (parMs){
+  var cb = new Callback();
+  setTimeout(cb, parMs || 2000);
+  *cb.promise;
+}
+
+var connectPs = new Promise;
+
+var authPs = new Promise;
+
+var startConnect = (client){
+  
+  console.log("start connecting");
+  
+  var serverConnection;
+  var authConnection;
+  
+  var socket = io.connect(null, {
+    //reconnection: false,
+    timeout: 10,
+    //multiplex: false,
+    //'force new connection': true
+  });
+  var failFun = (){
+    if (client.connected){
+      client.connected = false;
+      client._newPromises();
+      client.emit("disconnect");
+    };
+    console.log("connection failed");
+    try{
+    if (serverConnection){
+      serverConnection.disconnect();
+      serverConnection = undefined;
+    };
+    if (authConnection){
+      authConnection.disconnect();
+      authConnection = undefined;
+    };
+    }catch(e){};
+  };
+  //socket.on("connect_error", failFun); // looks like we dont need this
+  socket.on("connect_timeout", failFun);
+  socket.on("reconnect_attempt", (){
+    console.log("reconnect_attempt");
+  });
+  socket.on("reconnecting", (){
+    console.log("reconnecting");
+  });
+  socket.on("reconnect_error", failFun);
+  socket.on("reconnect_failed", failFun);
+  
+  var connectFun = function(){
+    console.log("connected");
+    
+    if (serverConnection){
+      console.log("something is strange");
+    };
+    client.connected = true;
+    
+    serverConnection = new serverFrame.ConnectionBaseClass();
+    serverConnection.send = (data){
+      socket.emit("pl", data);
+    };
+    serverFrame.newConnection(serverConnection);
+    
+    client._resolveConnectPs();
+    client.emit("connect");
+    
+    authConnection = new serverFrame.ConnectionBaseClass();
+    authConnection.send = (data){
+      socket.emit("a", data);
+    };
+    serverNoAuthFrame.newConnection(authConnection);
+    
+    client._resolveAuthPs();
+    client.emit("auth_connect");
+
+  };
+  socket.on("pl", function(data){
+    serverConnection.data(data);
+  });
+  socket.on("a", function(data){
+    authConnection.data(data);
+  });
+  socket.on("connect", connectFun);
+  //socket.on("reconnect", connectFun);
+
+  socket.on("disconnect", failFun);
+  
+};
+
+
+class Client extends Eventemitter {
+  connected: false,
+  constructor: (){
+    this._newPromises();
+    var self = this;
+    (){
+      *wait(100);
+      startConnect(self);
+    }();
+  },
+  _newPromises: (){
+    this._connectPs = new Promise();
+    this._authPs = new Promise();
+  },
+  _resolveConnectPs: (){
+    this._connectPs.resolve();
+    catch(e){
+      console.log(e);
+    };
+  },
+  _resolveAuthPs: (){
+    this._connectPs.resolve();
+    catch(e){
+      console.log(e);
+    };
+  },
+  getConnectPs: (){
+    return this._connectPs;
+  },
+  getAuthPs: (){
+    return this._authPs;
+  }
+};
+
+var client = new Client();
+
+
+
+return client;

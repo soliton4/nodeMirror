@@ -1,0 +1,1619 @@
+<{
+  __promiseLandModule: true,
+  require: {
+    DynInstance: "./classSystem/DynInstance",
+    Wrapper: "./classSystem/Wrapper",
+    TrackedPromise: "./classSystem/TrackedPromise",
+    provisional: "./classSystem/provisional",
+    temporary: "./classSystem/temporary",
+    promiseOf: "./classSystem/promiseOf",
+    sync: "./classSystem/sync",
+    savable: "./classSystem/savable",
+    codeGeneration: "./classSystem/codeGeneration",
+    Map: "./Map",
+    makroModule: "./classSystem/makro"
+  }
+}>;
+
+var errorMsg = extra.errorMsg;
+DynInstance = extra.getModule(DynInstance);
+Wrapper = extra.getModule(Wrapper);
+TrackedPromise = extra.getModule(TrackedPromise);
+provisional = extra.getModule(provisional);
+temporary = extra.getModule(temporary);
+promiseOf = extra.getModule(promiseOf);
+sync = extra.getModule(sync);
+savable = extra.getModule(savable);
+makroModule = extra.getModule(makroModule);
+codeGeneration = extra.getModule(codeGeneration);
+Map = extra.getModule(Map);
+
+
+
+/* 
+  class system
+  everything type safety related
+  highly interconnects with the other modules
+*/
+
+// import from other modules
+var getModuleData;
+((){
+  getModuleData = (*extra.moduleSystemPs).getModuleData;
+})();
+
+var Tracker;
+((){
+  Tracker = (*extra.TrackerPs).Tracker;
+})();
+var Chainable;
+((){
+  Chainable = (*extra.ChainablePs).Chainable;
+})();
+
+var stringify = (par){
+  return JSON.stringify(par);
+};
+
+var stringifyInstance = (parType, parInstance){
+  if (!classSystem.isUniqueClass(parType)){
+    throw errorMsg.onlyUniqueCanBeStringified;
+  };
+  
+};
+
+/*
+
+  definitions:
+  
+  classtype / type / class
+    a type that is subject of typechecks
+    
+  instance
+    a created instance of a certain type
+  
+  tracked type
+    all variables / members containing the instance are being kept tracked of.
+    this is accomplished by a second variable containing a life line
+    
+  life line
+    a function that represents a instance right to exist.
+    life lines are capped by executing it.
+    if all life lines are gone, the instance is being destroyed
+    the destrut function of that instance is being called
+  
+  temporary tracked
+    a temporary varibale that is not represented as actual variable or member
+    it is used to deal with temporary function results or parameter passage
+    it is implemented as array of the instance and a life line 
+      [instance, lifeline]
+    
+  promiseOf
+    a typed promise that is resolving in a instance of a specified type
+    promises of trackable objects resolve to a temporary and have a extendec api
+    they can also be temporary themselves
+    
+  DynInstance
+    a non typed class that is being used to deal with instances internaly
+    its not intended for use outside of the promiseland modules
+
+*/
+
+
+/*var makro.SELF = 0;
+var makro.PROPERTY = 1;
+var makro.PROPERTYSTRING = 2;
+var makro.PROPERTYVALUE = 3;
+var makro.VALUE = 4;
+var makro.LEFT = 5;
+var makro.OPERATOR = 6;
+var makro.RIGHT = 7;
+var makro.VALUEPROPERTY = 8;
+var makro.RESOLVEFUN = 9;
+var makro.REJECTFUN = 10;
+var makro.TYPEVALUE = 11;
+var makro.CONSTRUCTOR = 12;
+*/
+
+// unhide class types    
+
+var _actClass;
+var getClass = function(cf){
+  _actClass = undefined;
+  cf();
+  return _actClass;
+};
+
+var classHider = function(toHide){
+  return function(){
+    _actClass = toHide;
+  };
+};
+
+
+// buildins
+
+var buildInTypesMap = new Map();
+buildInTypesMap.set("var", classHider({
+  isVar: true,
+  isReady: true,
+  availableByName: true,
+  builtin: true
+}));
+buildInTypesMap.set("statement", classHider({
+  isStatement: true,
+  isReady: true,
+  availableByName: false,
+  builtin: true
+}));
+buildInTypesMap.set("int", classHider({
+  isInt: true,
+  isReady: true,
+  availableByName: true,
+  builtin: true,
+  needsInitialization: true,
+  initializationValue: ["0"]
+}));
+buildInTypesMap.set("double", classHider({
+  isDouble: true,
+  isReady: true,
+  availableByName: true,
+  builtin: true,
+  needsInitialization: true,
+  initializationValue: ["0.0"]
+}));
+
+// helper function to add cast routines
+var addCast = (parToType, parCast){
+  var cDef = getClass(parToType);
+  if (!cDef.cast){
+    cDef.cast = [];
+  };
+  cDef.cast.push(parCast);
+};
+
+// delay execution till makro is defined
+var createCastings = (){
+
+  // int -> var
+  addCast(buildInTypesMap.get("var"), {
+    type: buildInTypesMap.get("int")
+  });
+
+  // var -> int
+  addCast(buildInTypesMap.get("int"), {
+    type: buildInTypesMap.get("var"),
+    makro: ["((", makro.SELF, ")|0)"]
+  });
+
+  // double -> var
+  addCast(buildInTypesMap.get("var"), {
+    type: buildInTypesMap.get("double")
+  });
+
+  // var -> double
+  addCast(buildInTypesMap.get("double"), {
+    type: buildInTypesMap.get("var"),
+    makro: ["(+(", makro.SELF, "))"]
+  });
+  
+};
+
+
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+
+/*
+  private parts of the classSystem
+*/
+var privateClassSystem = {
+  
+  stringifyInstance: stringifyInstance,
+  stringify: stringify,
+  
+  getMemberByName: (parType, parInstance, parMemberName){
+    var cDef = getClass(parType);
+    var mDef = cDef.map.members[parMemberName];
+    if (mDef){
+      return parInstance[mDef.index];
+    };
+    if (cDef.map.freePart !== undefined){
+      return parInstance[cDef.map.freePart][parMemberName];
+    };
+    return;
+  },
+  
+  
+  getCasting: function(parToType, parFromType, parErrorFun){
+    var fromCDef = getClass(parFromType);
+    var toCDef = getClass(parToType);
+    
+    if (fromCDef === toCDef || cs.isSameType(parFromType, parToType)){
+      return [makro.SELF];
+    };
+    
+    if (toCDef.cast){
+      var casts = toCDef.cast;
+      var i = 0;
+      for (i = 0; i < casts.length; ++i){
+        if (casts[i].type === parFromType){
+          if (casts[i].makro){
+            return casts[i].makro;
+          }else{
+            return [makro.SELF];
+          };
+        };
+      };
+    };
+
+    // temporary check
+    /*if (this.isTemporaryTrackedClass(parFromType)){
+      // temporary sourcetype can only pass as temporary target
+      if (this.isTemporaryTrackedClass(parToType)){
+        return this.getCasting(this.getClassFromTemporaryTracked(parToType), this.getClassFromTemporaryTracked(parFromType), parErrorFun);
+      };
+      return false;
+    };*/
+    if (cs.isTemporaryTrackedClass(parToType)){
+      if (cs.isTemporaryTrackedClass(parFromType)){
+        // both are temporary
+        return this.getCasting(cs.getClassFromTemporaryTracked(parToType), cs.getClassFromTemporaryTracked(parFromType), parErrorFun);
+      };
+      // temporary target is allways possible
+      // code is generated in getPassAsTypeCode
+      return pcs.createTemporaryClassMakro(cs.getClassFromTemporaryTracked(parToType), this.getCasting(cs.getClassFromTemporaryTracked(parToType), parFromType));
+    };
+
+
+    if (
+      cs.isFunctionType(parToType) && cs.isFunctionType(parFromType)
+      && cs.canSet(cs.getFunctionReturnType(parToType), cs.getFunctionReturnType(parFromType))
+      && toCDef.parameters.length == fromCDef.parameters.length
+    ){
+      var allOk = true;
+      var i = 0;
+      var l = toCDef.parameters.length;
+      for (i; i < l; ++i){
+        var tp = toCDef.parameters[i];
+        var sp = fromCDef.parameters[i];
+        if (!cs.canSet(sp, tp)){
+          allOk = false;
+        };
+      };
+      if (allOk){
+        return [makro.SELF];
+      };
+    };
+    debugger;
+    return [internals.runtimeError(errorMsg.typeMissmatch, {errorFun: parErrorFun})];
+    
+  },
+  
+  
+  
+  
+  getTrackerFromInstance: (parType, parInstance){
+    var cDef = getClass(parType);
+    return parInstance[cDef.map.trackerIdx];
+  },
+  
+  setMemberByDefFromInstance: (parType, parInstance, parMemberDefinition, parValueInstance){
+    var realInstance = privateClassSystem.getRealInstance(parType, parInstance);
+    
+    realInstance[parMemberDefinition.index] = parValueInstance;
+    
+    if (classSystem.isTrackedClass(parMemberDefinition.type)){
+      var tracker = classSystem.getTrackerFromInstance(parType, realInstance);
+      var cDef = getClass(parMemberDefinition.type);
+      var trackMemberIdx = cDef.map.trackMemberIdx;
+
+      if (realInstance[parMemberDefinition.trackIndex]){
+        realInstance[parMemberDefinition.trackIndex]();
+      };
+      realInstance[parMemberDefinition.trackIndex] = parValueInstance[trackMemberIdx](tracker);
+    };
+  },
+    
+  // generic function to get the actual instance
+  // this applies to temporaries and what ever cracy class type modifiers we come up in the future
+  getRealInstance: (parType, parInstance){
+    if (classSystem.isTemporaryTrackedClass(parType)){
+      return parInstance[0];
+    };
+    return parInstance;
+  },
+  
+  getNonTemporaryType: (parType){
+    if (classSystem.isTemporaryTrackedClass(parType)){
+      return classSystem.getClassFromTemporaryTracked(parType);
+    };
+    return parType;
+  },
+  
+  // generic function to make sure temproraries are no longer tracked
+  untrack: (parType, parInstance){
+    if (parInstance && classSystem.isTemporaryTrackedClass(parType)){
+      parInstance[1]();
+    };
+  },
+  
+  hasOwnProperty: (obj, property){
+    return hasOwnProperty.apply(obj, [property]);
+  },
+  
+  resolvePromise: (parType, parPromise, parInstance){
+    this.getRealInstance(parType, parPromise).resolve(parInstance);
+    return parPromise;
+  },
+  rejectPromise: (parType, parPromise, parInstance){
+    this.getRealInstance(parType, parPromise).reject(parInstance);
+    return parPromise;
+  }
+};
+
+var pcs = privateClassSystem;
+
+
+/* 
+  main classystem variable
+  ---------------------------------------------------------------------------------------------------------
+*/
+
+var classSystem = {
+
+  isSameType: function(type1, type2){
+    if (type1 === type2){
+      return true;
+    };
+    var cDef1 = getClass(type1);
+    if (cDef1.provisional){
+      if (!cDef1.type){
+        return false;
+      };
+      type1 = cDef1.type;
+      cDef1 = getClass(type1);
+    };
+    var cDef2 = getClass(type2);
+    if (cDef2.provisional){
+      if (!cDef2.type){
+        return false;
+      };
+      type2 = cDef2.type;
+      cDef2 = getClass(type2);
+    };
+    if (type1 === type2){
+      return true;
+    };
+    return false;
+  },
+
+
+/*
+      the classLiteral is used to ensure consistency between
+      compiletime type safety and runtime type safety
+
+      it contains class objects for members that are replaced with their names in sourcecode.
+
+      structure:
+      {
+        members:[
+          {
+            name: "nameliteral",
+            type: typeObject
+          },
+          ...
+        ],
+        extends: [typeObject, ...],
+        hasFreePart: true / false
+      }
+
+*/
+  // wrap arround _createClass
+  createClass: function(classLiteral, parDefaults){
+    var self = this;
+    return self._createClass(classLiteral, parDefaults);
+  },
+  
+  _membersDefined: function(classLiteral){
+    var self = this;
+
+    var cnt = 1;
+    var retPs = new Promise();
+
+    var check = function(){
+      if (cnt){
+        return;
+      };
+      retPs.resolve(classLiteral);
+    };
+
+    var addMember = function(m){
+      ++cnt;
+      self.definitionPromise(m.type).then(function(definedType){
+        m.type = definedType;
+        --cnt;
+        check();
+      });
+    };
+
+    if (classLiteral.members){
+      var i = 0;
+      for (i; i < classLiteral.members.length; ++i){
+        addMember(classLiteral.members[i]);
+      };
+    };
+    --cnt;
+    check();
+
+    return retPs;
+
+  },
+
+  /*
+      [
+        { // untyped part
+
+        },
+        ... // members
+      ]
+  */
+  _createClass: function(classLiteral, parDefaults){
+    var cAr = [];
+    var self = this;
+
+    var map = {
+      members: {},
+      membersByIndex: {},
+      membersAr: [],
+      "extends": []
+    };
+
+    // -------------------------------------------------------------------------
+    // basic unfinished definition
+    var cDef = {
+      constructor: undefined, // later
+      map: map,
+      isReady: false,
+      track: (classLiteral.track || classLiteral.sync) ? true : false,
+      sync: classLiteral.sync,
+      unique: classLiteral.unique,
+      savable: classLiteral.savable,
+      readyPromise: new Promise(),
+      syncMembers: [],
+      moduleName: classLiteral.moduleName,
+      className: classLiteral.className,
+      moduleHash: classLiteral.hashStr
+    };
+    //class hider to pass type arround without changing it
+    var cf = classHider(cDef);
+
+    if (cDef.sync){
+      if (cDef.sync.serve){
+        cDef.syncServe = true;
+      };
+    };
+    // savable implies unique
+    if (cDef.savable){
+      cDef.unique = true;
+    };
+    
+    cAr.push(cf); // cAr[0] is allways the class
+
+
+    var sync = classLiteral.sync ? true : false;
+    var syncAll = false;
+    if (sync){
+      if (classLiteral.sync.all){
+        syncAll = true;
+      };
+    };
+    var syncCnt = 0;
+    
+    
+    // -------------------------------------------------------------------------
+    // track
+    var trackerIdx;
+    var trackRootIdx;
+    var trackMemberIdx;
+
+    if (cDef.track){
+      map.trackerIdx = cAr.length;
+      cAr.push(undefined); // cAr[1] is allways lifeline if tracked
+      map.trackRootIdx = cAr.length;
+      cAr.push(undefined); // cAr[1] is allways lifeline if tracked
+      map.trackMemberIdx = cAr.length;
+      cAr.push(undefined); // cAr[1] is allways lifeline if tracked
+      trackerIdx = map.trackerIdx;
+      trackRootIdx = map.trackRootIdx;
+      trackMemberIdx = map.trackMemberIdx;
+    };
+
+    // -------------------------------------------------------------------------
+    // sync
+    if (sync){
+      map.syncDataIdx = cAr.length;
+      cAr.push(function(){
+        var self = this;
+        var internalId;
+        var syncData = {
+          getInternalId: function(){
+            if (internalId){
+              return internalId;
+            };
+            internalId = getNewInternalId();
+            internalObjects[internalId] = self;
+            syncData.internalId = internalId;
+            return internalId;
+          },
+          transports: []
+        };
+        this[map.syncDataIdx] = function(){
+          return syncData;
+        };
+        return syncData;
+      });
+    };
+
+
+    // -------------------------------------------------------------------------
+    // free part
+    if (classLiteral.hasFreePart){
+      var freepart = {};
+      map.freePart = cAr.length;
+      cAr.push(freepart);
+      map.getMemberCode = presets.getMemberCode(map.freePart);
+      map.setMemberCode = presets.setMemberCode(map.freePart);
+    };
+
+
+    var helpAr = [];
+    var makeHelpAr = function(){
+      return helpAr.slice();
+    };
+
+    // -------------------------------------------------------------------------
+    // connect
+    map.connectIdx = cAr.length;
+    var conIdx = map.connectIdx;
+    cAr.push(function(){
+      var helpAr = makeHelpAr();
+      this[conIdx] = function(idx, fun, base){
+        var chain = helpAr[idx];
+        if (!chain){
+          chain = Chainable(this, idx);
+          helpAr[idx] = chain;
+        };
+        return chain(fun, base);
+      };
+      return this[conIdx].apply(this, arguments);
+    });
+
+
+
+    // -------------------------------------------------------------------------
+    // members
+    var constructorDef;
+    var constructorFun;
+
+    var destroyDef;
+    var destroyFun;
+    var untrackIdxAr = [];
+
+    var addMember = (m){
+      var mDef = {
+        index: cAr.length,
+        name: m.name
+      };
+      if (syncAll || m.sync){
+        mDef.sync = true;
+      };
+      if (m.meta){
+        mDef.meta = m.meta;
+      };
+      mDef.type = m.type;
+      var mType = m.type;
+      
+      var isFunction = self.isFunctionType(mDef.type);
+
+      var memberIdx = mDef.index;
+      var isTrackedMember = self.isTrackedClass(mDef.type);
+      
+      if (cDef.unique){
+        if (m.name == "id"){
+          cDef.idIndex = memberIdx;
+          cDef.idDef = mDef;
+        };
+      };
+      
+      
+      if (mDef.sync){
+        mDef.hasSetter = true;
+        if (isTrackedMember){
+          mDef.defaultSetter = function(vAr){ syncFun(this, memberIdx, mType, vAr[0]); return vAr; };
+        }else{
+          mDef.defaultSetter = function(v){ syncFun(this, memberIdx, mType, v); return v; };
+        };
+        cDef.syncMembers.push(mDef);
+      };
+      
+      if (m.noSave){
+        mDef.noSave = true;
+      };
+
+      map.members[m.name] = mDef;
+      map.membersByIndex[mDef.index] = mDef;
+      map.membersAr.push(mDef);
+      var def = parDefaults ? parDefaults[m.name] : undefined;
+      mDef.defaultValue = def;
+      if (isFunction && mDef.sync){
+        if (!(m.name == "constructor" || m.name == "destroy")){
+          var originalFun = def;
+          def = (){
+            syncFunctionFun(this, memberIdx, mType, arguments);
+            return originalFun.apply(this, arguments);
+          };
+        };
+      };
+      cAr.push(def);
+
+      if (mDef.hasSetter){
+        mDef.setterIdx = cAr.length;
+        cAr.push(mDef.defaultSetter);
+      };
+
+      if (m.name == "constructor"){
+        // this is the constructor
+        constructorDef = mDef;
+        constructorFun = def;
+      };
+
+      if (m.name == "destroy"){
+        // this is the destructor
+        destroyDef = mDef;
+        destroyFun = def;
+      };
+
+      mDef.getCode = [makro.SELF, "[" + mDef.index + "]"];
+      if (mDef.hasSetter){
+        // call setter before assigning
+        mDef.setCode = ["(function(s, v){ v = s[" + mDef.setterIdx + "](v); s[" + mDef.index + "] ", makro.OPERATOR, " v; return v; })(", makro.SELF, ", ", makro.VALUE, ")"];
+
+      }else{
+        mDef.setCode = [makro.SELF, "[" + mDef.index + "] ", makro.OPERATOR, " " , makro.VALUE];
+
+      };
+      if (isTrackedMember){
+        var mCDef = getClass(mDef.type);
+        var memberTrackMemberIdx = mCDef.map.trackMemberIdx;
+        var memberTrackRootIdx = mCDef.map.trackRootIdx;
+
+        mDef.trackIndex = cAr.length;
+        cAr.push(undefined);
+        untrackIdxAr.push(mDef.trackIndex);
+        
+        if (cDef.track){
+          if (mDef.hasSetter){
+            mDef.setCode              = ["(function(s, v){ var vAr = [v, v[" + memberTrackRootIdx + "]()]; vAr = s[" + mDef.setterIdx + "](vAr); s[" + mDef.index + "] ", makro.OPERATOR, " v; if(s[" + mDef.trackIndex + "]){ s[" + mDef.trackIndex + "](); }; s[" + mDef.trackIndex + "] = v[" + memberTrackMemberIdx + "](s[" + trackerIdx + "]); vAr[1](); return v; })(", makro.SELF, ", ", makro.VALUE, ")"];
+            mDef.setCodeFromTemporary = ["(function(s, vAr){ vAr = s[" + mDef.setterIdx + "](vAr); var v = vAr[0]; s[" + mDef.index + "] ", makro.OPERATOR, " v; if(s[" + mDef.trackIndex + "]){ s[" + mDef.trackIndex + "](); }; s[" + mDef.trackIndex + "] = v[" + memberTrackMemberIdx + "](s[" + trackerIdx + "]); vAr[1](); return v; })(", makro.SELF, ", ", makro.VALUE, ")"];
+
+          }else{
+            //mDef.setCode = [runtimeError(errorMsg.onlyTrackedClassesCanContainTrackedMembers)]; // setters are allways called as temporary
+            mDef.setCode = ["(function(s, v){ s[" + mDef.index + "] ", makro.OPERATOR, " v; if(s[" + mDef.trackIndex + "]){ s[" + mDef.trackIndex + "](); }; s[" + mDef.trackIndex + "] = v[" + memberTrackMemberIdx + "](s[" + trackerIdx + "]); return v; })(", makro.SELF, ", ", makro.VALUE, ")"];
+            mDef.setCodeFromTemporary = ["(function(s, vAr){ var v = vAr[0]; s[" + mDef.index + "] ", makro.OPERATOR, " v; if(s[" + mDef.trackIndex + "]){ s[" + mDef.trackIndex + "](); }; s[" + mDef.trackIndex + "] = v[" + memberTrackMemberIdx + "](s[" + trackerIdx + "]); vAr[1](); return v; })(", makro.SELF, ", ", makro.VALUE, ")"];
+
+          };
+        }else{
+          mDef.setCode = [runtimeError(errorMsg.onlyTrackedClassesCanContainTrackedMembers)];
+          mDef.setCodeFromTemporary = [runtimeError(errorMsg.onlyTrackedClassesCanContainTrackedMembers)];
+        };
+      };
+      mDef.connectFunCode = [makro.SELF, "[" + map.connectIdx + "](" + mDef.index + ", ", makro.VALUE, ")"];
+      mDef.connectSlotCode = [makro.SELF, "[" + map.connectIdx + "](" + mDef.index + ", ", makro.VALUE, "[", makro.VALUEPROPERTY, "], ", makro.VALUE, ")"];
+      
+    };
+    
+    var createMembersPs = function(){
+      var donePs = new Promise();
+      self._membersDefined(classLiteral).then(function(){
+        
+        var i;
+        // get constructor type
+        var passedConstructorType;
+        if (classLiteral.members){
+          for (i = 0; i < classLiteral.members.length; ++i){
+            var m = classLiteral.members[i]
+            if (m.name == "constructor"){
+              passedConstructorType = m.type;
+              break;
+            };
+          };
+        };
+        if (passedConstructorType){
+
+          var conDef = getClass(passedConstructorType);
+          cDef.constructorType = self.createFunctionType({
+            "return": cf,
+            arguments: conDef.arguments
+          });
+
+        }else{
+          cDef.constructorType = self.createFunctionType({
+            "return": cf
+          });
+        };
+        cDef.constructorTypeIntern = cDef.constructorType;
+
+        if (cDef.unique){
+          // make id the first member
+          // id must not be defined
+          classLiteral.members = classLiteral.members || [];
+          
+          cDef.idType = self.getFunctionArgumentType(cDef.constructorTypeIntern, 0);
+          
+          
+          classLiteral.members.unshift({
+            name: "id",
+            "type": cDef.idType
+            //"defaultValue": undefined
+          });
+          
+          if (cDef.savable){
+            classLiteral.members.unshift({
+              name: "save",
+              "type": classSystem.getBuiltinType("var"),
+              noSave: true
+            });
+            parDefaults.save = (){
+              *pcs.saveInstance(cf, this);
+            };
+            classLiteral.members.unshift({
+              name: "load",
+              "type": classSystem.getBuiltinType("var"),
+              noSave: true
+            });
+            parDefaults.load = (){
+              *pcs.loadInstance(cf, this);
+            };
+            var conDef = getClass(cDef.constructorTypeIntern);
+            cDef.constructorReturnType = self._createPromiseOfClass( pcs.getNonTemporaryType(conDef.return) );
+            cDef.constructorType = self.createFunctionType({
+              "return": cDef.constructorReturnType,
+              arguments: conDef.arguments
+            });
+            cDef.constructorReturnType = cs.getFunctionReturnType(cDef.constructorType);
+          };
+          
+        };
+        
+        
+        if (classLiteral.members){
+          var i = 0;
+          for (i; i < classLiteral.members.length; ++i){
+            addMember(classLiteral.members[i]);
+          };
+        };
+
+        donePs.resolve();
+      });
+      return donePs;
+    };
+    var memberPs = createMembersPs();
+
+
+    var i;
+
+    var finalPs = new Promise();
+    memberPs.then(function(){
+      var i;
+
+
+      // ------------------------------------------------------------------
+      // constructor creation
+
+      var simpleConstructor = true;
+      var hasDestructor = false;
+      if ( cDef.track
+        || cDef.unique
+      ){
+        simpleConstructor = false;
+      };
+      if (cDef.track || sync){
+        hasDestructor = true;
+      };
+
+      //helperArray
+      for (i = 0; i < cAr.length; ++i){
+        helpAr.push(undefined);
+      };
+      cDef.constructorArguments = [];
+      
+      if (simpleConstructor){
+        if (classLiteral.hasFreePart){
+          var proto = {};
+          if (parDefaults){
+            for (i in parDefaults){
+              if (!map.members[i]){
+                proto[i] = parDefaults[i];
+              };
+            };
+          };
+          var freeFun = function(){};
+          freeFun.prototype = proto;
+          var f = map.freePart;
+
+          cDef.constructor = function(){
+            var r = cAr.slice();
+            r[f] = new freeFun();
+            return r;
+          };
+
+        }else{
+          cDef.constructor = function(){
+            return cAr.slice();
+          };
+        };
+        
+        if (constructorDef){
+          var realConstructor = cDef.constructor;
+          cDef.constructor = function(){
+            var instance = realConstructor();
+            constructorFun.apply(instance, arguments);
+            return instance;
+          };
+        };
+        
+      }else{
+        
+        var constructorStr = "";
+        var importObj = {};
+        
+        var importVar = (v, name){
+          importObj[name] = v;
+        };
+        
+        constructorStr += "var r;";
+        
+        // unique constructor part 1
+        if (cDef.unique){
+          var uniqueMap = new Map();
+          var hasVarId = self.isVar(cDef.idType);
+          var idType = cDef.idType;
+          importVar(idType, "idType");
+          var idDef = cDef.idDef;
+          
+          if (cDef.savable){
+            importVar(cs, "cs");
+            importVar(cDef, "cDef");
+            importVar(cs.getTypeConstructor(pcs.getNonTemporaryType(cDef.constructorReturnType)), "returnPromiseConstructor");
+            constructorStr += "var resPs = new returnPromiseConstructor;";
+          };
+          
+          // standard unique constructor
+          if (hasVarId){
+            importVar(stringify, "stringify");
+            constructorStr += "var key = stringify(arguments[0]);";
+          }else{
+            importVar(stringify, "stringifyInstance");
+            constructorStr += "var key = stringifyInstance(idType, arguments[0]);";
+          };
+          importVar(uniqueMap, "uniqueMap");
+          importVar(privateClassSystem, "privateClassSystem");
+          constructorStr += "r = uniqueMap.get(key);";
+          constructorStr += "if (r){";
+          constructorStr += "if (arguments[0]){";
+          constructorStr += "privateClassSystem.untrack(idType, arguments[0]);";
+          constructorStr += "};";
+          constructorStr += "}else{";
+        };
+
+
+        importVar(cAr, "cAr");
+        constructorStr += "r = cAr.slice();";
+
+        // constructor free part creation
+        if (classLiteral.hasFreePart){
+          var proto = {};
+          if (parDefaults){
+            for (i in parDefaults){
+              if (!map.members[i]){
+                proto[i] = parDefaults[i];
+              };
+            };
+          };
+          var freeFun = function(){};
+          freeFun.prototype = proto;
+          var freeIndex = map.freePart;
+
+          importVar(freeFun, "freeFun");
+          importVar(freeIndex, "freeIndex");
+
+          constructorStr += "r[freeIndex] = new freeFun();";
+
+        };
+
+
+        // unique constructor part 2
+
+        if (cDef.unique){
+          importVar(cf, "cf");
+          importVar(idDef, "idDef");
+          constructorStr += "privateClassSystem.setMemberByDefFromInstance(cf, r, idDef, arguments[0]);";
+          constructorStr += "uniqueMap.set(key, r);";
+          constructorStr += "r.map = uniqueMap;";
+          constructorStr += "r.key = key;";
+
+          if (cDef.savable){
+            constructorStr += "var doLoad = true;";
+          };
+
+          constructorStr += "};";
+        };
+        constructorStr += "var realInstance = r;";
+
+        // track constructor part
+        if (cDef.track){
+          importVar(Tracker, "Tracker");
+          importVar((){
+            destroyFun.apply(this, arguments);
+          }, "destroyFun");
+          importVar(trackerIdx, "trackerIdx");
+          importVar(trackRootIdx, "trackRootIdx");
+          importVar(trackMemberIdx, "trackMemberIdx");
+
+          constructorStr += "var t = Tracker(function(){";
+          constructorStr += "destroyFun.apply(realInstance);";
+          constructorStr += "});";
+          constructorStr += "realInstance[trackerIdx] = t[0];";
+          constructorStr += "realInstance[trackRootIdx] = t[1];";
+          constructorStr += "realInstance[trackMemberIdx] = t[2];";
+          constructorStr += "r = [realInstance, realInstance[trackRootIdx]()];";
+        };
+        
+        constructorStr += "var nonPromiseResult = r;";
+
+        if (cDef.savable){
+          importVar(pcs, "pcs");
+          constructorStr += "if (doLoad){";
+          constructorStr += "pcs.loadInstance(cf, realInstance).then(function(){";
+          constructorStr += "pcs.resolvePromise(cDef.constructorReturnType, resPs, nonPromiseResult);";
+          constructorStr += "}, function(e){ pcs.rejectPromise(cDef.constructorReturnType, resPs, e); });";
+          constructorStr += "}else{";
+
+          constructorStr += "pcs.resolvePromise(cDef.constructorReturnType, resPs, nonPromiseResult);";
+          constructorStr += "};";
+          constructorStr += "r = resPs;";
+        };
+        
+        // call custorm constructor
+        if (constructorDef){
+          importVar(constructorFun, "constructorFun");
+          constructorStr += "constructorFun.apply(realInstance, arguments);";
+        };
+
+        constructorStr += "return r;";
+
+        var constructorObj = {};
+        importVar(constructorObj, "constructorObj");
+        var wrapStr = "constructorObj.fun = function(){" + constructorStr + "};";
+        promiseland.javascriptEval(wrapStr, importObj);
+
+        cDef.constructor = constructorObj.fun;
+
+
+
+
+
+        // -----------------------------------------------
+        // unique constructor
+
+        /*if (cDef.unique){
+          var uniqueRealConstructor2 = cDef.constructor;
+          var uniqueMap = new Map();
+          var hasVarId = self.isVar(cDef.idType);
+          var idType = cDef.idType;
+          var idDef = cDef.idDef;
+
+          if (cDef.savable){
+            // special constructer that actually returns a promise
+            cDef.constructor = (parId){
+              if (hasVarId){
+                var key = stringify(parId);
+              }else{
+                var key = stringifyInstance(idType, parId);
+              };
+              var res = new (cs.getTypeConstructor(cDef.constructorReturnType));
+
+              var instance = uniqueMap.get(key);
+              if (instance){
+                if (parId){
+                  privateClassSystem.untrack(idType, parId);
+                };
+                if (cDef.track){
+                  pcs.resolvePromise(cDef.constructorReturnType, res, [instance, instance[trackRootIdx]()]);
+                }else{
+                  pcs.resolvePromise(cDef.constructorReturnType, res, instance);
+                };
+                return res;
+              };
+              instance = uniqueRealConstructor2.apply(null, arguments);
+              var realInstance = instance;
+              if (cDef.track){
+                realInstance = instance[0];
+              };
+              uniqueMap.set(key, realInstance);
+              (){
+                *pcs.loadInstance(cf, realInstance);
+                pcs.resolvePromise(cDef.constructorReturnType, res, instance);
+              }();
+              return res;
+            };
+          };
+
+        };*/
+        
+      };
+
+
+      if (hasDestructor){
+        
+        var destructorStr = "";
+        var destructorImportObj = {};
+        
+        var destructorImportVar = (v, name){
+          destructorImportObj[name] = v;
+        };
+        
+        if (sync){
+          destructorImportVar(destroySynced, "destroySynced");
+          destructorImportVar(classSystem, "classSystem");
+          
+          destructorStr += "var syncData = classSystem.getSyncData(this);";
+          destructorStr += "destroySynced(syncData);";
+        };
+
+        if (cDef.track){
+          var _destroyFun;
+          if (untrackIdxAr.length){
+            // has tracked members
+            
+            destructorImportVar(untrackIdxAr, "untrackIdxAr");
+            destructorStr += "var i;";
+            destructorStr += "for (i = 0; i < untrackIdxAr.length; ++i){";
+            destructorStr += "var curIdx = untrackIdxAr[i];";
+            destructorStr += "var tFun = this[curIdx];";
+            destructorStr += "this[curIdx] = undefined;";
+            destructorStr += "if (tFun){";
+            destructorStr += "tFun();";
+            destructorStr += "};";
+            destructorStr += "};";
+          };
+          if (cDef.unique){
+            destructorStr += "this.map.delete(this.key);";
+          };
+        };
+        if (destroyDef){
+          destructorImportVar(destroyFun, "_destroyFun");
+          destructorStr += "_destroyFun.apply(this);";
+        };
+        destructorStr += "this.splice(0,this.length);";
+        /*if (sync){
+          var _sync_destroyFun = destroyFun;
+          destroyFun = function(){
+            var syncData = classSystem.getSyncData(this);
+            destroySynced(syncData);
+            _sync_destroyFun.apply(this);
+          };
+        };*/
+        var destructorObj = {};
+        destructorImportVar(destructorObj, "destructorObj");
+        var wrapStr = "destructorObj.fun = function(){" + destructorStr + "};";
+        promiseland.javascriptEval(wrapStr, destructorImportObj);
+
+        destroyFun = destructorObj.fun;
+        
+      };
+
+      finalPs.resolve();
+    });
+
+
+    finalPs.then(function(){
+      cDef.isReady = true;
+      if (cDef.savable){
+        privateClassSystem.registerSavableClass(cf);
+      };
+      cDef.readyPromise.resolve(cf);
+    });
+
+    if (sync){
+      if (classLiteral.name){
+        cDef.syncId = {
+          hash: classLiteral.hashStr,
+          name: classLiteral.name
+        };
+        registerSyncClass(classLiteral.hashStr, classLiteral.name, cf);
+      };
+    };
+
+    return cf;
+  },
+  
+  getConstructorReturnType: (parType){
+    
+    if (this.isProvisional(parType)){
+      var pr = this._createProvisionalClass();
+      var self = this;
+      (){
+        var definedType = *self.definitionPromise(parType);
+        self._resolveProvisional(pr, self.getConstructorReturnType(definedType));
+      }();
+      
+      return pr;
+    };
+    
+    var cDef = getClass(parType);
+    
+    if (cDef.constructorReturnType){
+      return cDef.constructorReturnType;
+    };
+    
+    return cs.getFunctionReturnType(cDef.constructorType);
+
+  },
+  
+  getTypeFromInstance: (parInstance){
+    if (typeof parInstance[0] === "function"){
+      return parInstance[0];
+    };
+    if (parInstance.length === 2){
+      // most likely a temporary
+      // this is a hack and must be replaced
+      return this._createTemporaryTrackedClass(parInstance[0][0]);
+    };
+    throw errorMsg.unknownInstanceType;
+  },
+  
+  
+  isFunctionType: (parType){
+    var cDef = getClass(parType);
+    if (cDef.isFunction){
+      return true;
+    };
+    return false;
+  },
+
+  isTrackedClass: (parType){
+    var cDef = getClass(parType);
+    if (cDef.track){
+      return true;
+    };
+    return false;
+  },
+  
+  isUniqueClass: (parType){
+    var cDef = getClass(parType);
+    if (cDef.unique){
+      return true;
+    };
+    return false;
+  },
+      
+
+  createFunctionType: function(par){
+    var self = this;
+    var cDef = {
+      isFunction: true,
+      "return": par["return"] || this.getBuiltinType("var"),
+      "arguments": par["arguments"] || [],
+      isReady: false
+    };
+
+    var checkReady = function(){
+      makeTemporaries();
+    };
+    var makeTemporaries = function(){
+      cDef.return = self._createTemporaryTrackedClass(cDef.return);
+      var i = 0;
+      for (i = 0; i < cDef.arguments.length; ++i){
+        cDef.arguments[i] = self._createTemporaryTrackedClass(cDef.arguments[i]);
+      };
+    };
+
+    var isReady = true;
+
+    if (self.isProvisional(cDef.return)){
+      isReady = false;
+      self.definitionPromise(cDef.return).then(function(parType){
+        cDef.return = parType;
+        checkReady();
+      });
+    };
+
+    var resolveTypeFun = function(parI){
+      return function(parType){
+        cDef.arguments[parI] = parType;
+        checkReady();
+      };
+    };
+    var i = 0;
+    for (i = 0; i < cDef.arguments.length; ++i){
+      if (self.isProvisional(cDef.arguments[i])){
+        isReady = false;
+        self.definitionPromise(cDef.arguments[i]).then(resolveTypeFun(i));
+      };
+    };
+
+    var cf = classHider(cDef);
+
+    if (!isReady){
+      cDef.readyPromise = new Promise();
+      checkReady = function(){
+        if (self.isProvisional(cDef.return)){
+          return;
+        };
+        var i = 0;
+        for (i = 0; i < cDef.arguments.length; ++i){
+          if (self.isProvisional(cDef.arguments[i])){
+            return;
+          };
+        };
+        makeTemporaries();
+        cDef.isReady = true;
+        cDef.readyPromise.resolve(cf);
+      };
+      checkReady();
+
+    }else{
+      checkReady();
+      cDef.isReady = true;
+
+    };
+
+
+    return cf;
+  },
+
+  isVar: function(parType){
+    var cDef = getClass(parType);
+    if (cDef.isVar){
+      return true;
+    };
+    return false;
+  },
+  isStatementType: (parType){
+    var cDef = getClass(parType);
+    if (cDef.isStatement){
+      return true;
+    };
+    return false;
+  },
+  
+  isAvailableByName: (parType){
+    var cDef = getClass(parType);
+    if (cDef.availableByName){
+      return true;
+    };
+    return false;
+  },
+
+  getFunctionReturnType: function(parType){
+    var cDef = getClass(parType);
+    if (cDef.isVar){
+      return this.getBuiltinType("var");
+    };
+    return cDef["return"];
+  },
+  getFunctionArgumentCount: function(parType){
+    var cDef = getClass(parType);
+    if (cDef.arguments){
+      return cDef.arguments.length;
+    };
+    return 0;
+
+  },
+
+  getFunctionArgumentType: function(parType, parIndex){
+    var cDef = getClass(parType);
+    if (cDef.arguments && cDef.arguments[parIndex]){
+      return cDef.arguments[parIndex];
+    }
+      return this.getBuiltinType("var");
+
+  },
+
+  getConstructorArgumentType: function(parType, parIndex){
+    var cDef = getClass(parType);
+    var t;
+    if (cDef.constructorArguments){
+      t = cDef.constructorArguments[parIndex];
+    };
+    if (t){
+      return t;
+    };
+    return this.getBuiltinType("var");
+
+  },
+
+  getTypeConstructor: function(parType){
+    var cDef = getClass(parType);
+    return cDef.constructor;
+  },
+
+  getBuiltinType: function(parName){
+    return buildInTypesMap.get(parName);
+  },
+  getBuiltinTypesMap: function(parName){
+    return buildInTypesMap.clone();
+  },
+
+
+  getPropertyAlias: function(par){
+    var cDef = getClass(par["type"]);
+    if (cDef.isVar){
+      return par.property;
+    };
+
+    var map = cDef.map;
+
+    if (map && map.members && map.members[par.property]){
+      return map.members[par.property].index;
+    };
+    return par.property;
+
+  },
+
+  getPropertyType: function(par){
+    var cDef = getClass(par["type"]);
+    if (cDef.isVar){
+      return this.getBuiltinType("var");
+    };
+    var map = cDef.map;
+
+    if (map.members[par.property]){
+      if (par.original){
+        return map.members[par.property]["originalType"] || map.members[par.property]["type"];
+      }else{
+        return map.members[par.property]["type"];
+      };
+    };
+
+    return this.getBuiltinType("var");
+  },
+
+  getConstructorType: function(par){
+    var cDef = getClass(par["type"]);
+    if (cDef.isVar){
+      return this.getBuiltinType("var");
+    };
+
+    if (cDef.constructorType){
+      return cDef.constructorType;
+    };
+
+    throw errorMsg.noConstructorAvailable;
+
+  },
+
+
+  setMemberByDef: (parDynInstance, parMemberDefinition, parValueDynInstance){
+    var realInstance = parDynInstance.instance;
+
+    realInstance[parMemberDefinition.index] = parValueDynInstance.getInstanceAsType(parMemberDefinition.type);
+
+    if (this.isTrackedClass(parMemberDefinition.type)){
+      var tracker = this.getTrackerFromDynInstance(parDynInstance);
+      var cDef = getClass(parValueDynInstance.type);
+      var trackMemberIdx = cDef.map.trackMemberIdx;
+
+      if (realInstance[parMemberDefinition.trackIndex]){
+        realInstance[parMemberDefinition.trackIndex]();
+      };
+      realInstance[parMemberDefinition.trackIndex] = parValueDynInstance.instance[trackMemberIdx](tracker);
+    };
+  },
+  
+  
+  // return a live
+  getTrack: function(parInstance){
+    if (!parInstance){
+      return;
+    };
+    var type = parInstance[0];
+    var cDef = getClass(type);
+    return parInstance[cDef.map.trackRootIdx]();
+  },
+
+  
+  canSet: function(parTargetType, parSourceType){
+    if (parTargetType === undefined && parSourceType === undefined){
+      return true;
+    };
+    if (parTargetType === undefined || parSourceType === undefined){
+      return false;
+    };
+    if (parTargetType === parSourceType){
+      return true;
+    };
+
+    // temporary check
+    if (this.isTemporaryTrackedClass(parSourceType)){
+      // temporary sourcetype can only pass as temporary target
+      if (this.isTemporaryTrackedClass(parTargetType)){
+        return this.canSet(this.getClassFromTemporaryTracked(parTargetType), this.getClassFromTemporaryTracked(parSourceType));
+      };
+      return false;
+    };
+    if (this.isTemporaryTrackedClass(parTargetType)){
+      // temporary target is allways possible
+      // code is generated in getPassAsTypeCode
+      return this.canSet(this.getClassFromTemporaryTracked(parTargetType), parSourceType);
+    };
+
+
+    if (
+      parTargetType.isFunction && parSourceType.isFunction
+      && this.canSet(parTargetType.returnType, parSourceType.returnType)
+      && parTargetType.parameters.length == parSourceType.parameters.length
+    ){
+      var allOk = true;
+      var i = 0;
+      var l = parTargetType.parameters.length;
+      for (i; i < l; ++i){
+        var tp = parTargetType.parameters[i];
+        var sp = parSourceType.parameters[i];
+        if (!this.canSet(sp, tp)){
+          allOk = false;
+        };
+      };
+      if (allOk){
+        return true;
+      };
+    };
+    return false;
+  },
+
+  canConnect: function(parType, parProperty, parFunType){
+      var cDef = getClass(parType);
+      var map = cDef.map;
+
+      if (map.members[parProperty]){
+        var mDef = map.members[parProperty];
+
+        var propertyType = this.getPropertyType({
+          "type": parType,
+          property: parProperty
+        });
+
+        /*if (!mDef.connectable){
+            return false;
+          };*/
+
+        if (!this.canSet(propertyType, parFunType)){
+          return false;
+        };
+
+        if (!(this.isVar(propertyType) || this.isFunctionType(propertyType))){
+          return false;
+        };
+        if (!(this.isVar(parFunType) || this.isFunctionType(parFunType))){
+          return false;
+        };
+
+        return true;
+      };
+
+      return false;
+    }
+
+};
+
+var cs = classSystem;
+
+
+var getEffectiveFunctionResultType = (parFunType){
+  var res = {
+    promiseResolveType: classSystem.getBuiltinType("var"),
+    isTemporary: false,
+    originalResultType: classSystem.getFunctionReturnType(parFunType),
+    resolvePromise: (parPromise, parValue){
+      parPromise.resolve(parValue);
+    },
+    rejectPromise: (parPromise, parValue){
+      parPromise.reject(parValue);
+    }
+  };
+  var resultType = res.originalResultType;
+  
+  res.newPromise = (){
+    return new Promise();
+  };
+  
+  if (classSystem.isTemporaryTrackedClass(resultType)){
+    res.isTemporary = true;
+    var unTrackedType = classSystem.getClassFromTemporaryTracked(resultType);
+    
+    if (classSystem.isPromiseOfClass(unTrackedType)){
+      var promiseConstructor = classSystem.getTypeConstructor(unTrackedType);
+      res.newPromise = (){
+        return promiseConstructor();
+      };
+      res.resolvePromise = (parPromise, parValue){
+        parPromise[0].resolve(parValue);
+      };
+      res.rejectPromise = (parPromise, parValue){
+        parPromise[0].reject(parValue);
+      };
+      
+      var promiseResolveType = classSystem.getClassFromPromiseOf(unTrackedType);
+      res.promiseResolveType = promiseResolveType;
+    };
+  };
+  
+  return res;
+};
+
+
+
+var _stringEncodeStr = function(par){
+  var s = par.replace(new RegExp("\\\\", "g"), "\\\\");
+  s = s.replace(new RegExp("\\n", "g"), "\\n");
+  s = s.replace(new RegExp("\\r", "g"), "\\r");
+  s = s.replace(new RegExp("\\\"", "g"), "\\\"");
+  s = s.replace(new RegExp("\\u2028", "g"), "\\u2028");
+  s = s.replace(new RegExp("\\u2029", "g"), "\\u2029");
+  return s;
+};
+var stringEncodeStr = function(par){
+  return "\"" + _stringEncodeStr(par) + "\"";
+};
+
+    
+
+var internals = {
+  classHider: classHider,
+  getClass: getClass,
+  TrackedPromise: TrackedPromise,
+  DynInstance: DynInstance,
+  stringEncodeStr: stringEncodeStr,
+  getEffectiveFunctionResultType: getEffectiveFunctionResultType,
+  privateClassSystem: privateClassSystem
+};
+  
+provisional(classSystem, internals);
+temporary(classSystem, internals);
+promiseOf(classSystem, internals);
+        
+sync(classSystem, internals);
+var registerSyncClass = internals.registerSyncClass;
+var destroySynced = internals.destroySynced;
+var getClassBySyncId = internals.getClassBySyncId;
+var syncFun = internals.syncFun;
+var syncFunctionFun = internals.syncFunctionFun;
+var internalObjects = internals.internalObjects;
+var getNewInternalId = internals.getNewInternalId;
+
+savable(classSystem, internals);
+
+
+makroModule(classSystem, internals);
+var makro = internals.makro;
+
+createCastings(); // waited for makro to be defined
+
+
+codeGeneration(classSystem, internals);
+var runtimeError = internals.runtimeError;
+var presets = internals.presets;
+    
+promiseland.classSystem = classSystem;
+
+extra.classSystemPs.resolve({
+  classSystem: classSystem,
+  privateClassSystem: privateClassSystem,
+  internalObjects: internalObjects,
+  getClassBySyncId: getClassBySyncId,
+  DynInstance: DynInstance,
+  getEffectiveFunctionResultType: getEffectiveFunctionResultType
+});
+
+
+return classSystem;

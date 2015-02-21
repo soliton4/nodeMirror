@@ -1,0 +1,30 @@
+
+var i = 2;
+
+class type track C1 {
+  destroy: (){
+    --i;
+  }
+};
+
+class type track C2 {
+  C1 m:
+};
+
+
+((){
+ C1 m = new C1();
+ C2 v = new C2();
+ v.m = m;
+ v.m = new C1();
+})();
+
+if (i == 0){
+  return {
+    success: true
+  };
+};
+
+return {
+  success: false
+};

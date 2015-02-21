@@ -1,0 +1,57 @@
+<{  __promiseLandModule: true }>;
+  
+var errorMsg = extra.errorMsg;
+
+return (classSystem, internals){
+  var cs = classSystem;
+  var classHider = internals.classHider;
+  var getClass = internals.getClass;
+  
+  cs._createTemporaryTrackedClass = function(parType){
+    var self = this;
+    if (this.isProvisional(parType)){
+      var pr = this._createProvisionalClass();
+      this.definitionPromise(parType).then(function(parDefinedClass){
+        self._resolveProvisional(pr, self._createTemporaryTrackedClass(parDefinedClass));
+      });
+      return pr;
+    };
+    if (this.isTemporaryTrackedClass(parType)){
+      return parType;
+    };
+    if (!this.isTrackedClass(parType)){
+      return parType;
+    };
+    var cDef = {
+      temporaryTracked: true,
+      type: parType,
+      isReady: false,
+      readyPromise: new Promise()
+    };
+    var cf = classHider(cDef);
+
+    self.readyPromise(parType).then(function(){
+      cDef.ready = true;
+      cDef.readyPromise.resolve(cf);
+    });
+
+    return cf;
+  };
+
+  cs.isTemporaryTrackedClass = function(parType){
+    var cDef = getClass(parType);
+    if (cDef.temporaryTracked){
+      return true;
+    };
+    return false;
+  };
+
+  cs.getClassFromTemporaryTracked = function(parType){
+    if (this.isTemporaryTrackedClass(parType)){
+      var cDef = getClass(parType);
+      return cDef.type;
+    };
+    return parType;
+  };
+  
+};

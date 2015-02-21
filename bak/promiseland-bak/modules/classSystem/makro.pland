@@ -1,0 +1,33 @@
+<{  
+  __promiseLandModule: true,
+
+}>;
+  
+var errorMsg = extra.errorMsg;
+
+
+return (classSystem, internals){
+  
+  var makro = {
+    SELF: 0,
+    PROPERTY: 1,
+    PROPERTYSTRING: 2,
+    PROPERTYVALUE: 3,
+    VALUE: 4,
+    LEFT: 5,
+    OPERATOR: 6,
+    RIGHT: 7,
+    VALUEPROPERTY: 8,
+    RESOLVEFUN: 9,
+    REJECTFUN: 10,
+    TYPEVALUE: 11,
+    CONSTRUCTOR: 12,
+    NEWLINE: 13
+  };
+  
+  internals.makro = makro;
+  internals.xxx1 = makro;
+  
+  return makro;
+  
+};

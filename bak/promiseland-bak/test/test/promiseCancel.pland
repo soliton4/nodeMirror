@@ -1,0 +1,34 @@
+
+wait(){
+  var cb = new Callback();
+  setTimeout(cb, 100);
+  *cb.promise;
+}
+
+var cancelReason;
+var runThrough;
+  
+f(){
+  try{
+    *wait();
+    cancel return;
+  }cancel(reason){
+    cancelReason = reason;
+  };
+  runThrough = true;
+};
+
+var res = f();
+res.cancel(4);
+*wait();
+*wait();
+
+if (cancelReason != 4){
+  return {success: false};
+};
+
+if (runThrough){
+  return {success: false};
+};
+
+return {success: true};

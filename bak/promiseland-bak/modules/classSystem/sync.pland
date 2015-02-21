@@ -1,0 +1,408 @@
+<{  __promiseLandModule: true }>;
+  
+var errorMsg = extra.errorMsg;
+
+var internalObjects = {};
+
+var getModuleData;
+((){
+  getModuleData = (*extra.moduleSystemPs).getModuleData;
+})();
+
+var frames;
+var getInstanceFromTransportData;
+var getInstanceTransportData;
+var getEffectiveFunctionResultType;
+
+return (classSystem, internals){
+  
+  ((){
+    frames = *extra.framesPs;
+    getInstanceFromTransportData = frames.getInstanceFromTransportData;
+    getInstanceTransportData = frames.getInstanceTransportData;
+
+    frames.handlers.sync2 = (parContent, parPackage){
+      try{
+        var data = parContent.getData();
+
+        var t = parContent.getTransport();
+
+        var realInstance = internalObjects[data.remoteId];
+        var dynInstance = new DynInstance(undefined, realInstance);
+
+        var valueInstance = *getInstanceFromTransportData(data.value, parContent);
+        if (!realInstance){
+          valueInstance.track();
+          return;
+        };
+        
+        classSystem.setMemberByIndex(dynInstance, data.memberIdx, valueInstance);
+        
+        var syncData = classSystem.getSyncData(realInstance);
+        if (syncData){
+          var i = 0;
+          for (i = 0; i < syncData.transports.length; ++i){
+
+            var transport = syncData.transports[i].t;
+            if (transport === t){
+              continue;
+            };
+            var m = transport.newMessage();
+            m.setData({
+              type: "sync2",
+              remoteId: transport.getInstanceRemoteId(realInstance),
+              memberIdx: data.memberIdx,
+              value: getInstanceTransportData(valueInstance.type, valueInstance.instance, m)
+            });
+            m.send();
+
+          };
+        };
+        
+      }catch(e){
+        if (valueInstance){
+          valueInstance.track();
+        };
+        if (dynInstance){
+          dynInstance.track();
+        };
+        console.log("sync error");
+        console.log(e);
+
+      };
+      if (valueInstance){
+        valueInstance.track();
+      };
+      if (dynInstance){
+        dynInstance.track();
+      };
+    };
+    
+    frames.handlers.syncf = (parContent, parPackage){
+      var argInstances = [];
+      var clearUpArgs = (){
+        var i;
+        for (i = 0; i < argInstances.length; ++i){
+          argInstances[i].track();
+        };
+        argInstances = [];
+      }
+      try{
+        var data = parContent.getData();
+
+        var t = parContent.getTransport();
+
+        var realInstance = internalObjects[data.remoteId];
+        var dynInstance = new DynInstance(undefined, realInstance);
+        var funType = cs.getMemberTypeByIndex(dynInstance, data.memberIdx);
+        var resultTypes = getEffectiveFunctionResultType(funType);
+        
+        var args = data.args;
+        
+        var i = 0;
+        for (i = 0; i < args.length; ++i){
+          argInstances.push(*getInstanceFromTransportData(args[i], parContent));
+        };
+        var funType;
+        var realArgs = [];
+        for (i = 0 ; i < args.length; ++i){
+          realArgs.push(argInstances[i].getInstanceAsType(classSystem.getFunctionArgumentType(funType, i)));
+        };
+        clearUpArgs();
+        
+        currentTransport = t; // mark the transport we received from as current
+        var funResult = realInstance[data.memberIdx].apply(realInstance, realArgs);
+        
+        if (resultTypes.isTemporary){
+          funResult[1]();
+        };
+        
+      }catch(e){
+        if (dynInstance){
+          dynInstance.track();
+        };
+        console.log("syncf error");
+        console.log(e);
+
+      };
+      if (dynInstance){
+        dynInstance.track();
+      };
+      clearUpArgs();
+    };
+
+  })();
+
+  
+  var cs = classSystem;
+  var classHider = internals.classHider;
+  var getClass = internals.getClass;
+  var TrackedPromise = internals.TrackedPromise;
+  var DynInstance = internals.DynInstance;
+  getEffectiveFunctionResultType = internals.getEffectiveFunctionResultType
+  
+  // sync stuff
+
+  var nextInternalId = 1;
+  var getNewInternalId = function(){
+    return nextInternalId++;
+  };
+  internals.getNewInternalId = getNewInternalId;
+  internals.internalObjects = internalObjects;
+
+  var syncFun = function(parInstance, memberIdx, mType, value){
+    var syncData = classSystem.getSyncData(parInstance);
+    if (syncData){
+      var i = 0;
+      for (i = 0; i < syncData.transports.length; ++i){
+        
+        var transport = syncData.transports[i].t;
+        var m = transport.newMessage();
+        m.setData({
+          type: "sync2",
+          remoteId: transport.getInstanceRemoteId(parInstance),
+          memberIdx: memberIdx,
+          value: getInstanceTransportData(mType, value, m)
+        });
+        m.send();
+        
+      };
+    };
+  };
+  internals.syncFun = syncFun;
+  
+  
+  
+  var currentTransport; // used to keep sync functions from endless loop syncing back and forward
+  
+  var syncFunctionFun = (parInstance, memberIdx, mType, args){
+    var cTransport = currentTransport;
+    currentTransport = undefined;
+    
+    var syncData = classSystem.getSyncData(parInstance);
+    if (syncData){
+      var i = 0;
+      for (i = 0; i < syncData.transports.length; ++i){
+        
+        var transport = syncData.transports[i].t;
+        if (transport === cTransport){
+          continue;
+        };
+        
+        var m = transport.newMessage();
+        
+        var argInstances = [];
+        var j;
+        for (j = 0; j < args.length; ++j){
+          var argType = cs.getFunctionArgumentType(mType, j);
+          argInstances.push(getInstanceTransportData(argType, args[j], m));
+        };
+        
+        m.setData({
+          type: "syncf",
+          remoteId: transport.getInstanceRemoteId(parInstance),
+          memberIdx: memberIdx,
+          args: argInstances
+        });
+        m.send();
+        
+      };
+    };
+  };
+  internals.syncFunctionFun = syncFunctionFun;
+
+  var destroySynced = function(parSyncData){
+    if (!parSyncData){
+      return;
+    };
+    var syncData = parSyncData;
+    var transports = syncData.transports.slice();
+    var i;
+    for (i = 0; i < transports.length; ++i){
+      var t = transports[i].t;
+      t.removeInstance(syncData.getInternalId());
+    };
+    if (syncData.internalId){
+      delete internalObjects[syncData.internalId];
+    };
+  };
+  internals.destroySynced = destroySynced;
+  
+  var registerSyncClass = function(hashStr, nameStr, parType){
+    var moduleData = getModuleData(hashStr);
+    moduleData.classes[nameStr] = {
+      "type": parType
+    };
+  };
+  internals.registerSyncClass = registerSyncClass;
+  
+  var getClassBySyncId = function(parSyncId){
+    var moduleData = getModuleData(parSyncId.hash);
+    if (moduleData && moduleData.classes[parSyncId.name]){
+      return moduleData.classes[parSyncId.name].type;
+    };
+  };
+  internals.getClassBySyncId = getClassBySyncId;
+  
+  
+  cs.isSyncedClass = (parType){
+    var cDef = getClass(parType);
+    if (cDef.sync){
+      return true;
+    };
+    return false;
+  };
+  
+  cs.isServe = (parType){
+    var cDef = getClass(parType);
+    if (cDef.syncServe){
+      return true;
+    };
+    return false;
+  };
+  
+  cs.getInternalId = (parInstance){
+    var type = parInstance[0];
+    var cDef = getClass(type);
+    if (cDef.sync){
+      var syncData = parInstance[cDef.map.syncDataIdx]();
+      return syncData.getInternalId();
+    };
+    return;
+  };
+
+  cs.getSyncData = (parInstance){
+    var type = parInstance[0];
+    var cDef = getClass(type);
+    if (cDef.sync){
+      return parInstance[cDef.map.syncDataIdx]();
+    };
+    return;
+  };
+
+  cs.getSyncId = (parType){
+    var cDef = getClass(parType);
+    return cDef.syncId;
+
+  };
+  
+  cs.addTransport = (parDynInstance, parTransport){
+    var syncData = this.getSyncData(parDynInstance.instance);
+    syncData.transports.push({ 
+      t: parTransport,
+      remove: (){}
+    });
+    if (syncData.transports.length > 1 && !syncData.track){
+      syncData.track = parDynInstance.getTrack();
+    };
+  };
+  
+  cs.removeTransport = (parInternalId, parTransport){
+    var realInstance = internalObjects[parInternalId];
+    if (!realInstance){
+      return;
+    };
+    var syncData = this.getSyncData(realInstance);
+    var transports = syncData.transports;
+    
+    var index = -1;
+    var i;
+    var l = transports.length;
+    for (i = 0; i < l; ++i){
+      if (transports[i].t === parTransport){
+        transports[i].remove();
+        index = i;
+        break;
+      };
+    };
+    if (index > -1) {
+      transports.splice(index, 1);
+    };
+    
+    if (syncData.transports.length < 2 && syncData.track){
+      var track = syncData.track;
+      syncData.track = undefined;
+      track();
+    };
+  };
+  
+  cs.getInstanceSyncData = (parDynInstance, parGetDataFun, parGetTypeFun){
+    if (!parDynInstance){
+      return;
+    };
+    var type = parDynInstance.type;
+    var instance = parDynInstance.instance;
+    
+    var cDef = getClass(type);
+    if (!cDef.sync){
+      throw errorMsg.notSyncable
+    };
+    var res = [parGetTypeFun(type)];
+    
+    var syncMembers = cDef.syncMembers;
+    var i = 0;
+    var l = syncMembers.length;
+    for (i; i < l; ++i){
+      var t = syncMembers[i].type;
+      var d = instance[syncMembers[i].index];
+      if (!this.isFunctionType(t)){
+        res.push(parGetDataFun(t, d));
+      };
+    };
+    return res;
+  };
+  
+  cs.setMemberByIndex = (parDynInstance, parIndex, parValueDynInstance){
+    var cDef = getClass(parDynInstance.type);
+    var mDef = cDef.map.membersByIndex[parIndex];
+    return this.setMemberByDef(parDynInstance, mDef, parValueDynInstance);
+    
+  };
+  cs.getMemberTypeByIndex = (parDynInstance, parIndex){
+    var cDef = getClass(parDynInstance.type);
+    var mDef = cDef.map.membersByIndex[parIndex];
+    return mDef.type;
+    
+  };
+  
+  
+  cs.getTrackerFromDynInstance = (parDynInstance){
+    var cDef = getClass(parDynInstance.type);
+    var trackerIdx = cDef.map.trackerIdx;
+    return parDynInstance.instance[trackerIdx];
+  };
+  
+  // assumes all members are allready present
+  cs.getInstanceFromSyncData = (parData){
+    var type = parData[0];
+    
+    var cDef = getClass(type);
+    if (!cDef.sync){
+      throw errorMsg.notSyncable
+    };
+    var isTracked = this.isTrackedClass(type);
+    
+    var instance = new DynInstance(type, this.getTypeConstructor(type)());
+    try{
+
+      var syncMembers = cDef.syncMembers;
+      var i = 0;
+      var l = syncMembers.length;
+      var nextData = 1;
+      for (i; i < l; ++i){
+        var t = syncMembers[i].type;
+        if (this.isFunctionType(t)){
+          continue;
+        };
+        this.setMemberByDef(instance, syncMembers[i], parData[nextData]);
+        ++nextData;
+      };
+      
+    }catch(e){
+      instance.track();
+      throw e;
+    };
+    return instance;
+  };
+  
+};

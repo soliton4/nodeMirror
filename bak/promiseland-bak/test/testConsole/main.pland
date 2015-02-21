@@ -1,0 +1,42 @@
+
+
+var cp;
+
+(() exclusive "server" {
+  cp = require "../createProcess";
+ 
+})();
+
+console.log("loaded");
+
+var runTests = () frame "server" {
+  
+  console.log("running tests");
+  
+  console.log("copy promiseland");
+  console.log(*cp("cp", [__dirname + "/../../../promiseland/promiseland.js", __dirname + "/../node_modules/promiseland/"]).result);
+  console.log(*cp("cp", [__dirname + "/../../../promiseland/package.json", __dirname + "/../node_modules/promiseland/"]).result);
+  console.log(*cp("cp", [__dirname + "/../../../promiseland/modules", __dirname + "/../node_modules/promiseland/", "-R"]).result);
+  
+  console.log("running compileall");
+  console.log(*cp("node", ["compileAll.js"]).result);
+  
+  console.log("starting tests");
+  try{
+    var ts = cp("./testServer", [], {fork: true});
+    var cb = new Callback();
+    ts.child.on("message", cb);
+    return (*cb.promise)[0];
+  }catch(e){
+    console.log("error");
+    console.log(e);
+    return {
+      failed: true
+    };
+  };
+  
+};
+
+return {
+  runTests: runTests
+};

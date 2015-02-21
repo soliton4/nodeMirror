@@ -1,0 +1,879 @@
+var Map = promiseland.Map;
+var classSystem = promiseland.classSystem;
+
+var basics = require "./basics";
+var errorFun = basics.errorFun;
+var errorMsg = basics.errorMsg;
+var _stringEncodeStr = basics._stringEncodeStr;
+var stringEncodeStr = basics.stringEncodeStr;
+
+var VariableNames = basics.VariableNames;
+var mixin = basics.mixin;
+var identifierName = basics.identifierName;
+var checkIsFunction = basics.checkIsFunction;
+var getExtraFromPar = basics.getExtraFromPar;
+var statementType = basics.statementType;
+var checkPromising = basics.checkPromising;
+
+
+
+var blocksModule = require "./blocks";
+var loopsModule = require "./loops";
+var conditionalsModule = require "./conditionals";
+var literalsModule = require "./literals";
+var classModule = require "./class";
+
+
+return (parInstance, par){
+  
+  var f = (par){
+    
+    blocksModule(this, par);
+    loopsModule(this, par);
+    conditionalsModule(this, par);
+    literalsModule(this, par);
+    classModule(this, par);
+    
+    
+    this.parseExpression = function(par){
+      var res = this._parseExpression(par);
+      if (!res.getType()){
+        this.error(par, errorMsg.internalMissingResultType);
+      };
+      res.setParsed(par);
+      return res;
+    };
+      
+    this._parseExpression = function(value){
+      var res;
+
+      switch(value.type){
+      case "ArrayExpression":
+        return this.expArrayExpression(value);
+
+      case "AssignmentExpression":
+        return this.expAssignmentExpression(value);
+
+      case "BinaryExpression":
+        return this.expBinaryExpression(value);
+
+      case "BlockStatement":
+        return this.expBlockStatement(value);
+
+      case "BreakStatement":
+        return this.expBreakStatement(value);
+
+      case "CallExpression":
+        return this.expCallExpression(value);
+
+      case "Class":
+        return this.expClassStatement(value);
+
+      case "ClassObjectExpression":
+        return this.expClassObjectExpression(value);
+
+      case "ConditionalExpression":
+        return this.conditionalExpression(value);
+
+      case "ConnectExpression":
+        return this.connectExpression(value);
+
+      case "ContinueStatement":
+        return this.expContinueStatement(value);
+
+      case "DebuggerStatement":
+        return this.expDebuggerStatement(value);
+        
+      case "DoWhileStatement":
+        return this.expDoWhileStatement(value);
+
+      case "EmptyStatement":
+        // why does this exist?
+        res = this.newResult();
+        res.setType("var");
+        return res;
+
+      case "ExpressionStatement":
+        return this.expExpressionStatement(value);
+
+      case "ForInStatement":
+        return this.expForInStatement(value);
+
+      case "ForStatement":
+        return this.expForStatement(value);
+
+      case "FunctionExpression":
+        return this.expFunctionExpression(value);
+      case "FunctionDeclaration":
+        return this.expFunctionDeclaration(value);
+      case "MemberFunction":
+        return this.expMemberFunction(value);
+
+      case "Identifier":
+        return this.expIdentifier(value);
+
+      case "IfStatement":
+        return this.expIfStatement(value);
+
+      case "InheritedExpression":
+        return this.expInheritedExpression(value);
+
+      case "Literal":
+        return this.expLiteral(value);
+
+      case "MemberExpression":
+        return this.expMemberExpression(value);
+
+      case "NewExpression":
+        return this.expNewExpression(value);
+
+      case "ObjectExpression":
+        return this.expObjectExpression(value);
+
+      case "ReturnStatement":
+        return this.expReturnStatement(value);
+        
+      case "SequenceExpression":
+        return this.expSequenceExpression(value);
+
+      case "SwitchStatement":
+        return this.expSwitchStatement(value);
+
+      case "ThisExpression":
+        return this.expThisExpression(value);
+
+      case "ThrowStatement":
+        return this.expThrowStatement(value);
+
+      case "TryStatement":
+        return this.expTryStatement(value);
+
+      case "UnaryExpression":
+        if (value.operator == "*"){
+          return this.expPromiseExpression(value.argument);
+        };
+        if (value.operator == "require"){
+          return this.expRequireExpression(value.argument);
+        };
+        return this.expUnaryExpression(value);
+
+      case "UpdateExpression":
+        return this.expUpdateExpression(value);
+
+      case "VariableStatement":
+        return this.expVariableStatement(value);
+
+      case "VariableDeclaration":
+        return this.expVariableDeclaration(value);
+
+      case "WhileStatement":
+        return this.whileStatement(value);
+
+      default:
+        debugger;
+        this.error(value, errorMsg.unknownType);
+      };
+      return "/*this should not happen*/";
+    };
+
+    this.expExpressionStatement = function(parParsed){
+      var res = this.getDestroyTemporaryClassCode({
+        value: this.parseExpression(parParsed.expression)
+      });
+      //res.push(this._parseExpression(par.expression));
+      //res.push(";");
+      return res;
+    };
+
+    
+    
+    /*
+        this
+    */
+    this.expThisExpression = function(par){
+      var res = this.newResult();
+      if (!this.promising){
+        res.push("this");
+      }else{
+        if (!this.usingThis){
+          this.usingThis = true;
+          this.thisExpression = this.getUniqueName("this");
+        };
+        res.push(this.thisExpression);
+      };
+      res.setType(this.thisType);
+      return res;
+    };
+      
+      
+    /*
+      sequence
+    */
+      
+    this.expSequenceExpression = (par){
+      var res = this.newResult();
+      
+      if (par.expressions && par.expressions.length){
+        var i = 0;
+        for (i = 0; i < par.expressions.length; ++i){
+          if (i > 0){
+            res.push(",");
+          };
+          res.push(this.expectTypeVar(this.parseExpression(par.expressions[i])));
+        };
+      };
+      
+      res.setType("var");
+      return res;
+    }
+    
+    
+      /*
+        throw
+      */
+      
+      this.expThrowStatement = function(par){
+        var res = this.newResult();
+        res.push("throw ");
+        
+        res.push(this.expectTypeVar(this.parseExpression(par.argument)));
+        
+        res.setType(statementType);
+        return res;
+      };
+
+    
+          // try catch / finally (why do we need finally?)
+       this.expTryStatement = function(par){
+         var res = this.newResult();
+         //{type: "TryStatement", block: Object, catch: Object, finally: null}
+        
+         var catchPromise;
+         var continuePromise;
+        
+         if (checkPromising(par)){
+           this.stack("tryCatchFunctionStr");
+           this.stack("catchFunctionStr");
+
+           continuePromise = this.getUniqueName();
+           res.addPre("var " + continuePromise + " = " + this.newPromiseStr() + ";");
+           res.addPre(this.newLine());
+
+           catchPromise = this.getUniqueName();
+           res.addPre("var " + catchPromise + " = " + this.newPromiseStr() + ";");
+           res.addPre(this.newLine());
+
+           this.tryCatchFunctionStr = this.getUniqueName() + "/*try catch*/";
+           res.addPre("var " + this.tryCatchFunctionStr + " = function(code){ return function(res){ try{code(res);}catch(e){ " + catchPromise + ".resolve(e); }; }; };");
+           res.addPre(this.newLine());
+
+           this.catchFunctionStr = this.getUniqueName();
+           res.addPre("var " + this.catchFunctionStr + " = function(e){ " + catchPromise + ".resolve(e); };");
+           res.addPre(this.newLine());
+
+           res.push(this.tryCatchFunctionStr + "(function()");
+
+         }else{
+           res.push("try");
+           res.push(this.newLine());
+         };
+        
+         var b = par.block;
+         var extraPar = {};
+         b.brackets = true;
+         if (checkPromising(par)){
+           extraPar.postCode = this.newResult(continuePromise + ".resolve()");
+         };
+         res.push(this.makeCompleteStatement(this.blockCreator(b, extraPar)));
+        
+        // catch part
+        if (checkPromising(par)){
+          this.unstack("tryCatchFunctionStr");
+          this.unstack("catchFunctionStr");
+          res.push(")();");
+          res.push(this.newLine());
+          res.push(catchPromise + ".then(" + this.tryCatchFunctionStr + "(function(");
+        }else{
+          
+          res.push("catch(");
+        };
+        
+        var temporaryPs;
+        if (par.handler && par.handler.param){
+          res.push(this.getVariableName(identifierName(par.handler.param)));
+          temporaryPs = this.addLocalVariableTemporary({
+            name: identifierName(par.handler.param), 
+            typename: "var", 
+            parameter: true
+          }, par.handler);
+        }else{
+          res.push("__dummy");
+        };
+        res.push(")");
+        
+        if (par.handler){
+          b = par.handler.body;
+          extraPar = {};
+          b.brackets = true;
+          if (checkPromising(par)){
+            extraPar.postCode = this.newResult(continuePromise + ".resolve();");
+          };
+          res.push(this.makeCompleteStatement(this.blockCreator(b, extraPar)));
+        }else{
+          // no handler
+          res.push("{");
+          if (checkPromising(par)){
+            res.push(continuePromise + ".resolve();");
+          };
+          res.push("}");
+        };
+        
+        if (checkPromising(par)){
+          res.push("));");
+          res.push(this.newLine());
+          
+          res.push(continuePromise);
+          res.push(".then(" + this.tryCatchFunctionStr + "(function(){");
+          
+          res.addPost("}), " + this.catchFunctionStr + ")");
+        };
+        
+        if (par.finally){
+          res.push("finally");
+          b = par.finally;
+          b.brackers = true;
+          res.push(this.makeCompleteStatement(this.blockCreator(b)));
+        };
+        
+        if (temporaryPs){
+          temporaryPs.resolve();
+        };
+        
+        res.setType(statementType);
+        return res;
+       };
+
+      
+            this.expDebuggerStatement = function(par){
+        var res = this.newResult();
+        res.push("debugger");
+        res.setType(statementType);
+        return res;
+      };
+      
+      
+      
+      this.expUpdateExpression = function(par){
+        var res = this.newResult();
+        //{type: "UpdateExpression", operator: "++", argument: Object}
+        if (par.prefix){
+          res.push(par.operator);
+        };
+        res.pushType(this.expectTypeVar(this.parseExpression(par.argument)));
+        if (!par.prefix){
+          res.push(par.operator);
+        };
+        
+        return res;
+      };
+      
+      this.expIdentifier = function(par){
+        return this.getVariable(identifierName(par.name));
+      };
+      
+      this.expLiteral = function(par){
+        var res = this.newResult();
+        if (!par.originalText){
+          this.error(par, errorMsg.internalOriginalTextMissing)
+        };
+        switch (typeof par.value){
+          case "string":
+            res.push(stringEncodeStr(par.value));
+            break;
+            
+          case "number":
+            if (this.asmMode){
+              res.push("" + par.originalText);
+              break;
+            };
+            res.push("" + par.value);
+            break;
+            
+          case "boolean":
+            if (par.value){
+              res.push("true");
+            }else{
+              res.push("false");
+            };
+            break;
+            
+          default:
+            if (par.value === null){
+              res.push("null");
+            }else if(par.value && par.value.exec){
+              // regex
+              res.push("" + par.value);
+            }else{
+              this.error(par, errorMsg.internalUnknownLiteralType);
+            };
+        };
+        res.setType(this.getType("var"));
+        return res;
+      };
+          
+          
+                /*
+       this expression is a promise. we return code that be treated as the resolved value
+      */
+      this.expPromiseExpression = function(parExpression){
+        return this.dereference(this.parseExpression(parExpression));
+      };
+        
+      this.dereference = (parRes){
+        if (this.asmMode){
+          this.error(parRes, errorMsg.notPossibleWithinAsm);
+        };
+        var res = this.newResult();
+        
+        var expressionRes = parRes;
+        if (typeof parRes == "string"){
+          expressionRes = this.newResult();
+          expressionRes.push(parRes);
+        };
+        
+        var promiseNameStr = this.getUniqueName();
+        
+        res.makePromising();
+        res.setPromiseName(promiseNameStr);
+        
+        var dereferencePre = this.dereferencePromisePreCode({
+          value: expressionRes
+        });
+        
+        var preRes = this.newResult();
+        preRes.push(dereferencePre);
+        preRes.push(this.tryCatchFunctionStr + "(function(");
+        preRes.push(promiseNameStr);
+        preRes.push("){");
+        
+        res.addPre(preRes);
+        
+        
+        var dereferencePost = this.dereferencePromisePostCode({
+          value: expressionRes
+        });
+        
+        var postRes = this.newResult();
+        postRes.push("}), " + this.catchFunctionStr);
+        postRes.push(dereferencePost);
+        postRes.push(";");
+        
+        res.addPost(postRes);
+        
+        var promiseType = expressionRes.getType();
+        
+        res.setType(this.getClassFromPromiseOf(promiseType));
+        return res;
+      };
+      
+      // statement means the dereference code stays local and will not be added in front of the current statement
+      this.dereferenceStatement = (parRes){
+        return this.makeStatement(this.dereference(parRes));
+      };
+        
+        
+      
+      this.expUnaryExpression = function(parExpression){
+        var res = this.newResult();
+        
+        res.push(parExpression.operator);
+        res.push(" ");
+        res.pushType(this.expectTypeVar(this.parseExpression(parExpression.argument)));
+        return res;
+      };
+        
+        
+              
+      /*
+       this expression is the result of a require
+       its also a promise
+      */
+      this.expRequireExpression = function(parExpression){
+        var res = this.newResult();
+        
+        this.common.useRequire = true;
+        
+        var expressionRes = this.newResult();
+        expressionRes.push("__requireFun(");
+        expressionRes.push(this.parseExpression(parExpression));
+        expressionRes.push(")");
+        expressionRes.setType("var");
+        
+        var promiseNameStr = this.getUniqueName();
+        
+        res.makePromising();
+        res.setPromiseName(promiseNameStr);
+        
+        var dereferencePre = this.dereferencePromisePreCode({
+          value: expressionRes
+        });
+        
+        var preRes = this.newResult();
+        preRes.push(dereferencePre);
+        preRes.push(this.tryCatchFunctionStr + "(function(");
+        preRes.push(promiseNameStr);
+        preRes.push("){");
+        
+        res.addPre(preRes);
+        
+        
+        var dereferencePost = this.dereferencePromisePostCode({
+          value: expressionRes
+        });
+        
+        var postRes = this.newResult();
+        postRes.push("}), " + this.catchFunctionStr);
+        postRes.push(dereferencePost);
+        postRes.push(";");
+        
+        res.addPost(postRes);
+        
+        res.setType("var");
+        return res;
+      };
+      
+      
+      this.expNewExpression = function(par){
+        //{type: "NewExpression", callee: Object, arguments: Array[0]}
+        var res = this.newResult();
+        var typed = false;
+        var type = "var";
+        if (par.callee && par.callee.type == "Identifier"){
+          type = this.getType(identifierName(par.callee), par, { dontThrow: true });
+          if (type){
+            res.push("new ");
+            res.push(this.getConstructorName(par.callee));
+            res.push("(");
+            typed = true;
+            //res.setType(this.createTemporaryTrackedClass(type));
+            res.setType(this.getConstructorReturnType(type));
+          };
+        };
+        if (!typed){
+          res.push("new ");
+          res.push(this.expectTypeVar(this.parseExpression(par.callee)));
+          res.push("(");
+        };
+        var i = 0;
+        var constructorType;
+        if (typed){
+          constructorType = this.getConstructorType({
+            "type": type
+          }, par);
+        };
+        for (i; i < par["arguments"].length; ++i){
+          if (i){
+            res.push(", ");
+          };
+          var expression = this.parseExpression(par["arguments"][i]);
+          if (typed){
+            res.push(this.getPassAsTypeCode({ // only var type is allowed in regular object literal
+                value: expression,
+                valueType: expression.getType(),
+                "type": this.getFunctionArgumentType(constructorType, i, par)
+                , errorFun: this.getWarningFun(par)
+              }));
+          }else{
+            res.push(this.expectTypeVar(expression));
+          };
+        };
+        res.push(")");
+        if (!typed){
+          res.setType("var");
+        };
+        return res;
+        
+      };
+      
+      
+      this.connectExpression = function(parParsed){
+        var res = this.newResult();
+        
+        
+        if (parParsed.signal.type != "MemberExpression"){
+          this.error(parParsed.signal, errorMsg.expectedMemberExpression);
+        };
+        if (parParsed.signal.computed){
+          this.error(parParsed.signal, errorMsg.noComputedMembersAllowed);
+        };
+        
+        var signalObject = this.parseExpression(parParsed.signal.object);
+        var signalProperty = identifierName(parParsed.signal.property);
+        
+        if (parParsed.slot){
+          if (parParsed.slot.type != "MemberExpression"){
+            this.error(parParsed.slot, errorMsg.expectedMemberExpression);
+          };
+          if (parParsed.slot.computed){
+            this.error(parParsed.slot, errorMsg.noComputedMembersAllowed);
+          };
+          var slotObject = this.parseExpression(parParsed.slot.object);
+          var slotProperty = identifierName(parParsed.slot.property);
+          
+          res.push(this.connectSlotCode({
+            signalObject: signalObject,
+            signalProperty: signalProperty,
+            slotObject: slotObject,
+            slotProperty: slotProperty,
+            errorFun: this.getWarningFun(parParsed)
+          }));
+          
+        }else if (parParsed.fun){
+          var fun = this.parseExpression(parParsed.fun);
+          
+          res.push(this.connectFunCode({
+            signalObject: signalObject,
+            signalProperty: signalProperty,
+            fun: fun,
+            errorFun: this.getWarningFun(parParsed)
+          }));
+          
+        }else{
+          this.error(parParsed, errorMsg.unknownConnect);
+          
+        };
+        
+        res.setType("var");
+        return res;
+      };
+        
+        
+        
+      /* 
+        *x || *y -> special case
+        *x && *y -> normal case
+      */
+      this.expBinaryExpression = function(par){
+        var res = this.newResult();
+        
+        var left = this.parseExpression(par.left);
+        var right = this.parseExpression(par.right);
+        
+        res.setType("var");
+        
+        if (par.operator == "||" && par.right.promising){
+          var ltype = left.getType();
+          var rtype = right.getType();
+          if (ltype !== this.getType("var") || rtype !== this.getType("var")){
+            this.error(par, errorMsg.notImplemented);
+          };
+          
+          // so the right expression only needs to be evaluated if the left is false
+          res.makePromising();
+          var tempPromise = this.getUniqueName();
+          var tempValue = this.getUniqueName();
+          res.addPre("var ");
+          res.addPre(tempPromise);
+          res.addPre(" = " + this.newPromiseStr() + ";");
+          res.addPre(this.newLine());
+          res.addPre("var ");
+          res.addPre(tempValue);
+          res.addPre(" = ");
+          res.addPre(left);
+          res.addPre(";");
+          res.addPre(this.newLine());
+          res.addPre("if (");
+          res.addPre(tempValue);
+          res.addPre("){ ");
+          res.addPre(tempPromise);
+          res.addPre(".resolve(");
+          res.addPre(tempValue);
+          res.addPre(") }else{ ");
+          var rightExtraCode = this.newResult();
+          rightExtraCode.push(tempPromise);
+          rightExtraCode.push(".resolve(");
+          rightExtraCode.push(right);
+          rightExtraCode.push(");");
+          rightExtraCode.push(this.newLine());
+          res.addPre(this.makeCompleteStatement(rightExtraCode));
+          res.addPre("};");
+          res.addPre(this.newLine());
+          res.addPre(tempPromise);
+          res.addPre(".then(");
+          res.setPromiseName(this.getUniqueName());
+          res.addPre(res.getPromiseName());
+          res.addPre("){");
+          res.addPost("});");
+          
+        }else{
+          
+          res.push(this.getBinaryExpressionCode({
+            left: left,
+            right: right,
+            operator: par.operator
+            , errorFun: this.getWarningFun(par)
+          }));
+          
+        };
+        return res;
+        
+      };
+      
+      
+      this.expMemberExpression = function(par){
+        var res = this.newResult();
+        var base = this.parseExpression(par.object);
+        
+        res.pushType(this.getGetPropertyCode({
+          instance: base,
+          property: par.computed ? undefined : identifierName(par.property),
+          propertyValue: par.computed ? this.expectTypeVar(this.parseExpression(par.property)) : undefined
+          , errorFun: this.getWarningFun(par)
+        }));
+        
+        return res;
+      };
+
+
+        
+       /*
+        something = value
+        something = some.complex["expression"]
+      */
+      
+      this.expAssignmentExpression = function(par){
+        //{type: "AssignmentExpression", operator: "=", left: Object, right: Object}
+        var res = this.newResult();
+        
+        if (par.left.type == "MemberExpression"){
+          
+          var base = this.parseExpression(par.left.object);
+          var property;
+          var propertyValue;
+          if (par.left.computed){
+            propertyValue = this.expectTypeVar(this.parseExpression(par.left.property));
+          }else{
+            property = identifierName(par.left.property);
+          };
+          
+          res.pushType(this.getSetPropertyCode({
+            instance: base,
+            
+            propertyValue: propertyValue,
+            property: property,
+            computed: par.left.computed,
+            
+            value: this.parseExpression(par.right),
+            
+            operator: par.operator,
+            errorFun: this.getWarningFun(par)
+          }));
+          
+        }else{
+          res.pushType(this.getSetVariableCode({
+            instance: this.parseExpression(par.left),
+            assignmentType: par.left.type, //Identifier
+            value: this.parseExpression(par.right),
+            operator: par.operator,
+            errorFun: this.getWarningFun(par)
+          }));
+          
+        };
+        
+        return res;
+      };
+        
+
+      /*
+        funname([par1, par2, ...]);
+      */
+      
+      this.expCallExpression = function(par){
+        var res = this.newResult();
+        var i = 0;
+        var l;
+        var calleeRes = this.parseExpression(par.callee);
+        
+        var args = [];
+        if (par["arguments"]){
+          l = par["arguments"].length;
+          for (i = 0; i < l; ++i){
+            var argType = this.getFunctionArgumentType(calleeRes.getType(), i, par["arguments"][i]);
+            var argRes = this.parseExpression(par["arguments"][i]);
+            argRes = this.getPassAsTypeCode({ // only var type is allowed in regular object literal
+              value: argRes,
+              valueType: argRes.getType(),
+              "type": argType
+              , errorFun: this.getWarningFun(par)
+            });
+            args.push({
+              "type": argRes.getType(),
+              "value": argRes
+            });
+          };
+        };
+        
+        res.push(this.callClassSystem("getCallCode", {
+          "type": calleeRes.getType(),
+          instance: calleeRes,
+          "arguments": args
+        }));
+        
+        res.setType(this.getFunctionReturnType(calleeRes.getType(), par));
+        return res;
+      };
+        
+        
+        
+      /*
+        return [value];
+      */
+      
+      this.expReturnStatement = function(par, closingFun){
+        if (this.preventreturn){
+          this.error(par, errorMsg.returnNotAllowedHere);
+        };
+        var res = this.newResult();
+        
+        
+        var valueRes;
+        
+        if (par.argument){
+          valueRes = this.newResult();
+          
+          var passAsType = this.getReturnType();
+          if (this.promising){
+            // promising returns need to be of the type the promise is returning
+            passAsType = this.getClassFromPromiseOf(passAsType);
+          };
+          // eventually a tracked class, in that case we need to create a temporary
+          passAsType = this.createTemporaryTrackedClass(passAsType);
+          
+          
+          var v = this.parseExpression(par.argument);
+          valueRes.push(this.getPassAsTypeCode({ // only var type is allowed in regular object literal
+            value: v,
+            valueType: v.getType(),
+            "type": passAsType
+            , errorFun: this.getWarningFun(par)
+          }));
+        };
+        
+        res.push(this.getReturnCode({
+          return: true,
+          value: valueRes
+        }), par);
+        
+        
+        res.setType(statementType);
+        return res;
+      };
+
+
+
+
+    
+  };
+  f.apply(parInstance, [par]);
+  
+};

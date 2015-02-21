@@ -1,0 +1,58 @@
+
+  var testObj = require "./testObj";
+
+  
+  
+  var successFun = function(mod, success){
+    if (mod && mod.success){
+      success();
+    };
+  };
+  
+  var successFunDbg = function(mod, success){
+    debugger;
+    if (mod && mod.success){
+      success();
+    };
+  };
+  
+  
+  var createTest = function(parModuleName, parFun){
+    console.log("running " + parModuleName);
+    if (!parFun){
+      parFun = successFun;
+    };
+    testObj[parModuleName] = false;
+    var sFun = function(){
+      testObj[parModuleName] = true;
+    };
+    try{
+      var mod = require ("./frames/" + parModuleName);
+      
+      parFun(mod, sFun);
+    }catch(e){
+      console.log("something went wrong");
+      console.log(e);
+    };
+  };
+  
+  
+  *createTest("clientServer");
+  *createTest("emptyReturn");
+  *createTest("frameParameter");
+  *createTest("exclusive");
+  *createTest("syncReturn");
+  *createTest("syncServerDestroy");
+  *createTest("syncServerDestroy2");
+  *createTest("syncServe");
+  *createTest("syncServe2");
+  *createTest("syncParameter");
+  *createTest("syncMember");
+  *createTest("syncMemberNonTrivial");
+  *createTest("syncEvents");
+  *createTest("syncEvents2");
+  //*createTest("syncEvents2");
+
+
+
+return testObj;

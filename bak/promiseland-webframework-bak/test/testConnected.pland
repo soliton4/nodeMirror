@@ -1,0 +1,45 @@
+console.log("connected");
+
+
+
+
+testFun (par1) frame "server" {
+  console.log("par1: " + par1);
+  console.log(session);
+  return "server Content";
+};
+
+
+authFun () frame "serverNoAuth" {
+  console.log("calling auth");
+  console.log(session);
+  if (session && session.setAuth){
+    session.setAuth(true);
+  }else{
+    console.log("missing setAuth");
+  };
+};
+
+
+() exclusive "client" {
+  
+  try{
+    console.log(*testFun("xx1"));
+  }catch(err){
+    console.log("failed --- ");
+    console.log(err);
+  };
+  
+  console.log("now calling auth");
+  
+  *authFun();
+  
+  try{
+    console.log(*testFun("xx1"));
+  }catch(err){
+    console.log(err);
+  };
+
+  
+}()
+

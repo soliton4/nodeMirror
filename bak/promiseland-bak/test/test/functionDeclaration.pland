@@ -1,0 +1,35 @@
+
+if (*fmain() == 6){
+  return {
+    success: true
+  };
+};
+
+return {
+  success: false
+};
+
+
+fmain(){
+
+  function fa(){
+    return 1;
+  };
+
+  var res = fa() + fb() + fc(); 
+
+  function fb(){
+    return 2;
+  };
+
+  return res;
+
+  if (false){
+    *fb(); // force it to be promising
+  };
+
+  fc(){
+    return 3;
+  };
+
+};

@@ -1,0 +1,11 @@
+try{
+  require "somethingThatsNotPresent";
+}catch(e){
+  return {
+    success: true
+  };
+};
+
+return {
+  success: false
+};

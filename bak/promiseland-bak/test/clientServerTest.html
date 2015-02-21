@@ -1,0 +1,34 @@
+<html>
+  <head>
+    <!-- socket.io -->
+      <script src="/socket.io/socket.io.js"></script>
+    <!-- require -->
+    <script src="/requirejs/require.js"></script>
+      <script>
+        require.config({
+          //baseUrl: "/",
+          paths: {
+            "testmodules": "testmodules",
+            "test": "test",
+            "testapp": "testapp"
+          },
+          packages: [
+            {
+              name: "promiseland",
+              main: "promiseland",
+              location: "pl"
+            }
+          ],
+          waitSeconds: 60
+        });
+      </script>
+    
+    <script>
+      require(["testmodules/clientServerTestClient"], function(){});
+      
+    </script>
+  </head>
+  <body>
+    success!
+  </body>
+</html>

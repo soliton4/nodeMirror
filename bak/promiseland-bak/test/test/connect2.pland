@@ -1,0 +1,34 @@
+class type Emitter {
+  event: (amount){}
+};
+
+class type Reciever {
+  eventSlot: (amount){
+    this.amount += amount;
+  },
+  
+  amount: 1
+};
+
+Emitter e = new Emitter();
+
+Reciever r = new Reciever();
+
+//r.eventSlot(2);
+
+var c = connect e.event r.eventSlot;
+
+e.event(2);
+
+if (r.amount !== 3){
+  return { success: false };
+};
+
+c();
+
+if (r.amount !== 3){
+  return { success: false };
+};
+
+
+return { success: true };

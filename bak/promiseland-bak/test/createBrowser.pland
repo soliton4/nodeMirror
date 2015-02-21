@@ -1,0 +1,6 @@
+
+var cp = require "./createProcess";
+
+res = cp("google-chrome", ["http://localhost:3008/"]);
+
+console.log(*res);

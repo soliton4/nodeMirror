@@ -1,0 +1,117 @@
+try{
+
+  var waitFun = function(){
+    var cb = new Callback();
+    setTimeout(cb, 2000);
+    *cb.promise;
+  };
+
+  var nextId = 1;
+  
+  class type sync Ses {
+    constructor: (){
+      this.id = nextId++;
+    },
+    id: 0,
+    destroy: (){
+      console.log("destroying" + this.id);
+      var p = pos.p;
+      console.log(p);
+      delete p[this.id];
+      console.log(p);
+      pos.p = p;
+    }
+  };
+  
+  class type sync Pos {
+    p: {}
+  };
+  
+  Pos pos;
+  
+  var gotit = false;
+  (() exclusive "server" {
+    pos = new Pos();
+    gotit = true;
+  })();
+  
+  Ses* newSes() frame "server"{
+    console.log("new session");
+    return new Ses();
+  };
+  Pos* getPos() frame "server"{
+    return pos;
+  };
+  
+  var serverSetMouse = (x, y, sid) frame "server"{
+    //console.log(x + " " + y + " " + sid);
+    var p = pos.p;
+    p[sid] = {x: x, y: y};
+    pos.p = p;
+    return;
+  };
+  
+  (() exclusive "server" {
+    gotit = true;
+    
+  })();
+  
+  Ses s;
+
+  var setMousePos = (x, y){
+    if (s.id > 0){
+      serverSetMouse(x, y, s.id);
+    };
+  };
+  
+  if (!gotit){
+    *waitFun();
+    s = *newSes();
+    pos = *getPos();
+  };
+  
+  if (window){
+    window.onmousemove = (evt){
+      if (evt.pageX !== undefined){
+        setMousePos(evt.pageX, evt.pageY);
+      };
+    };
+    var wgts = {};
+    
+    setInterval((){
+      var p = pos.p;
+      //console.log(p);
+      var i;
+      var n;
+      for (i in p){
+        if(i != s.id){
+          if (wgts[i]){
+            n = wgts[i].n;
+          }else{
+            n = document.createElement("img");
+            n.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAAgCAYAAAAffCjxAAAEWklEQVRIx6WVC1BUVRiAbyCBiUVlzuhQNgxmDQwx8hQkddkVWSAJotSwiYfh8qayKaD57967hCZFGCGP3QXuwrK7vJ8iwfIM5LmwsGBKmrxFB6ERSYaFzjJao4DAcma++e+5/5lv/nvPC/vm24jtyoUFbMMt5sdYFySjn/jk5MZESclcB0l2bgzTyeVNcwtL9UUZmSJGSWk5kcJNjUHdF3x8T6knKiouZUhy8gkEJCam4IzDDroBLNb6RdKaWoZQlEtkCMVAZYjYScn8YNO3d29at6iltY2RKZQQgkwRpKZnApdPkUkp/GNcfvr6RDJ5N516LKIyIYWXDrxUQRSXl3aYEmStXdQlVzCyJLmEUJwDAqEE0gVZwEvLAD6VEU1RQnveWitrl3UxCorLiIKiMsgrLIWc/EKQ5BaCSIUkj0xO5hlHfIevLrrS3EKvqW8iqmsbQVrzO1TVNECltAF+k9ZBVXUDXlRyGU77B2xbw6zV0+WKP4hOeS/IulQoQNapgE55H3Sg2Ngsw/MKyyLQUK1nikpKK+gDQ2PEzVvD8B8Dw3D9zwFQ9F2Hnt5+uNb/Fzu/qCy8u/fqyqK8/AL6g5lZYmrqPizy9zTcnZiC8bv3EKo4ucjk1DRBZQq9Y3+OW14kFInsFxYWyDmlEubmlaCcm4c55RxifgkzM/9EkZzvmY5M5lIRlU4tihCwFmZnH0abmZtbGxmbPCnip/LtZx/OkPemJlD5k6swAdMP7sPg0OC5Lbpbdzs7H/1flEZR9qPj4+Tg8DAsy8gIjI7fhtHbYzA8OrLYH7tzB5paWggTE9Md5hZWj/6RONu+r/8m0XMVzdBTKBBdPX1QUVVHNjS1kfLefuLajQHixsAoe2hsnLhcWR356mt6mx4dI2W05nY52djaCY+50i7HUcSbO7oB7UNAw6wRNs9rb2bu2mV4zGqfne9RV48gVkBoONPJNUhLCy2x6toGmrSuiayqbYJqhLS2ie3l6xfE5QtCahvb8MqaRjIwOMxWW1sH27FTHzN51wyzZzhiRWVSVR0aiK1aKlNLawet6FIlWVJeBRXSevxzVlA4SurHXUgwKL1UGVVeVQe/XuTiH7h5rLgWFytql8lpGVk5ZHZ+Me7nH6L6jLdUyfj4REycU8gRivMgS1LAYTJdTFbb/Qd/SUjheHmdVlVi+OR5LqbFX+SSCUl8nBN9PszF2XVlUZY4l+HucYKNHg2ezv0Ud+HFsz/EngUiGnDyHOeIg9PrK4o++thzLwpGmpqaS3JoJT8XHsn2CQk7ww794muC5R/sbmFptbzI86Q3pqOzednc4K0BLDjkS1ufUyyOl48f7vmp91dmZuZb1LquAoJCt7t7HI9EgNuHx6PsDh4yVksUGByKOTm7Bjo4uuBHmO+zbfcf+Ezt29h6n43F/vcOcewO0HDTvZbn0auX1BLZ2NphBoZ7onfqv3FGT+9lN00NjW3YBtorCN097xhhSLQk+S/Hvpo08p3TowAAAABJRU5ErkJggg==";
+            n.style.position = "absolute";
+            document.body.appendChild(n);
+            wgts[i] = {n: n};
+          };
+          n.style.top = p[i].y + "px";
+          n.style.left = p[i].x + "px";
+        };
+      };
+      for (i in wgts){
+        if (!p[i]){
+          n = wgts[i].n;
+          document.body.removeChild( n );
+          delete wgts[i];
+        };
+      };
+    }, 100)
+  };
+  
+
+}catch(e){
+  console.log("error:");
+  console.log(e);
+}
+
+  

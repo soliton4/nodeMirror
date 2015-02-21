@@ -1,0 +1,14 @@
+var z = function(context){
+  if (*x()){
+    doSome();
+  };
+};
+
+
+var y = () frame "server"{
+  *z(context);
+};
+
+var x = () frame "client"{
+  return "x";
+};

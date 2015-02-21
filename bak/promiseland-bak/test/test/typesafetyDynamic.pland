@@ -1,0 +1,47 @@
+class type T1 {
+  a: 1,
+  b: 2
+}
+
+class type T2 {
+  a: 3,
+  b: 4
+}
+
+var a = <{ types: { Tx: T1, Ty: T2} }> (){
+  Tx x = new Tx();
+  Ty y = new Ty();
+  x = y;
+}
+
+var b = <{ types: { Tx: T1, Ty: T1} }> function(){
+  Tx x = new Tx();
+  Ty y = new Ty();
+  x = y;
+}
+
+var catched = false;
+
+try {
+  a();
+}catch(e){
+  catched = true;
+}
+
+if (!catched){
+  return {
+    success: false
+  };
+};
+
+try {
+  b();
+}catch(e){
+  return {
+    success: false
+  };
+}
+
+return {
+  success: true
+};

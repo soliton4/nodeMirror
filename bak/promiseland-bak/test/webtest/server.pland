@@ -1,0 +1,9 @@
+var Fw = require ("promiseland-webframework");
+var fw = new Fw({
+  load: "test/saveHandler",
+  dirs: [{
+    client: "/test",
+    server: __dirname + "/test/"
+  }]
+});
+fw.listen(4000);

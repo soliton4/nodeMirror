@@ -21,7 +21,8 @@
     "imagemagick": "*",
     "pty.js": "0.2.4",
     "commander": "*",
-    "watch": "0.14.x"
+    "watch": "0.14.x",
+    "runtime-configuration": "0.1.x"
   },  
   "keywords": [
     "ide"

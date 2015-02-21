@@ -1,0 +1,37 @@
+
+var isServer = false;
+if (__dirname){
+  isServer = true;
+};
+
+var serverRun = false;
+var clientRun = false;
+
+var exs = () exclusive "server" {
+  serverRun = true;
+};
+
+var exc = () exclusive "client" {
+  clientRun = true;
+};
+
+exs();
+exc();
+
+if (isServer && clientRun){
+  return { success: false };
+};
+if (isServer && !serverRun){
+  return { success: false };
+};
+
+if (!isServer && serverRun){
+  return { success: false };
+};
+if (!isServer && !clientRun){
+  return { success: false };
+};
+
+return {
+  success: true
+};

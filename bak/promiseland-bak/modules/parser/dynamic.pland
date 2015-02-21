@@ -1,0 +1,661 @@
+var Map = promiseland.Map;
+var classSystem = promiseland.classSystem;
+
+var basics = require "./basics";
+var errorFun = basics.errorFun;
+var errorMsg = basics.errorMsg;
+var _stringEncodeStr = basics._stringEncodeStr;
+var stringEncodeStr = basics.stringEncodeStr;
+
+var VariableNames = basics.VariableNames;
+var mixin = basics.mixin;
+var identifierName = basics.identifierName;
+var checkIsFunction = basics.checkIsFunction;
+var getExtraFromPar = basics.getExtraFromPar;
+var statementType = basics.statementType;
+var checkPromising = basics.checkPromising;
+
+
+
+var blocksModule = require "./blocks";
+var loopsModule = require "./loops";
+var conditionalsModule = require "./conditionals";
+var literalsModule = require "./literals";
+var classModule = require "./class";
+
+
+return (parInstance, par){
+  
+  var f = (par){
+    
+    
+    this.isDynamicType = (parType){
+      if (parType.isDynamic){
+        return true;
+      };
+      return false;
+    };
+    
+    
+          /*
+        
+        class system code generation 
+        
+      */
+      
+      this.callClassSystem = function(parFun, par){
+        var dynamic = false;
+        var typeProps = {"type": true, "valueType": true, "leftType": true, "rightType": true};
+        var ignoreProps = {"errorFun": true, "parsed": true};
+        var i = 0;
+        var p;
+        var promises = [];
+        var parsed = par.parsed;
+        parsed = parsed || par.value && par.value.getParsed();
+        parsed = parsed || par.instance && par.instance.getParsed();
+        parsed = parsed || par.left && par.left.getParsed();
+        parsed = parsed || par.right && par.right.getParsed();
+        if (!parsed){
+          errorFun({}, errorMsg.internalParserInfoMissing);;
+        };
+        var errRes = this.runtimeError(parsed, errorMsg.typeLookupFailed);
+        var self = this;
+        
+        var resolveType = function(prop, ps, parArgument){
+          var res = new Promise();
+          ps.then(function(t){
+            if (parArgument){
+              par["arguments"][prop]["type"] = t;
+            }else{
+              par[prop] = t;
+            };
+            res.resolve();
+          });
+          promises.push(res);
+          return res;
+        };
+        var t;
+        for (p in typeProps){
+          t = par[p];
+          if (t){
+            if (t.isDynamic){
+              dynamic = true;
+            }else{
+              resolveType(p, classSystem.readyPromise(t));
+            };
+          };
+        };
+        if (par["arguments"]){
+          for (i = 0; i < par["arguments"].length; ++i){
+            t = par["arguments"][i]["type"];
+            if (t){
+              if (t.isDynamic){
+                dynamic = true;
+              }else{
+                resolveType(i, classSystem.readyPromise(t), true);
+              };
+            };
+          };
+        };
+        promiseland.all(promises).then(function(){
+          var p;
+          if (dynamic){
+            self.common.useClassSystem = true;
+            var res = self.newResult();
+            res.push("classSystem.");
+            res.push(parFun);
+            res.push("({");
+
+            var propsStarted = false;
+            var addProperty = function(p){
+              if (propsStarted){
+                res.push(", ");
+              };
+              propsStarted = true;
+              res.push(stringEncodeStr(p));
+              res.push(":");
+            };
+
+            for (p in par){
+              if (!par[p] || ignoreProps[p]){
+              }else if (typeProps[p]){
+                addProperty(p);
+                res.push(self.renderType(par[p], parsed));
+              }else{
+                addProperty(p);
+                if (typeof par[p] == "boolean"){
+                  var tempStr = "";
+                  tempStr += par[p];
+                  res.push(tempStr);
+                }else{
+                  res.push(self.makeCompleteStatementDynamic(par[p]));
+                };
+              };
+            };
+            res.push("})");
+
+            var dynRes = self.newResult();
+            dynRes.push(self.makeCompleteStatement(res), undefined, {
+              dynamic: true
+            });
+            errRes.resolve(dynRes);
+
+          }else{
+            var tempRes = self.newResult();
+            par.result = tempRes;
+            par.newLine = par.newLine || self.newLine();
+            par.getIndentRes = (){
+              return self.indent();
+            };
+            par.newResult = (){
+              return self.newResult();
+            };
+            errRes.resolve(promiseland.classSystem[parFun](par));
+          };
+
+        });
+        
+        return errRes;
+      };
+
+      this.isTrackedClassConRes = function(parType, parParsed){
+        var self = this;
+        if (parType.isDynamic){
+          // yes this might look odd
+          // but its true, we return a boolean when its compiletime defined, otherwise
+          // we return a result that results in a boolean.
+          var res = self.newResult();
+          self.common.useClassSystem = true;
+          res.push("classSystem.isTrackedClass");
+          res.push("(");
+          res.push(self.renderType(parType, parParsed));
+          res.push(")");
+
+          return res;
+          
+        };
+        
+        if (classSystem.isProvisional(parType)){
+          var pr = new Promise();
+          classSystem.definitionPromise(parType).then((parType){
+            pr.resolve(classSystem.isTrackedClass(parType));
+          });
+          return pr;
+        };
+        
+        return classSystem.isTrackedClass(parType);
+      };
+    
+    
+      /*
+        some imported classSystem functions
+      */
+      
+      this.isTrackedClass = function(parType){
+        return classSystem.isTrackedClass(parType);
+      };
+      
+      this.createTemporaryTrackedClass = function(parType, parParsed){
+        if (parType.isDynamic){
+          return this.createExtraDynamicType(parType, {
+            temporaryTracked: true
+          }, parParsed);
+        };
+        return classSystem._createTemporaryTrackedClass(parType);
+      };
+      this.getConstructorReturnType = function(parType, parParsed){
+        if (parType.isDynamic){
+          return this.createExtraDynamicType(parType, {
+            constructorReturn: true
+          }, parParsed);
+        };
+        return classSystem.getConstructorReturnType(parType);
+      };
+      
+      
+      this.parseAsType = function(parType, par){
+        var value = this.parseExpression(par);
+        return this.getPassAsTypeCode({
+          value: value,
+          valueType: value.getType(),
+          "type": parType,
+          errorFun: this.getWarningFun(par),
+          parsed: par
+        });        
+      };
+      
+      
+      this.getPassAsTypeCode = function(par){
+        var res = this.newResult();
+        
+        res.push(this.callClassSystem("getPassAsTypeCode", {
+            "type": par["type"],
+            value: par.value,
+            valueType: this.getResultType(par.value, par),
+            errorFun: par.errorFun
+        }));
+        
+        res.setType(par["type"]);
+        
+        return res;
+        
+      };
+      
+      this.getDestroyTemporaryClassCode = function(par){
+        var res = this.newResult();
+        
+        var value = par.value;
+        var valueType = value.getType();
+        
+        res.push(this.callClassSystem("getDestroyTemporaryClassCode", {
+          value: value,
+          valueType: value.getType(),
+          errorFun: par.errorFun,
+          noValueRequired: par ? par.noValueRequired : undefined
+        }));
+        
+        res.setType(this.getClassFromTemporaryTracked(valueType, value.getParsed()));
+        
+        return res;
+        
+      };
+      
+      this.getClassFromTemporaryTracked = function(parType, parParsed){
+        var self = this;
+        if (parType.isDynamic){
+          return this.createExtraDynamicType(parType, {
+            temporaryTrackedResolved: true
+          }, parParsed);
+        };
+        var resType = this.getProvisionalType(parParsed, parParsed);
+        classSystem.definitionPromise(parType).then(function(parDefinedType){
+          self.resolveProvisional(resType, classSystem.getClassFromTemporaryTracked(parDefinedType));
+        });
+        return resType;
+      };
+      
+      this.getSetPropertyCode = function(par){
+        var res = this.newResult();
+        
+        res.push(this.callClassSystem("getSetPropertyCode", {
+          instance: par.instance,
+          "type": this.getResultType(par.instance),
+          property: par.property,
+          propertyValue: par.propertyValue,
+          computed: par.computed,
+          value: par.value,
+          valueType: this.getResultType(par.value),
+          operator: par.operator || "=",
+          errorFun: par.errorFun
+        }));
+
+        res.setType(this.getPropertyType({
+          "type": this.getResultType(par.instance),
+          property: par.property
+        }, par.instance));
+
+
+        return res;
+        
+      };
+      
+      
+      this.getSetVariableCode = function(par){
+        var res = this.newResult();
+        
+        res.push(this.callClassSystem("getSetVariableCode", {
+          instance: par.instance,
+          "type": this.getResultType(par.instance),
+          value: par.value,
+          valueType: this.getResultType(par.value),
+          operator: par.operator || "=",
+          errorFun: par.errorFun,
+          assignmentType: par.assignmentType
+        }));
+        
+        res.setType( this.getClassFromTemporaryTracked(this.getResultType(par.value), par.value.getParsed()) );
+        
+        return res;
+      };
+      
+      this.declareReturnPromiseCode = function(par){
+        var res = this.newResult();
+        this.common.usePromise = true;
+        
+        res.push(this.callClassSystem("declareReturnPromiseCode", {
+          "type": par.type,
+          name: par.name,
+          constructorName: par.constructorName,
+          errorFun: par.errorFun,
+          parsed: par.parsed
+        }));
+        
+        res.setType(statementType);
+        
+        return res;
+      };
+      this.returnReturnPromiseCode = function(par){
+        var res = this.newResult();
+        
+        res.push(this.callClassSystem("returnReturnPromiseCode", {
+          "type": par.type,
+          name: par.name,
+          errorFun: par.errorFun,
+          parsed: par.parsed
+        }));
+        
+        res.setType(statementType);
+        
+        return res;
+      };
+      
+      this.getDeclareVariableCode = function(par){
+        var res = this.newResult();
+        
+        res.push(this.callClassSystem("getDeclareVariableCode", {
+          "type": par.type,
+          name: par.name,
+          errorFun: par.errorFun,
+          parsed: par.parsed,
+          declaration: par.declaration,
+          value: par.value,
+          valueType: this.getResultType(par.value)
+        }));
+        
+        res.setType(statementType);
+        
+        return res;
+      };
+    
+    
+    
+      this.getProcessParameterCode = function(par){
+        var res = this.newResult();
+        
+        res.push(this.callClassSystem("getProcessParameterCode", {
+          "type": par.type,
+          name: par.name,
+          errorFun: par.errorFun,
+          parsed: par.parsed
+        }));
+        
+        res.setType(statementType);
+        
+        return res;
+      };
+      
+      this.getDestroyVariableCode = function(par){
+        var res = this.newResult();
+        
+        res.push(this.callClassSystem("getDestroyVariableCode", {
+          "type": par.type,
+          name: par.name,
+          errorFun: par.errorFun,
+          parsed: par.parsed
+        }));
+        
+        res.setType(statementType);
+        
+        return res;
+      };
+      
+      this.connectFunCode = function(par){
+        var res = this.newResult();
+        res.push(this.callClassSystem("getConnectCode", {
+          instance: par.signalObject,
+          "type": this.getResultType(par.signalObject),
+          property: par.signalProperty,
+          value: par.fun,
+          valueType: this.getResultType(par.fun),
+          errorFun: par.errorFun
+        }));
+        
+        res.setType("var");
+        return res;
+      };
+      
+      this.connectSlotCode = function(par){
+        var res = this.newResult();
+        res.push(this.callClassSystem("getConnectCode", {
+          instance: par.signalObject,
+          "type": this.getResultType(par.signalObject),
+          property: par.signalProperty,
+          value: par.slotObject,
+          valueType: this.getResultType(par.slotObject),
+          valueProperty: par.slotProperty,
+          errorFun: par.errorFun
+        }));
+        
+        res.setType("var");
+        return res;
+      };
+      
+      this.dereferencePromisePreCode = function(par){
+        var res = this.newResult();
+        res.push(this.callClassSystem("dereferencePromisePreCode", {
+          value: par.value,
+          valueType: this.getResultType(par.value),
+          errorFun: par.errorFun
+        }));
+        
+        res.setType(statementType);
+        return res;
+      };
+      this.dereferencePromisePostCode = function(par){
+        var res = this.newResult();
+        res.push(this.callClassSystem("dereferencePromisePostCode", {
+          value: par.value,
+          valueType: this.getResultType(par.value),
+          errorFun: par.errorFun
+        }));
+        
+        res.setType(statementType);
+        return res;
+      };
+      
+      this.promisingReturnTypeCheck = function(par){
+        var res = this.newResult();
+        res.push(this.callClassSystem("promisingReturnTypeCheck", {
+          "type": par.type,
+          errorFun: par.errorFun,
+          parsed: par.parsed
+        }));
+        
+        res.setType(statementType);
+        return res;
+      };
+      
+      this.getClassFromPromiseOf = function(parType){
+        return classSystem.getClassFromPromiseOf(parType);
+      };
+      
+      this.getPropertyType = function(par, parParsed){
+        var type = par["type"];
+        var self = this;
+        if (type.isDynamic){
+          return this.createExtraDynamicType(type, {
+            property: par.property
+          }, parParsed);
+        }else{
+          var r = this.getProvisionalType(parParsed);
+          classSystem.readyPromise(par.type).then(function(resultType){
+            self.resolveProvisional(r, promiseland.classSystem.getPropertyType({
+              type: resultType,
+              property: par.property
+            }));
+          });
+          return r;
+        };
+      };
+      
+      
+      this.getConstructorType = function(par, parParsed){
+        var type = par["type"];
+        var self = this;
+        if (type.isDynamic){
+          return this.createExtraDynamicType(type, {
+            property: "constructor"
+          }, parParsed);
+        }else{
+          var r = this.getProvisionalType(parParsed);
+          classSystem.readyPromise(par.type).then(function(resultType){
+            try{
+              self.resolveProvisional(r, promiseland.classSystem.getConstructorType({
+                type: resultType
+              }));
+            }catch(e){
+              self.error(parParsed, e);
+            };
+          });
+          return r;
+        };
+        
+      };
+      
+      this.getGetPropertyCode = function(par){
+        var res = this.newResult();
+        
+        res.push(this.callClassSystem("getGetPropertyCode", {
+          instance: par.instance,
+          "type": this.getResultType(par.instance),
+          property: par.property,
+          propertyValue: par.propertyValue,
+          errorFun: par.errorFun,
+          asmMode: this.asmMode || false
+        }));
+        
+        if (par.property){
+          res.setType(this.getPropertyType({
+            "type": this.getResultType(par.instance),
+            property: par.property
+          }, par.instance));
+        }else{
+          res.setType("var");
+        };
+        
+        return res;
+      };
+      
+      this.getBinaryExpressionCode = function(par){
+        var res = this.newResult();
+        
+        res.push(this.callClassSystem("getBinaryExpressionCode", {
+          left: par.left,
+          leftType: this.getResultType(par.left),
+          right: par.right,
+          rightType: this.getResultType(par.right),
+          operator: par.operator,
+          errorFun: par.errorFun
+        }));
+        
+        res.setType("var");
+        
+        return res;
+      };
+
+    this.makeCompleteStatementDynamic = function(par){
+      var r = this.newResult();
+      var d = this.newResult();
+
+      d.push(this.makeCompleteStatement(par), undefined, {
+        stringEncode: true
+      });
+      r.push("\"");
+      r.push(d);
+      r.push("\"");
+      return r;
+    };
+    
+    
+    
+          this.createExtraDynamicType = function(parType, par, parParsed){
+        var name;
+        if (par.property){
+          name = this.getTypeName(parType, parParsed) + "::property::" + par.property;
+          
+        }else if (par.temporaryTracked){
+          name = this.getTypeName(parType, parParsed) + "::temporaryTracked";
+          
+        }else if (par.temporaryTrackedResolved){
+          name = this.getTypeName(parType, parParsed) + "::temporaryTrackedResolved";
+          
+        }else if (par.constructorReturn){
+          name = this.getTypeName(parType, parParsed) + "::constructorReturn";
+          
+        }else{
+          this.error(errorMsg.internalMissingTypeProperty);
+        };
+        
+        
+        if (!parType.extraTypes){
+          parType.extraTypes = [];
+        };
+        if (!parType.extraTypeMap){
+          parType.extraTypeMap = new Map();
+        };
+        
+        
+        if (parType.extraTypeMap.has(name)){
+          return parType.extraTypeMap.get(name);
+        };
+        
+        var entry = {
+          res: this.newResult()
+        };
+        parType.extraTypes.push(entry);
+        var res = entry.res;
+        
+        this.addType({name: name, dynamic: true}, parParsed);
+        
+        res.push("var /*extratyperender*/ ");
+        res.push(this.renderType(name));
+        res.push(" = ");
+        
+        this.common.useClassSystem = true;
+        
+        if (par.property){
+          if (par.property == "constructor"){
+            res.push("classSystem.getConstructorType({\"type\":");
+          }else{
+            res.push("classSystem.getPropertyType({\"type\":");
+          };
+          res.push(this.renderType(parType));
+          res.push(", property: " + stringEncodeStr(par.property));
+          res.push("});");
+          res.push(this.newLine());
+          
+        }else if (par.temporaryTracked){
+          res.push("classSystem._createTemporaryTrackedClass(");
+          res.push(this.renderType(parType));
+          res.push(");");
+          res.push(this.newLine());
+          
+        }else if (par.temporaryTrackedResolved){
+          res.push("classSystem.getClassFromTemporaryTracked(");
+          res.push(this.renderType(parType));
+          res.push(");");
+          res.push(this.newLine());
+          
+        }else if (par.constructorReturn){
+          res.push("classSystem.getConstructorReturnType(");
+          res.push(this.renderType(parType));
+          res.push(");");
+          res.push(this.newLine());
+          
+        };
+        
+        var newType = this.getType(name, parParsed);
+        entry.type = newType;
+        parType.extraTypeMap.set(name, newType);
+        return newType;
+        
+      };
+      
+
+
+
+    
+  };
+  f.apply(parInstance, [par]);
+  
+};

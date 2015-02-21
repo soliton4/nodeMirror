@@ -1,0 +1,44 @@
+<html>
+  <head>
+    <!-- socket.io -->
+      <script src="/socket.io/socket.io.js"></script>
+    <!-- require -->
+    <script src="/requirejs/require.js"></script>
+      <script>
+        require.config({
+          //baseUrl: "/",
+          paths: {
+            "testmodules": "testmodules",
+            "testConsole": "testConsole"
+          },
+          packages: [
+            {
+              name: "promiseland",
+              main: "promiseland",
+              location: "pl"
+            }, {
+              name: "dojo",
+              location: "dojo"
+            }, {
+              name: "dijit",
+              location: "dijit"
+            }, {
+              name: "dojox",
+              location: "dojox"
+            }
+          ],
+          waitSeconds: 60
+        });
+      </script>
+    
+    <link rel="stylesheet" type="text/css" href="/dijit/themes/claro/claro.css">
+    
+    <script>
+      require(["testConsole/client"], function(){});
+      
+    </script>
+  </head>
+  <body class="claro">
+    
+  </body>
+</html>

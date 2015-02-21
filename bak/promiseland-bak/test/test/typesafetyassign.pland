@@ -1,0 +1,33 @@
+class type Type1 {
+  
+};
+
+class type Type2 {
+  
+};
+
+try{
+  Type1 a;
+  Type1 b;
+  
+  a = b;
+}catch(e){
+  return {
+    success: false
+  };
+}
+
+try{
+  Type1 c;
+  Type2 d;
+  
+  c = d;
+}catch(e){
+  return {
+    success: true
+  };
+}
+
+return {
+  success: false
+};

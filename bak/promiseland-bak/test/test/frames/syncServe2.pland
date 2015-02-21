@@ -1,0 +1,55 @@
+var destroyed = false;
+
+var isClient = false;
+(() exclusive "client" {
+  isClient = true;
+})();
+
+
+class type sync serve C1 {
+  a: 1,
+  destroy: (){
+    destroyed = true;
+  }
+};
+
+
+C1* x(par1) frame "server" {
+  destroyed = false;
+  C1 temp = new C1();
+  temp.a = 2;
+  
+  return temp;
+};
+
+
+check() frame "server" {
+  return destroyed;
+};
+
+var tempres;
+var serverDestroyed;
+
+var fx = (){
+  C1 t = *x();
+  tempres = t.a;
+};
+
+
+
+if (isClient){
+  *fx();
+  serverDestroyed = *check();
+}else{
+  return { success: true }; // server is ok
+};
+
+if (tempres != 2){
+  return { success: false };
+};
+
+if (!serverDestroyed){
+  return { success: false };
+};
+
+return { success: true };

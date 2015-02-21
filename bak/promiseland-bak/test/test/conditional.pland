@@ -1,0 +1,13 @@
+var somefun = (par)*{
+  return par + 1;
+};
+
+return {
+  fun: (){
+    var a = 1;
+    if (*somefun(a) == 2){
+      return 4;
+    };
+    return 0;
+  }
+};

@@ -1,0 +1,30 @@
+var a = {
+  a: 1,
+  b: 2,
+  c: 3
+};
+
+var namesStr = "";
+var cnt = 0;
+
+var p;
+
+for (var i in a){
+  namesStr += i;
+  cnt += a[i];
+  if (false){
+    *p;
+  };
+};
+  
+if (namesStr.length != 3){
+  return {success: false};
+};
+
+
+if (cnt != 6){
+  return {success: false};
+};
+
+return {success: true};
+

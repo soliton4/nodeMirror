@@ -1,0 +1,2 @@
+var mod = require "./requiredModule2";
+return {msg: "this is the message", id: mod.id}; 

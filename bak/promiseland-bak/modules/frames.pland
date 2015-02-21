@@ -1,0 +1,1378 @@
+<{__promiseLandModule: true}>;
+
+/* 
+  frame system
+  registration of frames
+  inter communication between frames
+  frame base classes
+*/
+  
+
+
+var classSystem;
+var internalObjects;
+var getClassBySyncId;
+var DynInstance;
+var getEffectiveFunctionResultType;
+((){
+  classSystem = (*extra.classSystemPs).classSystem;
+  internalObjects = (*extra.classSystemPs).internalObjects;
+  getClassBySyncId = (*extra.classSystemPs).getClassBySyncId;
+  DynInstance = (*extra.classSystemPs).DynInstance;
+  getEffectiveFunctionResultType = (*extra.classSystemPs).getEffectiveFunctionResultType;
+})();
+
+
+var config = extra.config;
+
+var errorMsg = extra.errorMsg;
+
+
+var moduleData = {};
+
+var profiles = {};
+
+var _emitFun = function(parEventStr, parData){
+  if (this._on[parEventStr]){
+    var i = 0;
+    var l = this._on[parEventStr].length;
+    for (i; i < l; ++i){
+      try{
+        this._on[parEventStr][i](parData);
+      }catch(e){};
+    };
+  };
+};
+var _onFun = function(parEventStr, parFun){
+  if (this._on[parEventStr]){
+    this._on[parEventStr].push(parFun);
+  };
+};
+
+
+
+
+// base classes
+var Profile = function(){
+  this._on = {
+    "connection": []
+  };
+};
+Profile.prototype = {
+  // return the name of the profile
+  name: function(){
+
+  },
+
+  emit: _emitFun,
+
+  // return Connection object
+  find: function(parId /*optional*/){
+
+  },
+
+  // return array of provided Profiles
+  /*providesProfiles: function(){
+
+      },*/
+
+  /* events:
+        "connection":   a new connection was initiated - function(parConnection){}
+      */
+  on: _onFun
+};
+    
+var Connection = function(){
+  this._on = {
+    "data": [],
+    "disconnect": []
+  };
+};
+Connection.prototype = {
+  /* send string to counterpart object on the other frame */
+  send: function(parStr){
+
+  },
+
+  emit: _emitFun,
+
+  /* events:
+        "data":        data arrives - function(parDataStr){}
+        "disconnect":  connection got permanently disconnected
+      */
+  on: _onFun
+};
+
+
+
+
+
+var maxId = 10000000;
+
+var MAKRO_REQUEST = 1;
+var MAKRO_MESSAGE = 2;
+var MAKRO_ANSWER = 3;
+
+
+// modules can dock on to this
+var handlers = {
+  
+};
+
+
+class ContentBase {
+  constructor: (parParent, parData){
+    this.parent = parParent;
+    
+    this.sendPs = new Promise();
+    
+    this.dataAr = parData || [];
+  },
+  newMessage: (){
+    return this.parent.newMessage();
+  },
+  newRequest: (){
+    return this.parent.newRequest();
+  },
+  send: (){
+    this.sendPs.resolve();
+  },
+  setData: (parData){
+    this.dataAr[1] = parData;
+  },
+  getData: (){
+    return this.dataAr[1];
+  },
+  getType: (){
+    return this.getData().type;
+  },
+  getTransport: (){
+    return this.parent.getTransport();
+  },
+  getRequest: (parId){
+    return this.parent.getRequest(parId);
+  }
+};
+
+class Request extends ContentBase {
+  constructor: (parParent, parData){
+    this.dataAr[0] = MAKRO_REQUEST;
+    this.answerPs = new Promise();
+    this.localPs = new Promise();
+  },
+  setId: (parId){
+    this.dataAr[2] = parId;
+  },
+  getId: (){
+    return this.dataAr[2];
+  },
+  createAnswer: (){
+    var a = this.parent._createAnswer();
+    a.setId(this.getId());
+    return a;
+  }
+};
+
+class Answer extends ContentBase {
+  isAnswer: true,
+  constructor: (parParent, parData){
+    this.dataAr[0] = MAKRO_ANSWER;
+  },
+  setId: (parId){
+    this.dataAr[2] = parId;
+  },
+  getId: (){
+    return this.dataAr[2];
+  }
+};
+
+class Message extends ContentBase {
+  constructor: (parParent, parData){
+    this.dataAr[0] = MAKRO_MESSAGE;
+    this.localPs = new Promise();
+  }
+};
+
+
+/*
+  package
+    can contain 
+      - request
+      - msg
+      - linkRequest
+  [[reqmakro, reqid, reqdata], [msgmakro, msgdata], [linkreqmakro, reqid, reqdata]]
+  
+*/
+
+// basically represents a network package,
+// but has some knowledge about requests it contains
+class Package {
+  constructor: (parParent, parData){
+    this.parent = parParent;
+    this.requests = {};
+    this.dataAr = [undefined];
+    this.content = [];
+    
+    if (parData){
+      try{
+      this.answers = [];
+      var i;
+      for (i = 1; i < parData.length; ++i){
+        var d = parData[i];
+        switch(d[0]){
+          case MAKRO_REQUEST:
+          var r = this.newRequest(d);
+          this.requests[r.getId()] = r;
+          break;
+          case MAKRO_MESSAGE:
+          this.newMessage(d);
+          break;
+          case MAKRO_ANSWER:
+          this.newAnswer(d);
+          break;
+          default:
+          parParent.error();
+        };
+      };
+        }catch(e){
+          console.log("package error");
+          console.log(e);
+        }
+      this.dataAr = parData; // has to be done afterwards to override the dataAr that might be filled by the code above
+      
+    }else{
+      this.sendPs = new Promise();
+      
+    };
+  },
+    
+  getRequest: (parId){
+    return this.requests[parId];
+  },
+  
+  handle: (){
+    try{
+      var i = 0;
+      while (i < this.content.length){
+        var c = this.content[i];
+        if (c.isAnswer){
+          this.parent.handleAnswer(c, this);
+
+        }else{
+          var type = c.getType();
+
+          if (handlers[type]){
+            handlers[type](c, this);
+
+          }else{
+            this.parent.error();
+          };
+        };
+        ++i;
+      };
+    }catch(e){
+      console.log("handle error");
+      console.log(e);
+    };
+  },
+  
+  getTransport: (){
+    return this.parent;
+  },
+    
+  newRequest: (parData){
+    var r = this.parent._newRequest(this, parData);
+    this.requests[r.id] = r;
+    this.dataAr.push(r.dataAr);
+    this.content.push(r);
+    return r;
+  },
+  newMessage: (parData){
+    var r = this.parent._newMessage(this, parData);
+    this.dataAr.push(r.dataAr);
+    this.content.push(r);
+    return r;
+  },
+  _createAnswer: (parData){
+    return this.parent.newAnswer(parData);
+  },
+  newAnswer: (parData){
+    var r = this.parent._newAnswer(this, parData);
+    this.dataAr.push(r.dataAr);
+    this.content.push(r);
+    return r;
+  },
+  send: (){
+    var i = 0;
+    while (i < this.content.length){
+      *(this.content[i].sendPs);
+      ++i;
+    };
+    this.sendPs.resolve();
+  }
+};
+
+var waitForTheSend = (content, package){
+  *content.sendPs;
+  package.send();
+};
+
+
+class Transport {
+  constructor: (){
+    this.expect = {};
+
+    this.requests = [];
+    this.nextFreeRequest = 0;
+    this._nextId = 1;
+    
+    this.types = [];
+    this.remoteTypes = [];
+    this.moduleData = {};
+    
+    this.instances = {};
+    this.instanceTracks = {};
+    
+    // start workloop
+    this.workLoop();
+  },
+
+  queue: (parData){
+    var id = parData[0];
+    this._expectPs(id).resolve(parData);
+  },
+    
+  _expectPs: (parId){
+    var ps = this.expect[parId];
+    if (!ps){
+      ps = new Promise();
+      this.expect[parId] = ps;
+    };
+    return ps;
+  },
+    
+  handleAnswer: (parAnswer, parPackage){
+    var id = parAnswer.getId();
+    var r = this.requests[id];
+    if (!r){
+      this.error();
+      return;
+    };
+    this.requests[id] = undefined;
+    if (id < this.nextFreeRequest){
+      this.nextFreeRequest = id;
+    }else if(id + 1 == this.requests.length){
+      this.requests.pop();
+    };
+    r.answerPs.resolve(parAnswer);
+  },
+  
+  workLoop: (){
+    var i;
+    while (true){
+      for (i = 1; i < maxId; ++i){
+        var data = *this._expectPs(i);
+        var package = new Package(this, data);
+        package.handle();
+      };
+    };
+  },
+  nextId: (){
+    var ret = this._nextId;
+    this._nextId += 1;
+    if (!(this._nextId < maxId)){
+      this._nextId = 1;
+    };
+    return ret;
+  },
+  
+  _newRequest: (parParent, parData){
+    var r = new Request(parParent, parData);
+    if (!parData){
+      var id = this.nextFreeRequest;
+      while (this.requests[id]){
+        ++id;
+      };
+      this.nextFreeRequest = id + 1;
+      this.requests[id] = r;
+      r.setId(id);
+    };
+    return r;
+  },
+  
+  _newMessage: (parParent, parData){
+    var r = new Message(parParent, parData);
+    return r;
+  },
+    
+  _newAnswer: (parParent, parData){
+    var r = new Answer(parParent, parData);
+    return r;
+  },
+    
+  newRequest: (){
+    var p = this.newPackage();
+    var r = p.newRequest();
+    waitForTheSend(r, p);
+    return r;
+  },
+    
+  newMessage: (){
+    var p = this.newPackage();
+    var r = p.newMessage();
+    waitForTheSend(r, p);
+    return r;
+  },
+  
+  newAnswer: (){
+    var p = this.newPackage();
+    var r = p.newAnswer();
+    waitForTheSend(r, p);
+    return r;
+  },
+    
+  newPackage: (){
+    var p = new Package(this);
+    var self = this;
+    ((){
+      *p.sendPs;
+      p.dataAr[0] = self.nextId();
+      self.sendString(JSON.stringify(p.dataAr));
+    })();
+    return p;
+  },
+  
+  stringData: (parStr){
+    var data = JSON.parse(parStr);
+    this.queue(data);
+  },
+
+  // pls override / connect
+  sendString: (parStr){
+
+  },
+  
+  
+  _getModuleData: (parHash){
+    var moduleData = this.moduleData[parHash];
+    if (!moduleData){
+      moduleData = {};
+      this.moduleData[parHash] = moduleData;
+    };
+    return moduleData;
+  },
+  
+  
+  addType: (parType, parRemoteTypeId){
+    
+    var syncId = classSystem.getSyncId(parType);
+    var moduleData = this._getModuleData(syncId.hash);
+    var entry = moduleData[syncId.name];
+    var typeIds;
+    if (entry){
+      typeIds = entry.typeIds;
+      
+      if (parRemoteTypeId !== undefined){
+        typeIds.remoteId = parRemoteTypeId;
+        this.remoteTypes[parRemoteTypeId] = parType;
+      };
+      return typeIds;
+    };
+    
+    var typeIdInt = this.types.length;
+    this.types.push(parType);
+    
+    var entry = {
+      typeIds: {
+        id: typeIdInt,
+        remoteId: parRemoteTypeId
+      },
+      type: parType
+    };
+    moduleData[syncId.name] = entry;
+    
+    if (parRemoteTypeId !== undefined){
+      this.remoteTypes[parRemoteTypeId] = parType;
+    };
+    
+    return entry.typeIds;
+  },
+  
+  getTypeByRemoteId: (parRemoteTypeId){
+    return this.remoteTypes[parRemoteTypeId];
+  },
+  
+  getTypeById: (parTypeId){
+    return this.types[parTypeId];
+  },
+  
+  
+  getInstanceRemoteId: (parData){
+    var internalId = classSystem.getInternalId(parData);
+    return this.instances[internalId];
+  },
+  
+  addInstance: (parDynInstance, parRemoteId, parTrack){
+    var internalId = parDynInstance.getInternalId();
+    var remoteId = this.instances[internalId];
+    if (remoteId === undefined){
+      classSystem.addTransport(parDynInstance, this);
+      this.instances[internalId] = parRemoteId;
+    };
+    if (parTrack){
+      if (this.instanceTracks[internalId]){
+        parTrack();
+      }else{
+        this.instanceTracks[internalId] = parTrack;
+      }
+    };
+  },
+  
+  removeInstance: (parInternalId, dontSend){
+    var remoteId = this.instances[parInternalId];
+    if (remoteId !== undefined && !dontSend){
+      // send unsync request / msg
+      var m = this.newMessage();
+      m.setData({
+        type: "remove",
+        remoteId: remoteId
+      });
+      m.send();
+    };
+    delete this.instances[parInternalId];
+    classSystem.removeTransport(parInternalId, this);
+    if (this.instanceTracks[parInternalId]){
+      var track = this.instanceTracks[parInternalId];
+      delete this.instanceTracks[parInternalId];
+      track();
+    };
+  },
+  
+  removeAllInstances: (){
+    var i;
+    var all = [];
+    for (i in this.instances){
+      all.push(i);
+    };
+    for (i = 0; i < all.length; ++i){
+      this.removeInstance(all[i], true);
+    };
+  }
+  
+};  
+    
+    
+
+
+    var prepConnection = function(connection, profile){
+      
+      var transport = new Transport();
+      transport.sendString = (s){
+        connection.send(s);
+      };
+      
+
+      connection.on("data", function(dataStr){
+        transport.stringData(dataStr);
+      });
+
+      connection.on("disconnect", function(dataStr){
+      });
+
+      connection.createRequest = function(data){
+        return transport.newRequest();
+      };
+
+      connection.createMsg = function(data){
+        var msg = transport.newMessage();
+        msg.setData(data);
+        msg.send();
+      };
+
+    };
+    
+    
+    var prepConnectionNew = (connection, frame){
+      
+      var transport = new Transport();
+      transport.sendString = (s){
+        connection.send(s);
+      };
+      
+      transport.canAccessFrame = (parFrameName){
+        if (!connection.restrictLocalFrames){
+          return true;
+        };
+        console.log("checking frame access:");
+        console.log(parFrameName);
+        console.log(connection.localFrames.get(parFrameName));
+        return connection.localFrames.get(parFrameName);
+      };
+      
+      transport.getSession = (){
+        return connection.session;
+      };
+      
+      connection.data = (dataStr){
+        console.log("string data:");
+        console.log(dataStr);
+        transport.stringData(dataStr);
+      };
+
+      connection._transportDisconnect = (){
+        transport.removeAllInstances();
+      };
+
+      connection.createRequest = (data){
+        return transport.newRequest();
+      };
+
+      connection.createMsg = (data){
+        var msg = transport.newMessage();
+        msg.setData(data);
+        msg.send();
+      };
+
+    };
+    
+
+handlers.remove = (parContent, parPackage){
+  //console.log("calling remove");
+  try{
+    var data = parContent.getData();
+    
+    var t = parContent.getTransport();
+    
+    t.removeInstance(data.remoteId, true);
+    
+  }catch(e){
+    console.log("sync error");
+    console.log(e);
+  };
+      
+};
+
+
+    
+handlers.remoteexec = (parContent, parPackage){
+  var track = (){};
+  var err;
+  var args = [];
+  var transport = parPackage.getTransport();
+  var session;
+  if (transport.getSession){
+    session = transport.getSession();
+  };
+  var realArgs = [session];
+  var cleanUpArgs = (){
+    var i;
+    for (i = 0; i < args.length; ++i){
+      try{
+        args[i].track();
+      }catch(e){};
+    };
+  };
+  var clearExtraTracks = (){
+    var i;
+    for (i = 0; i < args.length; ++i){
+      try{
+        args[i].clearExtraTracks();
+      }catch(e){};
+    };
+  };
+  
+  var i;
+  var answer = parContent.createAnswer();
+  
+  try{
+    var data = parContent.getData();
+
+    var moduleData = getModuleData(data.hashStr);
+
+    var funEntry = moduleData.functions[data.nameStr];
+    
+    if (promiseland.isFrameLocal(funEntry.profile) && ((!transport.canAccessFrame) || (transport.canAccessFrame(funEntry.profile)))){
+
+      var funType = funEntry.funType;
+      var resultTypes = getEffectiveFunctionResultType(funType);
+      var isVar = true;
+      if (!classSystem.isVar(resultTypes.promiseResolveType)){
+        isVar = false;
+      };
+      
+      
+      for (i = 0 ; i < data.args.length; ++i){
+        var instance = *getInstanceFromTransportData(data.args[i], parContent);
+        args.push(instance);
+      };
+      
+      for (i = 0 ; i < args.length; ++i){
+        realArgs.push(args[i].getInstanceAsType(classSystem.getFunctionArgumentType(funType, i)));
+      };
+      cleanUpArgs();
+      
+      var funResult = funEntry.fun.apply(undefined, realArgs);
+      
+      if (resultTypes.isTemporary){
+        track = funResult[1];
+        funResult = funResult[0]; // the result promise itself is part of a temporary
+      };
+      
+      // var case
+      try{
+        answer.setData({data: getInstanceTransportData(resultTypes.promiseResolveType, *funResult, answer)});
+      }catch(e){
+        console.log("answer error");
+        console.log(e);
+        answer.setData({err: e});
+      };
+      console.log("send answer:");
+      console.log(answer.getData());
+      answer.send();
+      track();
+      return;
+    };
+    
+  }catch(e){
+    err = e;
+    console.log("remoteexec error");
+    console.log(e);
+    cleanUpArgs();
+    clearExtraTracks();
+  };
+  
+  answer.setData({err: err || errorMsg.canNotExecute});
+  answer.send();
+  console.log("error answer send")
+  
+  track();
+  cleanUpArgs();
+  console.log("remote exec fail end");
+  
+  return;
+      
+};
+    
+    
+    
+
+/*
+  protocol:
+  undefined -> undefined
+  is var -> [data]
+  typed -> [typeidentifier, data]
+*/
+    
+var getInstanceTransportData = (parType, parData, parContent){
+  if (parData === undefined){
+    return undefined;
+  };
+  if (classSystem.isVar(parType)){
+    return [parData];
+  };
+  var instance = new DynInstance(parType, parData);
+  try{
+    var getInstanceFun = (parType, _parData){
+      return getInstanceTransportData(parType, _parData, parContent)
+    };
+    var getTypeFun = (parType){
+      return getTypeTransportData(parType, parContent);
+    };
+    
+    
+    var t = parContent.getTransport();
+
+    var internalId = instance.getInternalId();
+    var remoteId = t.getInstanceRemoteId(instance.instance);
+    
+    var request = parContent.newRequest();
+
+    if (remoteId !== undefined){
+      request.setData({
+        type: "instance",
+        remoteId: remoteId
+      });
+
+    }else{
+      request.setData({
+        type: "addInstance",
+        id: internalId,
+        data: classSystem.getInstanceSyncData(instance, getInstanceFun, getTypeFun)
+      });
+
+    };
+    request.send();
+    
+    ((){
+      // keeps the instance from destruction till its certain the other side has recieved it
+      try{
+        var answer = *request.answerPs;
+        var answerData = answer.getData();
+        if (answerData.id !== undefined){
+          t.addInstance(instance, answerData.id, instance.isServe() ? instance.getTrack() : undefined);
+        };
+      }catch(e){
+
+      };
+      
+      instance.track();
+    })();
+    var ret = request.getId();
+    
+  }catch(e){
+    console.log("getInstanceTransportData error");
+    console.log(e);
+    if (instance){
+      instance.track();
+    };
+    throw {
+      position: "getInstanceTransportData",
+      error: e
+    };
+  };
+  
+  return ret;
+  
+};
+
+    
+var getInstanceFromTransportData = (parData, parContent){
+  
+  //if (parData === undefined){ // not possible because of JSON null / undefined treatment
+  if (parData === undefined || parData === null){
+    return new DynInstance(classSystem.getBuiltinType("var"), undefined);;
+  };
+  var remoteType;
+  var remoteVar = false;
+  var remoteInstance;
+  
+  // var
+  if (parData.length === 1){
+    return new DynInstance(classSystem.getBuiltinType("var"), parData[0]);
+  };
+  
+  var req = parContent.getRequest(parData);
+  
+  return *req.localPs;
+  
+};
+    
+    
+    
+    
+var getInstanceFromSyncData = (parData, parContent){
+  var tempAr = [];
+  var clearTempAr = (){
+    var i = 1;
+    for (i = 1; i < tempAr.length; ++i){
+      try{
+        tempAr[i].track();
+      }catch(e){
+      };
+    };
+  };
+  try{
+    var t = parContent.getTransport();
+    tempAr.push(*getTypeFromTransportData(parData[0], parContent));
+    var i = 1;
+    for (i = 1; i < parData.length; ++i){
+      tempAr.push(*getInstanceFromTransportData(parData[i], parContent));
+    };
+    
+    var ret = classSystem.getInstanceFromSyncData(tempAr);
+    
+  }catch(e){
+    clearTempAr();
+    throw e;
+  };
+  clearTempAr();
+  return ret;
+  
+};
+    
+handlers.addInstance = (parContent, parPackage){
+  var answer = parContent.createAnswer();
+  var instance;
+  
+  try{
+    var t = parPackage.getTransport();
+    
+    var data = parContent.getData();
+    
+    instance = *getInstanceFromSyncData(data.data, parContent);
+    
+    var internalId = instance.getInternalId();
+    
+    t.addInstance(instance, data.id);
+    
+    answer.setData({id: internalId});
+    answer.send();
+    parContent.localPs.resolve(instance);
+    return;
+    
+  }catch(e){
+    if (instance){
+      instance.track();
+    };
+    console.log("answer error 3");
+    console.log(e);
+    answer.setData({err: e});
+    answer.send();
+    parContent.localPs.reject(e);
+    throw e;
+  };
+};
+
+handlers.instance = (parContent, parPackage){
+  var answer = parContent.createAnswer();
+  var instance;
+  
+  try{
+    var t = parPackage.getTransport();
+    
+    var data = parContent.getData();
+    
+    var internalId = data.remoteId;
+    
+    var realInstance = internalObjects[internalId];
+    
+    if (realInstance){
+      instance = new DynInstance(undefined, realInstance);
+      answer.setData({});
+      answer.send();
+      parContent.localPs.resolve(instance);
+    }else{
+      // this case needs to be implemented
+      throw errorMsg.missingImplementation;
+    };
+    
+  }catch(e){
+    if (instance){
+      instance.track();
+    };
+    console.log("answer error 4");
+    console.log(e);
+    answer.setData({err: e});
+    answer.send();
+    parContent.localPs.reject(e);
+    throw e;
+  };
+};
+    
+    
+
+var getTypeTransportData = (parType, parContent){
+  if (!classSystem.isSyncedClass(parType)){
+    throw errorMsg.noSyncableData;
+  };
+  var t = parContent.getTransport();
+  var typeIds = t.addType(parType);
+  
+  if (typeIds && typeIds.remoteId !== undefined){
+    return typeIds.remoteId;
+  };
+  
+  var request = parContent.newRequest();
+  
+  request.setData({
+    type: "addType",
+    syncId: classSystem.getSyncId(parType),
+    typeId: typeIds.id
+  });
+  request.send();
+  ((){
+    var answer = *request.answerPs;
+    var data = answer.getData();
+    if (!data.err){
+      typeIds.remoteId = data.id;
+    };
+  })();
+  return [request.getId()];
+  
+};
+    
+var getTypeFromTransportData = (parData, parContent){
+  var t = parContent.getTransport();
+  var type;
+  
+  if (typeof parData === "number"){
+    type = t.getTypeById(parData);
+    return type;
+  };
+  
+  var req = parContent.getRequest(parData[0]);
+  return *req.localPs;
+};
+    
+var getRemoteType = (parData, parContent){
+  if (typeof parData == "number"){
+    // the typeId
+    var t = parContent.getTransport();
+    return t.getRemoteType(parData);
+  };
+  throw errorMsg.invalidRemoteType;
+};
+
+handlers.addType = (parContent, parPackage){
+  var answer = parContent.createAnswer();
+  var data = parContent.getData();
+  var type = getClassBySyncId(data.syncId);
+  if (!type){
+    parContent.localPs.reject(errorMsg.remoteTypeNotAvailable);
+    answer.setData({
+      err: errorMsg.remoteTypeNotAvailable
+    });
+    answer.send();
+    return;
+  };
+  var typeIdInt = data.typeId;
+  var t = parPackage.getTransport();
+  var typeIds = t.addType(type, typeIdInt);
+  answer.setData({id: typeIds.id});
+  answer.send();
+  parContent.localPs.resolve(type);
+};
+    
+    
+    
+    /*
+      par: {
+          conection: connection,
+          hashStr: hashStr,
+          nameStr: nameStr,
+          args: args,
+          promise: promise
+        }
+    */
+var createRemoteExecRequest = function(par){
+  try{
+    //debugger;
+    var connection = par.connection;
+    var funType = par.funType;
+    var resultTypes = getEffectiveFunctionResultType(funType);
+    
+    var request = connection.createRequest();
+    
+    var args = [];
+    if (par.args && par.args.length){
+      var i = 0;
+      for (i = 0; i < par.args.length; ++i){
+        args.push(getInstanceTransportData(classSystem.getFunctionArgumentType(funType, i), par.args[i], request));
+      };
+    };
+
+
+    request.setData({
+      "type": "remoteexec",
+      hashStr: par.hashStr,
+      nameStr: par.nameStr,
+      args: args
+    });
+
+    request.send();
+    var answer = *request.answerPs;
+    
+    
+    var data = answer.getData();
+    
+    if (data.err){
+      throw data.err;
+    };
+    
+    var instance = *getInstanceFromTransportData(data.data, answer);
+    var ret = instance.getInstanceAsType(resultTypes.promiseResolveType);
+    
+  }catch(e){
+    if (instance){
+      instance.track();
+    };
+    console.log("createRemoteExecRequest error");
+    console.log(e);
+    throw e;
+  };
+  if (instance){
+    instance.track();
+  };
+  return ret;
+};
+
+
+var findProfile = function(profileNameStr){
+  return profiles[profileNameStr];
+};
+
+var getModuleData = function(parHash){
+  if (!moduleData[parHash]){
+    moduleData[parHash] = {
+      functions: {},
+      classes: {}
+    };
+  };
+  return moduleData[parHash];
+};
+   
+
+    
+    
+
+
+    
+    
+    
+    
+    // new frame api
+    
+    
+    
+    // represents a session
+    class Session{
+      constructor: (parConnection){
+        this.connection = parConnection;
+
+      }
+    }
+    
+    // represents a point to point connection
+    var FrameConnection = class {
+      
+      constructor: (){
+        this.session = new this.SessionBaseClass(this);
+        this.localFrames = new promiseland.Map();
+      },
+        
+      restrictLocalFrames: false, // set to true if you need authentification
+        
+      addLocalFrameAccess: (parName){
+        this.localFrames.set(parName, true);
+      },
+      removeLocalFrameAccess: (parName){
+        this.localFrames.set(parName, false);
+      },
+      
+      SessionBaseClass: Session,
+      
+      // override
+      send: (parStr){
+
+      },
+        
+      // call this member when string data arrives
+      data: (parStr){
+        
+      },
+      // call this member function when the connection terminates
+      disconnect: (){
+        this.frame.removeConnection(this);
+        if (this._transportDisconnect){
+          this._transportDisconnect();
+        };
+      }
+    };
+
+    
+    
+/*
+  the Frame class represents the a existence of one or several other promiseLand runtime environments,
+  that are addressed by a specific name
+*/
+var Frame = class {
+  constructor: (){
+    this.connections = [];
+  },
+  name: undefined, // give your the frame a name
+    
+  ConnectionBaseClass: FrameConnection,
+  SessionBaseClass: Session,
+    
+  newConnection: (parConnection){ // call this member function with a new connection
+    parConnection.frame = this;
+    this.connections.push(parConnection);
+    prepConnectionNew(parConnection, this);
+  },
+    
+  removeConnection: (parConnection){
+    var i = 0;
+    for (i = 0; i < this.connections.length; ++i){
+      if (this.connections[i] === parConnection){
+        this.connections.splice(i, 1);
+        return;
+      };
+    };
+  },
+    
+  // this function is called when a remote function is being called
+  // it will throw an error when the number of connections does not equal 1
+  getConnection: (){
+    if (this.connections.length === 1){
+      return this.connections[0];
+    };
+    if (this.connections.length > 1){
+      throw errorMsg.toManyConnections;
+    };
+    throw errorMsg.noConnectionAvailable;
+  }
+};
+
+    
+    
+promiseland.FrameBaseClass = Frame;
+
+var frames = new promiseland.Map();
+    
+promiseland.addFrame = (parFrame){
+  var entry = frames.get(parFrame.name);
+  if (!entry){
+    entry = [];
+    frames.set(parFrame.name, entry);
+  };
+  entry.push(parFrame);
+};
+    
+var findFrame = (parName){
+  var entry = frames.get(parName);
+  if (!entry){
+    return;
+  };
+  return entry[0];
+};
+    
+var localFrameMap = new promiseland.Map();
+
+promiseland.isFrameLocal = (parFrameName){
+  if (localFrameMap.has(parFrameName)){
+    return true;
+  };
+  return false;
+};
+
+promiseland.addLocalFrameName = (parFrameName){
+  localFrameMap.set(parFrameName, true);
+};
+    
+promiseland.removeLocalFrameName = (parFrameName){
+  localFrameMap.delete(parFrameName);
+};
+    
+
+
+    
+    
+    
+
+    // old frame api
+    
+    
+promiseland.ProfileBaseClass = Profile;
+promiseland.ConnectionBaseClass = Connection;
+    
+
+promiseland.addProfile = function(parProfile){
+  if (!parProfile){
+    return;
+  };
+  if (profiles[parProfile.name()]){
+    throw {
+      code: 4,
+      msg: "profile exists"
+    };
+  };
+  profiles[parProfile.name()] = parProfile;
+  parProfile.on("connection", function(connection){
+    prepConnection(connection, parProfile);
+  });
+};
+    
+    // depricated
+    // use isFrameLocal
+promiseland.profileHas = function(profileNameStr){
+  return promiseland.isFrameLocal(profileNameStr);
+};
+
+    
+
+
+    
+
+promiseland.registerRemote = function(profileNameStr, hashStr, nameStr, fun, funType){
+  var moduleData = getModuleData(hashStr);
+  var entry = {
+    profile: profileNameStr,
+    fun: fun,
+    funType: funType
+  };
+  moduleData.functions[nameStr] = entry;
+  classSystem.definitionPromise(funType).then(function(definedFunType){
+    entry.funType = definedFunType;
+  });
+};
+
+promiseland.remoteExec = function(hashStr, nameStr, args){
+  
+  
+  var moduleData = getModuleData(hashStr);
+  if (!moduleData || !moduleData.functions[nameStr]){
+    throw errorMsg.missingRemoteFun;
+  };
+  var entry = moduleData.functions[nameStr];
+  var profile = findProfile(entry.profile);
+  var connection;
+  if (profile){
+    connection = profile.find();
+  }else{
+    profile = findFrame(entry.profile);
+    if (profile){
+      connection = profile.getConnection();
+    };
+  };
+  if (!profile){
+    throw errorMsg.frameNotFound;
+  };
+
+  if (!connection){
+    throw {
+      code: 3
+      , msg: "no connection available"
+    };
+  };
+  var resultTypes = getEffectiveFunctionResultType(entry.funType);
+  try{
+    var resultPromise = resultTypes.newPromise();
+    
+    ((){
+      try{
+        
+        var tempRes = createRemoteExecRequest({
+          connection: connection,
+          hashStr: hashStr,
+          nameStr: nameStr,
+          args: args,
+          funType: entry.funType
+        });
+        var realRes = *tempRes;
+        resultTypes.resolvePromise(resultPromise, realRes);
+      }catch(e){
+        resultTypes.rejectPromise(resultPromise, e);
+      };
+    })();
+    
+  }catch(e){
+    resultTypes.rejectPromise(resultPromise, e);
+  };
+  
+  return resultPromise;
+};
+
+extra.moduleSystemPs.resolve({
+  getModuleData: getModuleData
+});
+    
+extra.framesPs.resolve({
+  // functions to pack data into requests
+  getInstanceFromTransportData: getInstanceFromTransportData,
+  getInstanceTransportData: getInstanceTransportData,
+  // add custom handlers here
+  handlers: handlers
+});
+
+
+return;

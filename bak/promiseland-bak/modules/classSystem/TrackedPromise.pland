@@ -1,0 +1,165 @@
+<{  __promiseLandModule: true }>;
+  
+var errorMsg = extra.errorMsg;
+
+var Tracker;
+((){
+  Tracker = (*extra.TrackerPs).Tracker;
+})();
+
+// tracked Promise
+// for internal use to create tracked promises of tracked classes
+var TrackedPromise = function(parTrackFun){
+
+  var self = this;
+  var lifeLine;
+
+  var destroyFun = function(){
+    if (lifeLine){
+      lifeLine();
+      lifeLine = undefined;
+    }else{
+      self.then(function(){
+        if (lifeLine){
+          lifeLine();
+          lifeLine = undefined;
+        };
+      });
+    };
+  };
+
+  var t = Tracker(destroyFun);
+  var tracker = t[0];
+  this.rootTrack = t[1];
+  this.memberTrack = t[2];
+  var rootTrack = this.rootTrack;
+
+  var thenAr = [];
+  var elseAr = [];
+
+  var thenFun = function(parThenFun, parElseFun){
+    if (parThenFun){
+      thenAr.push([parThenFun, rootTrack()]);
+    };
+    if (parElseFun){
+      elseAr.push(parElseFun);
+    };
+    //return returnPromise;
+  };
+  var thenReuseFun = function(parReuse, parThenFun, parElseFun){
+    if (parThenFun){
+      thenAr.push([parThenFun, parReuse]);
+    }else{
+      parReuse();
+    };
+    if (parElseFun){
+      elseAr.push(parElseFun);
+    };
+    //return returnPromise;
+  };
+
+  this.resolve = function(value){
+    if (value){
+      var realValue = value[0]; // its a temporary
+      lifeLine = parTrackFun(value, tracker); // this will destroy the temporary
+      value = realValue; // create a temporary that will destroy the promise first
+    };
+
+    thenFun = function(parThenFun){
+      if (parThenFun){
+        try{
+          parThenFun([value, rootTrack()]);
+        }catch(e){
+          // maybe we are ignoring to much here, lets check later
+        };
+      };
+    };
+    thenReuseFun = function(parReuse, parThenFun){
+      if (parThenFun){
+        try{
+          parThenFun([value, parReuse]);
+        }catch(e){
+          // maybe we are ignoring to much here, lets check later
+        };
+      }else{
+        parReuse();
+      };
+    };
+    if (!thenAr) return;
+    var i = 0;
+    var l = thenAr.length;
+    for (i; i < l; ++i){
+      try{
+        var entryAr = thenAr[i];
+        entryAr[0]([value, entryAr[1]]);
+      }catch(e){
+        // will those errors ocur? if so what do we do with them?
+      };
+    };
+    thenAr = undefined; // why not delete?
+    elseAr = undefined;
+    this.resolve = undefined;
+    this.reject = undefined;
+  };
+  this.reject = function(value){
+    thenFun = function(u, parElseFun){
+      if (parElseFun){
+        try{
+          parElseFun(value);
+        }catch(e){
+          // maybe we are ignoring to much here, lets check later
+        };
+      };
+    };
+    thenReuseFun = function(parReuse, u, parElseFun){
+      parReuse();
+      if (parElseFun){
+        try{
+          parElseFun(value);
+        }catch(e){
+          // maybe we are ignoring to much here, lets check later
+        };
+      };
+    };
+    if (!elseAr) return;
+    var i = 0;
+    var l = elseAr.length;
+    for (i; i < l; ++i){
+      try{
+        elseAr[i](value);
+      }catch(e){
+        // will those errors ocur? if so what do we do with them?
+      }
+    };
+    thenAr = undefined; // why not delete?
+    elseAr = undefined;
+    this.resolve = undefined;
+    this.reject = undefined;
+  };
+
+  this.then = function(par1, par2){
+    thenFun(par1, par2);
+  };
+  this.thenReuse = function(parReuse, par1, par2){
+    thenReuseFun(parReuse, par1, par2);
+  };
+  /*this.promise = {
+        then: this.then
+      };*/
+  this.promise = this.then;
+  /* so this should be possible
+        var p = Promise();
+        var ps = p.then;
+        ps(thenfun...);
+        //alternative:
+        ps.then(thenfun...); // so the thenFun is a promise itself;
+      */
+  this.then.then = this.then;
+  this.then.thenReuse = this.thenReuse;
+
+
+};
+
+
+return TrackedPromise;
+

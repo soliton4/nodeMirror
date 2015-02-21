@@ -1,0 +1,42 @@
+<{__promiseLandModule: true}>;
+
+/* keeping track of module related infos
+   such as if its a promiseing module
+   or what functions / classes are available within the module
+*/
+
+var modules = {};
+
+      promiseland._registerModule = function(par){
+        if (this._hasModule(par.hashStr)){
+          return false;
+        };
+        modules[par.hashStr] = {
+          "promising": par["promising"],
+          "module": par["module"]
+        };
+        return true;
+      };
+
+      promiseland._getModule = function(parHashStr){
+        return modules[parHashStr]["module"];
+      }
+      
+      promiseland._hasModule = function(parHashStr){
+        if (modules[parHashStr]){
+          return true;
+        };
+        return false;
+      }
+      
+      promiseland.isPromiseLandPromisingModule = function(parM){
+        var i;
+        for (i in modules){
+          if (modules[i] && modules[i]["module"] === parM){
+            return modules[i].promising;
+          };
+        };
+        return false;
+      }
+
+return modules;

@@ -1,0 +1,72 @@
+
+
+var isClient = false;
+(() exclusive "client" {
+  isClient = true;
+})();
+
+
+class type sync C1 {
+  a: 1,
+  b: 2
+};
+  
+class type sync C2 {
+  c: 3,
+  d: 4,
+  C1 t1:
+};
+
+
+C2 local;
+  
+  
+doInit () {
+  local = new C2();
+  local.t1 = new C1();
+};
+
+var init = () frame "server" {
+  doInit();
+};
+
+
+
+x(C2 par1) frame "server" {
+  local = par1;
+};
+
+getLocalTB() frame "server" {
+  return local.t1.b;
+};
+
+
+if (!isClient){
+  return { success: true }; // server is ok
+};
+
+*init();
+doInit();
+
+if (*getLocalTB() !== 2){
+  return { success: false };
+};
+
+local.t1.b = 6;
+  
+
+var tempRes = *x(local);
+
+  
+if (*getLocalTB() !== 6){
+  return { success: false };
+};
+
+local.t1.b = 5;
+  
+
+if (*getLocalTB() !== 5){
+  return { success: false };
+};
+
+return { success: true };

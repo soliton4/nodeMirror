@@ -1,0 +1,20 @@
+var a = (){
+  *x;
+  return 1;
+}
+
+var res;
+
+try{
+  res = *a();
+};
+
+if (res == 1){
+  return {
+    success: false
+  };  
+};
+
+return {
+  success: true
+};

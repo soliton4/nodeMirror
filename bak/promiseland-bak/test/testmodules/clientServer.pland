@@ -1,0 +1,21 @@
+
+var fs;
+
+(() exclusive "server" {
+  fs = require "fs";
+})();
+
+var x = (par1, par2) frame "server"{
+  console.log("doing the request");
+  var cb = new Callback();
+  var filenameStr = __dirname + "/test.txt"
+  //console.log(filenameStr);
+  console.log(par1);
+  console.log(par2);
+  fs.readFile(filenameStr, { encoding: "utf8" }, cb);
+  return (*(cb.promise))[1];
+};
+
+setTimeout((){
+  console.log(*x("par1", {par: "2"}));
+}, 1000);

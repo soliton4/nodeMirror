@@ -1,0 +1,71 @@
+var failed = false;
+
+var cnt = 0;
+
+class type track C1 {
+  destroy: (){
+    cnt++;
+  }
+};
+
+class type track C2 {
+  C1 m1:
+};
+
+var cntSupposed = (s){
+  if (cnt == s){
+    return;
+  };
+  failed = true;
+};
+
+cntSupposed(0);
+
+C2 c2 = new C2();
+
+cntSupposed(0);
+
+var fun = (){
+  
+  C1 v1;
+  C1 v2;
+  C1 v3;
+  
+  cntSupposed(0);
+  
+  new C1(); // destroy immediately
+  
+  cntSupposed(1);
+  
+  v1 = new C1(); //keep in var
+  
+  cntSupposed(1);
+  
+  v1 = new C1(); // destroy former
+  
+  cntSupposed(2);
+  
+  v2 = new C1();
+  v3 = new C1();
+  
+  c2.m1 = new C1();
+  
+  cntSupposed(2);
+  
+  c2.m1 = v3; // destroy former
+  
+  cntSupposed(3);
+  
+};
+  
+fun(); // destroy v1 and v2 but not v3
+
+cntSupposed(5);
+
+
+
+if (failed){
+  return {success: false};
+};
+
+return {success: true};

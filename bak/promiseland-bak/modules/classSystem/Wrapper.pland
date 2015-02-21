@@ -1,0 +1,39 @@
+<{  __promiseLandModule: true }>;
+  
+var errorMsg = extra.errorMsg;
+var classSystem;
+(){
+  classSystem = (*extra.classSystemPs).classSystem;
+}();
+
+  
+/*
+  wrapper class that can be used to expose typesafe instances to ecmaland
+  
+  the rule for tracked classes is:
+    its only valid until your function is running
+*/
+class Wrapper {
+  constructor: (parType, parInstance){
+    
+    if (!parType){
+      parType = classSystem.getTypeFromInstance(parInstance);
+    };
+    
+    this.instance = parInstance;
+    this.type = parType;
+  },
+  
+  // use this to get extra trackers
+  getTrack: (){
+    if (classSystem.isTrackedClass(this.type)){
+      return classSystem.getTrack(this.instance);
+    };
+    return (){};
+  }
+  
+  
+};
+
+return Wrapper;
+

@@ -1,0 +1,14 @@
+var a = [];
+
+var b = [a, 0, ""];
+
+
+if (a.length == 0 && b.length == 3){
+  return {
+    success: true
+  };
+}
+
+  return {
+    success: false
+  };

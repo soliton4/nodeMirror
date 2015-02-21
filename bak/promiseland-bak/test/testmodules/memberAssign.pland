@@ -1,0 +1,15 @@
+class type sync C1{
+  a: 1
+};
+
+class type sync C2 {
+  C1 m:
+};
+
+C2 x = new C2();
+x.m = new C1();
+  
+C1 m = new C1();
+  debugger;
+x.m = m;
+

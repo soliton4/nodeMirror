@@ -1,0 +1,13 @@
+
+var i = 0;
+do {
+  
+  i += 1;
+  
+} while (i < 4);
+
+if (i == 4){
+  return {success: true};
+};
+
+return {success: false};

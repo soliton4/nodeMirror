@@ -1,0 +1,143 @@
+var Map = promiseland.Map;
+var classSystem = promiseland.classSystem;
+
+var basics = require "./basics";
+var errorFun = basics.errorFun;
+var errorMsg = basics.errorMsg;
+var _stringEncodeStr = basics._stringEncodeStr;
+var stringEncodeStr = basics.stringEncodeStr;
+
+var VariableNames = basics.VariableNames;
+var mixin = basics.mixin;
+var identifierName = basics.identifierName;
+var checkIsFunction = basics.checkIsFunction;
+var getExtraFromPar = basics.getExtraFromPar;
+var statementType = basics.statementType;
+var checkPromising = basics.checkPromising;
+
+
+
+
+return (parInstance, par){
+  
+  var f = (par){
+    
+    
+    
+      /*
+        {
+          ["name": value]
+          [, ...]
+        }
+      */
+      
+      this.expObjectExpression = function(par){
+        //{type: "ObjectLiteral", properties: Array[]}
+        var res = this.newResult();
+        var isClassObject = this.isClassObject;
+        this.stack("isClassObject");
+        this.isClassObject = false;
+
+        res.push("{");
+        
+        var indentRes = this.newResult();
+        
+        var i = 0;
+        var l = (par.properties && par.properties.length) || 0;
+        for (i; i < l; ++i){
+          this.isClassObject = false;
+          var currentMember;
+          //this.inheritedSystem
+          if (i){
+            indentRes.push(",");
+            indentRes.push(this.newLine());
+          };
+          var prop = par.properties[i];
+          if (prop.kind == "init"){
+            currentMember = identifierName(prop.key);
+            if (this.inheritedSystem){
+              this.inheritedSystem.setCurrent(currentMember);
+            };
+            indentRes.push(stringEncodeStr(identifierName(prop.key)) + ": ");
+            if (prop.value){
+              if (checkIsFunction(prop.value)){
+                if (isClassObject){
+                  this.isClassObject = true;
+                };
+              };
+              var v = this.parseExpression(prop.value);
+              
+              indentRes.push(this.expectTypeVar(this.getPassAsTypeCode({ // only var type is allowed in regular object literal
+                value: v,
+                valueType: v.getType(),
+                "type": this.getType(prop.typename || "var", par)
+                , errorFun: this.getWarningFun(par)
+              })));
+            };
+            
+          }else if (prop.kind == "function"){
+            if (isClassObject){
+              this.isClassObject = true;
+            };
+            var name = identifierName(prop.id);
+            currentMember = name;
+            if (this.inheritedSystem){
+              this.inheritedSystem.setCurrent(currentMember);
+            };
+            prop.id = undefined; // remove id
+            indentRes.push(stringEncodeStr(name) + ": ");
+            
+            var functionRes = this.expectTypeVar(this.parseExpression(prop));
+            indentRes.push(functionRes);
+            
+          }else if (prop.kind == "block"){
+            // handled in class expression
+            
+          }else{
+            this.error(par, errorMsg.unknownPropertyAssignmentType);
+          };
+          
+        };
+        
+        res.push(this.indentNewLine(indentRes));
+        
+        res.push("}");
+        res.setType("var");
+        this.unstack("isClassObject");
+        return res;
+      };
+    
+    
+      /*
+        [[value][, ...]]
+      */
+      
+      this.expArrayExpression = function(par){
+        var res = this.newResult();
+        res.push("[");
+        
+        var indentRes = this.newResult();
+        
+        var i = 0;
+        var l = (par.elements && par.elements.length) || 0;
+        for (i; i < l; ++i){
+          if (i){
+            indentRes.push(", ");
+            indentRes.push(this.newLine());
+          };
+          indentRes.push(this.expectTypeVar(this.parseExpression(par.elements[i])));
+        };
+        res.push(this.indentNewLine(indentRes));
+        
+        res.push("]");
+        res.setType("var");
+        return res;
+      };
+    
+
+
+    
+  };
+  f.apply(parInstance, [par]);
+  
+};

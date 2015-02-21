@@ -1,0 +1,24 @@
+class type C1 {
+  a: 1,
+  b: 2
+}
+
+C1* f1(){
+  
+  var cb = new Callback();
+  setTimeout(cb, 50);
+  
+  *(cb.promise);
+  
+  return new C1();
+}
+
+C1 a;
+
+a = *f1();
+
+if (a.b == 2){
+  return {success: true};
+};
+
+return {success: false};

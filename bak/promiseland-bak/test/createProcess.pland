@@ -1,0 +1,67 @@
+
+var child_process = require "child_process";
+
+var spawn = child_process.spawn;
+var fork = child_process.fork;
+
+return (cmdStr, parAr, options){
+  
+  
+  
+  if (!parAr){
+    parAr = [];
+  };
+  
+  var child;
+  if (options && options.fork){
+    child = fork(cmdStr, parAr, options);
+  }else{
+    child = spawn(cmdStr, parAr);
+  };
+  
+  
+  child.on("error", (err){
+    console.log("spawn error:");
+    console.log(err);
+  });
+  
+  if (child.stdout){
+    child.stdout.on('data', (data) {
+      console.log('stdout: ' + data);
+    });
+    child.stdout.on('error', (data) {
+      console.log('stdout error: ' + data);
+    });
+  };
+  
+  if (child.stderr){
+    child.stderr.on('data', (data) {
+      console.log('stderr: ' + data);
+    });
+  };
+  
+  var cb = new Callback();
+  child.on("close", cb);
+  
+  var result = (){
+    return (*cb.promise)[0];
+  };
+  
+  return {
+    child: child,
+    result: result()
+  };
+  
+};
+
+/*ls.stdout.on('data', function (data) {
+  console.log('stdout: ' + data);
+});
+
+ls.stderr.on('data', function (data) {
+  console.log('stderr: ' + data);
+});
+
+ls.on('close', function (code) {
+  console.log('child process exited with code ' + code);
+});*/

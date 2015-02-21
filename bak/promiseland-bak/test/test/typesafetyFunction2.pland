@@ -1,0 +1,23 @@
+class type C1 {
+  a: 1
+};
+
+C1 b = new C1();
+
+C1 fun1 (){
+  C1 c = new C1();
+  c.a = 2;
+  return c;
+};
+
+b = fun1();
+
+if (b.a == 2){
+  return {
+    success: true
+  };
+};
+
+return {
+  success: false
+};

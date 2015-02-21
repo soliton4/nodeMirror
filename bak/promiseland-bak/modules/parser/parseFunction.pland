@@ -1,0 +1,988 @@
+
+var basics = require "./basics";
+var errorFun = basics.errorFun;
+var errorMsg = basics.errorMsg;
+var _stringEncodeStr = basics._stringEncodeStr;
+var stringEncodeStr = basics.stringEncodeStr;
+
+var VariableNames = basics.VariableNames;
+var mixin = basics.mixin;
+var identifierName = basics.identifierName;
+var checkIsFunction = basics.checkIsFunction;
+var getExtraFromPar = basics.getExtraFromPar;
+
+var statementType = basics.statementType;
+
+return (parInstance, par){
+  
+  var f = (par){
+    
+    /*
+        [function] [name]([params]){[code]}
+        -> new parser instance
+        parGivenPromiseNameStr is provided by parseProgram to access the return promise before declaring the funciton
+    */
+    this.parseFunction = function(parsed){
+
+      this.stack("isFunction");
+      this.isFunction = true;
+
+      var res = this._parseFunction(parsed);
+
+      this.unstack("isFunction");
+      // extra syntax check for asm js
+      if (this.isAsmFun(parsed)){
+        var asmRes = this.newResult();
+        asmRes.pushType(res);
+        asmRes.checkasm = true;
+        asmRes.setParsed(parsed);
+        return asmRes;
+      };
+      return res;
+    };
+    
+    this.functionInfo = function(parsed){
+      
+      var res = {
+        hasName: false,
+        hasReturnType: false,
+        returnTypeNameStr: undefined,
+        nameStr: undefined
+      };
+      if (parsed.id){
+        res.hasName = true;
+        res.nameStr = identifierName(parsed.id)
+      };
+      
+      if (parsed.returnTypename){
+        var typeNameStr = identifierName(parsed.returnTypename);
+        if (res.hasName){
+          // name exists
+          res.returnType = this.getType(typeNameStr, parsed);
+          res.returnTypeNameStr = typeNameStr;
+          res.hasReturnType = true;
+        }else{
+          // maybe its just the name
+          var type = this.getType(typeNameStr, parsed, { dontThrow: true });
+          if (type){
+            res.returnType = type;
+            res.returnTypeNameStr = typeNameStr;
+            res.hasReturnType = true;
+          }else{
+            res.hasName = true;
+            res.nameStr = typeNameStr;
+          };
+        };
+      };
+      
+      if (!res.hasReturnType){
+        res.returnType = this.getType("var");
+      };
+      
+      if (parsed.type == "FunctionDeclaration"){
+        res.declaration = true;
+        if (res.hasName){
+          res.hasExternalName = true;
+        };
+      };
+      
+      return res;
+      
+    };
+    
+
+    this._parseFunction = function(par, parJsn){
+      parJsn = parJsn || {};
+      var parGivenPromiseNameStr = parJsn.promiseName;
+      var noUntrack = parJsn.noUntrack;
+
+      // check for hints
+      var hasFrameInfo = false;
+      var runRemote = false;
+      var runExclusive = false;
+      var i = 0;
+      var typename;
+      var parParsed = par;
+
+      var funClosure;
+
+      var self = this;
+      
+      var functionInfo = this.functionInfo(parParsed);
+
+      // has it a name?
+      var hasName = functionInfo.hasName;
+      var nameStr = functionInfo.nameStr;
+
+      /* -------------------------------------------------------------------------
+            return Type
+      */
+      var hasReturnTypeName = functionInfo.hasReturnType;
+      this._returnType = functionInfo.returnType;
+      
+      // function type
+      var thisFunType = this.getFunctionType(par);
+      
+      if (hasName && parParsed.useLocalVariableName){
+        this.addLocalVariable({name: nameStr, isFunction: true, type: thisFunType, localFunction: true }, parParsed);
+      };
+      
+      
+      
+      // if this is a member function, we can call inherited
+      // but only within this function!
+      this.stack("inheritedAvailable");
+      this.stack("thisType");
+      if (this.isClassObject){
+        this.inheritedAvailable = true;
+        this.thisType = this.inheritedSystem.type || this.getType("var");
+
+      }else{
+        this.inheritedAvailable = false;
+        this.thisType = this.getType("var");
+
+      };
+
+      // a result that can be used via this.addBeforeReturn()
+      // code will be executed before the function returns
+      this.runBeforeReturnRes = this.newResult();
+      this.beforeReturnExistsPs = new Promise();
+
+      // additional administrative code in front or back of the function body
+      this.additionalCodeFrontRes = this.newResult();
+      this.additionalCodeEndRes = this.newResult();
+
+
+      this.stack("isClassObject");
+      this.isClassObject = false;
+
+
+
+
+      /* -------------------------------------------------------------------------
+            frame Information
+        */
+      
+      var keywords = par.keywords;
+      var frameName;
+      if (keywords && keywords.length){
+        var k;
+        for (k = 0; k < keywords.length; ++k){
+          switch(keywords[k].type){
+          case "const":
+            break;
+          case "sync":
+            break;
+          case "frame":
+            hasFrameInfo = true;
+            runRemote = true;
+            par.promising = true;
+            if (this.dynamicCode){
+              this.error(par, errorMsg.functionFrameInDynamicCode);
+            };
+            frameName = keywords[k].name;
+            break;
+          case "exclusive":
+            hasFrameInfo = true;
+            runExclusive = true;
+            frameName = keywords[k].name;
+            break;
+          };
+        };
+      };
+
+
+
+      /* -------------------------------------------------------------------------
+            template
+        */
+
+      var templateTypesAr = [];
+
+      // identify template
+      if (par.template && par.template.properties.length){
+        var templateTypes = this.getTemplateProperty(par.template, "types", "ObjectExpression");
+        if (templateTypes){
+          var typeVarInit = this.newResult();
+          for (i = 0; i < templateTypes.properties.length; ++i){
+            var p = templateTypes.properties[i];
+            typename = identifierName(p.key);
+
+            this.addType({name: typename, dynamic: true}, p.value);
+            if (!funClosure){
+              funClosure = this.newResult();
+              funClosure.push("(function(){");
+            };
+
+            //this._addTypeDeclaration(typename, this.getConstructorName(typename));
+            typeVarInit.push("var ");
+            typeVarInit.push(this.renderType(typename));
+            typeVarInit.push(" = ");
+            typeVarInit.push(this.expectTypeVar(this.parseExpression(p.value)));
+            typeVarInit.push(";");
+            typeVarInit.push(this.newLine());
+
+            typeVarInit.push("var " + this.getVariableName(typename) + " = ");
+            typeVarInit.push(this.renderType(typename));
+            typeVarInit.push(this.newLine());
+            typeVarInit.push(";");
+            typeVarInit.push("var " + this.getConstructorName(typename) + " = undefined;");
+            typeVarInit.push(this.newLine());
+
+            typeVarInit.push(this._typeReadyCode({typename: typename}));
+
+
+            templateTypesAr.push(typename);
+
+          };
+          funClosure.push(typeVarInit);
+        };
+      };
+      var extraTypesRes = this.newResult();
+      if (funClosure){
+        funClosure.push("var communicator = {fun: undefined};");
+        funClosure.push(this.newLine());
+        funClosure.push(extraTypesRes);
+        funClosure.push("eval(\"communicator.fun = ");
+      };
+
+      // main result
+      var res = this.newResult(); 
+
+
+      /* -------------------------------------------------------------------------
+            the function
+        */
+
+      // function declaration
+      var funDecl = this.newResult();
+      // second layer for indentation
+      var funRes = this.newResult();
+
+
+      // function keyword and parameters
+      i = 0;
+      funDecl.push("function");
+      var nameRes;
+      if (hasName){
+        this.functionName = nameStr; //this.getVariableName(nameStr);
+        //if (parParsed.useLocalVariableName){
+        funDecl.push(" ");
+        nameRes = this.newResult();
+        nameRes.push(this.getVariableName(nameStr));
+        funDecl.push(nameRes);
+        //};
+      };
+
+      // parameters
+      funDecl.push("("); // function start
+      
+      
+      // if this is a frame function we need to add a session parameter
+      var params = [];
+      if (runRemote){
+        params.push({
+          name: "session",
+          typename: "var",
+          parsed: parParsed
+        });
+      };
+        
+      if (par.params && par.params.length){
+        i = 0;
+        var l = par.params.length;
+        for (i; i < l; ++i){
+          params.push({
+            name: identifierName(par.params[i].name),
+            typename: par.params[i].typename || "var",
+            parsed: par.params[i]
+          });
+        };
+      };
+      if (params.length){
+        i = 0;
+        var l = params.length;
+        for (i; i < l; ++i){
+          if (i){
+            funDecl.push(", ");
+          };
+          funDecl.push(this.getVariableName(identifierName(params[i].name)));
+          this.addLocalVariable({name: params[i].name, typename: params[i].typename || "var", parameter: true}, params[i].parsed);
+        };
+      };
+      funDecl.push("){");
+
+      
+      
+      
+      
+      if (this.isAsmFun(parParsed)){
+        funDecl.push(this.newLine());
+        funDecl.push("\"use asm\";");
+        funDecl.push(this.newLine());
+        this.asmMode = true;
+      };
+
+      // indent here
+      funRes.push(this.newLine());
+
+      var classesRes = this.findClasses(par.body); // scan for classes
+      this.findVariables(par.body);                // scan for variables - must happen after findClasses
+
+
+      // exclusive hint
+      if (runExclusive){
+        funRes.push("if (!promiseland.profileHas(" + stringEncodeStr(frameName.value) + ")){");
+        funRes.push(this.newLine());
+        if (par.promising){
+          funRes.push("var p = " + this.newPromiseStr() + ";"); // needs adjustment for tracked promises
+          funRes.push(this.newLine());
+          funRes.push("p.reject({id: 14, msg: \"function does not execute in this frame.\"});");
+          funRes.push(this.newLine());
+          funRes.push("return p;");
+          funRes.push(this.newLine());
+        }else{
+          funRes.push("return;");
+          funRes.push(this.newLine());
+        };
+        funRes.push("};");
+        funRes.push(this.newLine());
+      };
+
+      var addFront = getExtraFromPar(par, "addFront");
+      // evtl. "use strict"
+      if (addFront){
+        funRes.push(addFront);
+      };
+
+      // promising preparations
+      if (par.promising){
+        if (parGivenPromiseNameStr){
+          this.returnPromise = parGivenPromiseNameStr;
+
+        }else{
+          this.returnPromise = this.getUniqueName();
+
+          funRes.push(this.declareReturnPromiseCode({
+            type: this._returnType,
+            name: this.returnPromise,
+            constructorName: this.getConstructorName(this.getTypeName(this._returnType, parParsed)),
+            parsed: parParsed,
+            errorFun: this.getWarningFun(parParsed)
+          }));
+
+        };
+
+        // this function is called to run the actual function code
+        this.tryCatchFunctionStr = this.getUniqueName("promiseland exception catcher");
+        funRes.push([
+          "var " + this.tryCatchFunctionStr + " = function(code){",
+          this.indent([
+            this.newLine(),
+            "return function(res){",
+            this.indentNewLine([
+              "try{ code(res); }catch(e){",
+              this.indentNewLine([
+                this.runBeforeReturnRes,
+                this.returnPromise + ".reject(e);"
+              ]),
+              "};"
+            ]),
+            "};"
+          ]),
+          this.newLine(),
+          "};",
+        ]);
+        funRes.push(this.newLine());
+        
+        this.catchFunctionStr = this.getUniqueName("catch rejected");
+        funRes.push([
+          "var " + this.catchFunctionStr + " = function(e){",
+          this.indentNewLine([
+            this.runBeforeReturnRes,
+            this.returnPromise + ".reject(e);"
+          ]),
+          "};",
+          this.newLine()
+        ]);
+          
+
+        this.promising = true;
+        res.makePromising();
+
+      };
+
+      // variable declarations and main part
+      var b = par.body;
+      var extraPar = {};
+      b.brackets = false;
+      extraPar.preCode = this.additionalCodeFrontRes;
+      extraPar.postCode = this.newResult();
+      extraPar.postCode.push(this.getReturnCode({}, parParsed));
+      extraPar.postCode.push(this.additionalCodeEndRes);
+      var block = this.blockCreator(b, extraPar);
+
+      var localVariablesAr = this.localVariables.getArray();
+      for (i = 0 ; i < localVariablesAr.length; ++i){
+        var varname = localVariablesAr[i].key;
+        var type = this.getVariableType(varname);
+        
+        if (localVariablesAr[i].value.localFunction){
+          // do nothing
+          // this is the function itself
+          
+        }else if (localVariablesAr[i].value.parameter){
+          // special case for parameters
+          // they are usually not declared, but tracked parameters need processing
+          funRes.push(this.getProcessParameterCode({
+            name: this.getVariableName(varname),
+            "type": type,
+            errorFun: this.getWarningFun(par),
+            parsed: par
+          }));
+
+        }else if (localVariablesAr[i].value.declaration){
+          funRes.push(this.getDeclareVariableCode({
+            name: this.getVariableName(varname),
+            "type": type,
+            errorFun: this.getWarningFun(par),
+            parsed: par,
+            declaration: localVariablesAr[i].value.needsDeclaration
+          }));
+          
+        }else if (localVariablesAr[i].value.isFunction){
+          // nevermind
+          
+        }else{
+          // what is this?
+          debugger;
+        }
+
+        // untrack tracked variables
+        if (!noUntrack){
+          this.addBeforeReturn(this.getDestroyVariableCode({
+            name: this.getVariableName(varname),
+            "type": type,
+            errorFun: this.getWarningFun(par),
+            parsed: par
+          }), this.isTrackedClassConRes(type, par), parParsed);
+        };
+
+        //this.usedVariables[varname] = false;
+        this.usedVariablesMap.set(varname, false);
+      };
+
+      if (this.usedVariablesMap.get("arguments")){
+        funRes.push("var " + this.getVariableName("arguments") + " = arguments;");
+        funRes.push(this.newLine());
+        this.usedVariablesMap.set("arguments", false);
+      };
+
+      // defined types
+      funRes.push(classesRes);
+
+      for(i = 0; i < this.functionsAr.length; ++i){
+        funRes.push(this.functionsAr[i].res);
+        funRes.push(";");
+        funRes.push(this.newLine());
+      };
+
+
+
+      if (par.promising){
+        // in front of the function
+        if (this.usingThis){
+          funRes.push("var " + this.thisExpression + " = this;");
+          funRes.push(this.newLine());
+        };
+        funRes.push(this.tryCatchFunctionStr + "(function(){");
+        funRes.push(this.newLine());
+      };
+
+      funRes.push(this.indent(block));
+
+      funDecl.push(funRes);
+
+      // promising additions
+      if (par.promising){
+        funDecl.addPost("})();");
+        funDecl.push(this.newLine());
+        funDecl.addPost(this.returnReturnPromiseCode({
+          type: this._returnType,
+          name: this.returnPromise,
+          parsed: parParsed,
+          errorFun: this.getWarningFun(parParsed)
+        }));
+
+        funDecl.addPost("}"); // function end
+      }else{
+        funDecl.push("}"); // function end
+      };
+
+      var completeFun = this.makeCompleteStatement(funDecl);
+      var funNameScrewUp = false;
+
+      if (this.promising && hasReturnTypeName){
+        var returnTypePromiseCheck = this.newResult();
+        returnTypePromiseCheck.push("(function(t){");
+        returnTypePromiseCheck.push(this.promisingReturnTypeCheck({
+          type: this._returnType,
+          errorFun: this.getWarningFun(parParsed),
+          parsed: parParsed
+        }));
+        returnTypePromiseCheck.push("return t;})(");
+        returnTypePromiseCheck.push(completeFun);
+        returnTypePromiseCheck.push(")");
+        completeFun = returnTypePromiseCheck;
+        funNameScrewUp = true;
+      };
+
+      if (funClosure){
+        /*
+            putting the template together
+          */
+        var handleExtras = function(dt){
+          if (dt.extraTypes){
+            var i = 0;
+            for (i = 0; i < dt.extraTypes.length; ++i){
+              extraTypesRes.push(dt.extraTypes[i].res);
+              handleExtras(dt.extraTypes[i].type);
+            };
+          };
+        };
+        for (i = 0; i < templateTypesAr.length; ++i){
+          var dt = this.getType(templateTypesAr[i], par);
+          handleExtras(dt);
+        };
+
+        funClosure.push(completeFun, par, {
+          stringEncode: true
+        });
+        funClosure.push(";\"); return communicator.fun; })()");
+        completeFun = this.makeCompleteStatement(funClosure);
+        funNameScrewUp = true;
+      };
+
+
+      // remote execution check
+      var uniqueNameStr;
+      if (runRemote){
+        var remoteClosure = this.newResult();
+
+        uniqueNameStr = this.getUniqueName();
+
+        remoteClosure.push("(function(f){");
+        remoteClosure.push(this.newLine());
+
+        // register function
+        remoteClosure.push("promiseland.registerRemote(" + stringEncodeStr(frameName.value));
+        remoteClosure.push(", " + stringEncodeStr(this.getModuleHashStr()) + ", " + stringEncodeStr(uniqueNameStr) + ", f, ");
+        remoteClosure.push(this.renderType(thisFunType, parParsed));
+        remoteClosure.push(");");
+        remoteClosure.push(this.newLine());
+
+        remoteClosure.push("if (promiseland.profileHas(" + stringEncodeStr(frameName.value) + ")){");
+        remoteClosure.push(this.newLine());
+        
+        remoteClosure.push("return "); // eather the function stays itself
+        // wrap another function arround that removes the first parameter
+        // when we call it localy we dont have a session and we dont pass it as parameter
+        remoteClosure.push("function(){"); // eather the function stays itself
+        remoteClosure.push(this.newLine());
+        remoteClosure.push("var i = 0; var l = arguments.length; var newArgs = [undefined];")
+          remoteClosure.push(this.newLine());
+        remoteClosure.push("for(i = 0; i < l; ++i){ newArgs.push(arguments[i]); };");
+        remoteClosure.push(this.newLine());
+
+        remoteClosure.push("return f.apply(this, newArgs);");
+        remoteClosure.push(this.newLine());
+
+        remoteClosure.push("};");
+        remoteClosure.push(this.newLine());
+
+        
+        
+        
+        
+        
+        remoteClosure.push("}else{");
+        remoteClosure.push(this.newLine());
+        // or we create a remote exec hook
+        remoteClosure.push("return function(){");
+        remoteClosure.push(this.newLine());
+
+
+        remoteClosure.push("return promiseland.remoteExec(" + stringEncodeStr(this.getModuleHashStr()) + ", " + stringEncodeStr(uniqueNameStr) + ", arguments);");
+        remoteClosure.push(this.newLine());
+        remoteClosure.push("}");
+        remoteClosure.push(this.newLine());
+
+        remoteClosure.push("};");
+        remoteClosure.push(this.newLine());
+
+        remoteClosure.push("})(");
+        remoteClosure.push(completeFun); // pass the real function as parameter
+        remoteClosure.push(")");
+
+        res.push(remoteClosure);
+        funNameScrewUp = true;
+        
+      }else{
+        res.push(completeFun);
+      };
+
+      res.setType(thisFunType);
+
+      this.unstack("isClassObject");
+      this.unstack("inheritedAvailable");
+      this.unstack("thisType");
+
+      var finalResult = this.newResult();
+      
+      if (funNameScrewUp && hasName && functionInfo.declaration){
+        // it used to be a function declaration but now we need to make it a var fun = ....
+        finalResult.push("var ");
+        finalResult.push(this.getVariableName(nameStr));
+        finalResult.push(" = ");
+        nameRes.replace("");
+      };
+      finalResult.push(this.makeCompleteStatement(res));
+      
+      finalResult.setType(thisFunType);
+      return finalResult;
+    };
+    
+    
+    
+    
+    // the function expression
+    this.expFunctionExpression = function(value, declaration){
+      
+      if (!declaration){
+        value.useLocalVariableName = true;
+      };
+      
+      var cp = this.newInstance(value, {
+        dynamicCode: this.dynamicCode || this.isFunction,
+        asmMode: this.asmMode
+      });
+      var funName = cp.getFunctionName();
+      var funRes = cp.getFunctionRes();
+
+      // collect used variables from parsed function
+      var uv = cp._getUsedVairablesMap();
+      var name;
+      uv.forEach((value, name){
+        if (value === true){
+          this._addUsedVariable(name);
+        };
+      }, this);
+      
+      var res;
+
+      if (funName && funRes && declaration){
+        if (this.asmMode){
+          // asm.js special case
+          value.hoist = false;
+          this.addFunction(funRes, funName, value);
+          
+        }else{
+          
+          value.hoist = true;
+          this.addFunction(funRes, funName, value);
+          
+          if (declaration){
+            res = this.newResult("/* function " + funName + " (){} - hoisted */");
+            res.setType(statementType);
+          }else{
+            // for future concern
+            res = this.newResult(this.getVariableName(funName));
+            res.setType(funRes.getType());
+          };
+          return res;
+        };
+      };
+
+      res = this.newResult();
+      if (!declaration){
+        res.push("(");
+      };
+      res.pushType(funRes || cp.getResult());
+      if (!declaration){
+        res.push(")");
+      };
+
+      return res;
+
+    };
+    // the function statement
+    this.expFunctionDeclaration = function(value){
+      return this.expFunctionExpression(value, true);
+    };
+    this.expMemberFunction = function(value){
+      //value.id = undefined;
+      return this.expFunctionExpression(value);
+    };
+    
+    this.functionsAr = [];
+    this.addFunction = (res, name, parsed){
+      this.resolveFunctionType({name: identifierName(name), type: res.getType()}, parsed);
+      if (parsed.hoist){
+        this.functionsAr.push({res: res, name: name});
+      };
+    };
+    
+    
+    // return
+    
+    this.getReturnCode = function(par, parParsed){
+      var self = this;
+      var res = this.newResult();
+
+      if (this.promising){
+        res.push(this.returnPromise + ".resolve(");
+        if (par.value){
+          res.push(par.value);
+        };
+        res.push("); return");
+
+      }else{
+        if (par.return || par.value){
+          res.push("return");
+        };
+        if (par.value){
+          res.push(" ");
+          res.push(par.value);
+        };
+        if (par.return || par.value){
+          //res.push(";");
+        };
+
+      };
+
+      var falseRes = res;
+
+
+      var beforeReturnCode = this.runBeforeReturnRes;
+
+      var newRes = self.newResult();
+
+      var valueRes = self.newResult();
+      if (par.value){
+        valueRes.push("(function(ret){ ");
+        valueRes.push(beforeReturnCode);
+        valueRes.push("return ret; })(");
+        valueRes.push(par.value);
+        valueRes.push(")");
+
+      };
+
+      if (self.promising){
+        if (par.value){
+          newRes.push(self.returnPromise + ".resolve(");
+          newRes.push(valueRes);
+          newRes.push("); return;");
+
+        }else{
+          newRes.push(beforeReturnCode);
+          newRes.push(self.returnPromise + ".resolve(");
+          newRes.push("); return;");
+
+        };
+
+      }else{
+        if (par.value){
+          newRes.push("return ");
+          newRes.push(valueRes);
+          newRes.push(";");
+
+        }else{
+          newRes.push(beforeReturnCode);
+          if (par.return){
+            newRes.push("return;");
+          };
+
+        };
+      };
+
+      var trueRes = newRes;
+
+      var conditional = this.createConditionalCode(trueRes, falseRes, parParsed);
+      this.addBeforeReturnConditionFun(function(con){
+        conditional.addCondition(con);
+      });
+
+      return conditional.res;
+    };
+
+    /*
+        code to be executed before the function returns
+        even when a exception happens
+
+        extensive condition tracking is in order since the code generation can depend on dynamic classes
+        see createConditionalCode for more clarity
+      */
+
+    this.addBeforeReturn = function(parRes, parCondition, parParsed){
+
+      var condition = parCondition;
+      if (parCondition === undefined){
+        condition = true;
+      };
+
+      var conditional = this.createConditionalCode(parRes, undefined, parParsed);
+      conditional.addCondition(condition);
+
+      this.runBeforeReturnRes.push(conditional.res);
+
+
+      if (!this.beforeReturnExists){
+        this.beforeReturnExists = true;
+
+        var frontRes = this.newResult();
+        var endRes = this.newResult();
+        this.beforeReturnFrontConditional = this.createConditionalCode(frontRes, undefined, parParsed);
+        this.beforeReturnEndConditional = this.createConditionalCode(endRes, undefined, parParsed);
+
+        this.beforeReturnExistsPs.resolve(this.runBeforeReturnRes);
+        if (!this.promising){ // promising functions have their own error handler
+          // this is to execute the code even if an exception happens
+          frontRes.push("try{");
+          this.additionalCodeFrontRes.push(this.beforeReturnFrontConditional.res);
+
+          endRes.push("}catch(e){");
+          endRes.push(this.runBeforeReturnRes);
+          endRes.push("throw e};");
+          this.additionalCodeEndRes.push(this.beforeReturnEndConditional.res);
+
+        };
+      };
+
+      this.beforeReturnFrontConditional.addCondition(condition);
+      this.beforeReturnEndConditional.addCondition(condition);
+
+      this.addBeforeReturnCondition(condition);
+
+    };
+
+    this.beforeReturnConditions = [];
+    this.addBeforeReturnCondition = function(parCondition){
+      this.beforeReturnConditions.push(parCondition);
+      var i = 0;
+      for (i = 0; i < this.beforeReturnConditionFuns.length; ++i){
+        this.beforeReturnConditionFuns[i](parCondition);
+      };
+    };
+
+    this.beforeReturnConditionFuns = [];
+    this.addBeforeReturnConditionFun = function(parFun){
+      this.beforeReturnConditionFuns.push(parFun);
+      var i = 0;
+      for (i = 0; i < this.beforeReturnConditions.length; ++i){
+        parFun(this.beforeReturnConditions[i]);
+      };
+    };
+        
+        
+      /*
+        returns {
+          res
+          addCondition()
+        }
+        
+        the code defaults to the falseResult
+        only if one condition is passed that equals true will the true part be used
+        
+      */
+      this.createConditionalCode = function(parTrueRes, parFalseRes, parParsed){
+        var self = this;
+        parTrueRes = parTrueRes || this.newResult();
+        parFalseRes = parFalseRes || this.newResult();
+        var isDecided = false;
+        var conditions = [];
+
+        var res = this.newResult();
+        res.replace(parFalseRes);
+        
+        var promisesWaiting = 0;
+        var errRes;
+        
+        var addCondition = function(parCondition){
+          if (isDecided){
+            return;
+          };
+          
+          if (parCondition === true){
+            isDecided = true;
+            res.replace(parTrueRes);
+            return;
+          };
+          if (parCondition === false){
+            return;
+          };
+
+          if (parCondition.then){
+            // its a promise
+            if (!errRes){
+              errRes = self.runtimeError(parParsed, errorMsg.unresolvedPromise);
+            };
+            promisesWaiting++;
+            res.replace(errRes);
+            (){
+              var condition = *parCondition;
+              promisesWaiting--;
+              
+              if (!promisesWaiting){
+                if (errRes){
+                  errRes.resolve("");
+                  errRes = undefined;
+                };
+                if (!isDecided){
+                  res.replace(parFalseRes);
+                };
+              };
+              
+              addCondition(condition);
+            }();
+            return;
+          };
+
+            conditions.push(parCondition);
+            
+            var ifRes = self.newResult();
+            ifRes.push("((");
+            var i = 0;
+            for (i = 0; i < conditions.length; ++i){
+              if (i){
+                ifRes.push(" && ");
+              };
+              ifRes.push(conditions[i]);
+            };
+            ifRes.push(") ? (");
+            ifRes.push(self.makeCompleteStatementDynamic(parTrueRes));
+            ifRes.push(") : (");
+            ifRes.push(self.makeCompleteStatementDynamic(parFalseRes));
+            ifRes.push("))");
+            
+            var dynRes = self.newResult();
+            dynRes.push(self.makeCompleteStatement(ifRes), undefined, {
+              dynamic: true
+            });
+            
+            res.replace(dynRes);
+            
+          };
+          
+        return {
+          res: res,
+          addCondition: addCondition
+        };
+      };
+        
+
+    
+    
+  };
+  f.apply(parInstance, [par]);
+  
+};

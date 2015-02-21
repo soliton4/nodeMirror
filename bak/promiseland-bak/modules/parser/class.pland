@@ -1,0 +1,636 @@
+var Map = promiseland.Map;
+var classSystem = promiseland.classSystem;
+
+var basics = require "./basics";
+var errorFun = basics.errorFun;
+var errorMsg = basics.errorMsg;
+var _stringEncodeStr = basics._stringEncodeStr;
+var stringEncodeStr = basics.stringEncodeStr;
+
+var VariableNames = basics.VariableNames;
+var mixin = basics.mixin;
+var identifierName = basics.identifierName;
+var checkIsFunction = basics.checkIsFunction;
+var getExtraFromPar = basics.getExtraFromPar;
+var statementType = basics.statementType;
+var checkPromising = basics.checkPromising;
+
+
+
+
+return (parInstance, par){
+  
+  var f = (par){
+    
+
+    this.expClassObjectExpression = function(par){
+      this.stack("isClassObject");
+      this.isClassObject = true;
+
+      var res = this.expObjectExpression(par);
+      this.unstack("isClassObject");
+      return res;
+    };
+
+
+    this.expInheritedExpression = function(par){
+      if (!this.inheritedAvailable){
+        this.error(par, errorMsg.inheritedOnlyInMember);
+        return;
+      };
+
+      var res = this.newResult();
+      var i = 0;
+      var l;
+
+      res.push(this.inheritedSystem.getCurrent());
+      res.push(".apply(this");
+
+      var args = [];
+      if (par["arguments"]){
+        res.push(", [");
+        l = par["arguments"].length;
+        for (i = 0; i < l; ++i){
+          if (i){
+            res.push(", ");
+          };
+          var argRes = this.expectTypeVar(this.parseExpression(par["arguments"][i]));
+          res.push(argRes);
+        };
+        res.push("]");
+
+      }else if (par.expression){
+        res.push(", ");
+        this.expectTypeVar(this.parseExpression(par.expression));
+
+      };
+        res.push(")");
+
+      res.setType("var");
+      return res;
+
+    };
+
+    this.newInherited = function(){
+      return new InheritedSystem(this);
+    };
+
+    var InheritedSystem = function(par){
+      this.instance = par;
+      this.used = {};
+    };
+    InheritedSystem.prototype = {
+      setCurrent: function(par){
+        this.currentMember = par;
+      },
+      getCurrent: function(){
+        if (!this.used[this.currentMember]){
+          this.used[this.currentMember] = this.instance.getUniqueName("inherited " + this.currentMember);
+        };
+        return this.used[this.currentMember];
+      }
+    };
+
+
+    
+
+    
+    /* 
+
+      building block of the dynamic type checking
+
+    */
+      
+    this.expClassStatement = function(par){
+      var res = this.newResult();
+
+      var classRes = this.newResult();
+
+      var ci = this.identifyClass(par);
+
+      var hasName = ci.hasName;
+      var name;
+      if (hasName){
+        name = identifierName(par.name);
+      };
+
+      var isTyped = ci.isTyped;
+      var extendsClause = par.extendsClause;
+      var syncClause = ci.syncClause;
+      var trackClause = ci.trackClause;
+
+      var resultType = this.getType("var");
+
+      this.stack("inheritedSystem");
+      this.inheritedSystem = this.newInherited();
+        
+
+      if (isTyped){
+        this.common.useClassSystem = true;
+        classRes.push("classSystem.createClass(");
+        if (par.body.literal){
+
+          if (hasName){
+            this.inheritedSystem.type = this.getType(name, par);
+          };
+
+          this.stack("isClassObject");
+          this.isClassObject = true;
+
+          var literal = this.createClassLiteral(par.body.literal, ci, name);
+          classRes.push(this.stringifyClassLiteral(literal, name));
+          classRes.push(", ");
+          classRes.push(this.createClassDefaults(par.body.literal));
+
+          this.unstack("isClassObject");
+
+          if (hasName){
+            var type = this.createType({
+              name: name, 
+              literal: literal,
+              par: par
+            });
+
+          };
+
+        }else{
+          classRes.push("{}, ");
+          classRes.push(this.parseExpression(par.body.expression));
+
+        };
+        classRes.push(")");
+
+      }else{
+        var inheritedObjName = this.getUniqueName("inherited");
+
+        classRes.push("(function(){");
+
+        if (par.body.literal){
+          this.stack("preventreturn");
+          this.preventreturn = true;
+
+          var lit = par.body.literal;
+          var l = (lit.properties && lit.properties.length) || 0;
+          for (i; i < l; ++i){
+
+            var prop = lit.properties[i];
+            if (prop.kind == "block"){
+              classRes.push(this.parseExpression(prop));
+            };
+          };
+          this.unstack("preventreturn");
+        };
+
+        classRes.push("var " + inheritedObjName + " = {};");
+        classRes.push(this.newLine());
+
+        var tempRes = this.newResult();
+
+        tempRes.push("var res = promiseland.createClass(");
+        if (par.body.literal){
+          tempRes.push(this.expectTypeVar(this.parseExpression(par.body.literal)));
+
+        }else{
+          tempRes.push(this.expectTypeVar(this.parseExpression(par.body.expression)));
+
+        };
+        tempRes.push(", [");
+        var baseClasses = (extendsClause && extendsClause.baseClasses) || [];
+        var i = 0;
+        for (i = 0; i < baseClasses.length; ++i){
+          if (i){
+            tempRes.push(", ");
+          };
+          tempRes.push(this.expectTypeVar(this.parseExpression(baseClasses[i])));
+        };
+        tempRes.push("], ");
+        tempRes.push(inheritedObjName);
+        tempRes.push(");");
+
+
+        classRes.push(tempRes);
+        classRes.push(this.newLine());
+
+        var used = this.inheritedSystem.used;
+        var u;
+        for (u in used){
+          classRes.push("var " + used[u] + " = " + inheritedObjName + "[" + stringEncodeStr(u) + "];");
+          classRes.push(this.newLine());
+        };
+
+        classRes.push("return res; })()");
+      };
+
+
+      // named classes are variables
+      if (hasName){
+        if (isTyped){
+
+          res.addPre(this._resolveClassCode({
+            name: par.name,
+            classRes: classRes,
+            parsed: par
+          }));
+
+        }else{
+          res.addPre(this.getVariableName(par.name) + " = ");
+          res.addPre(classRes);
+          res.addPre(";");
+
+        };
+        res.push(this.getVariableName(par.name));
+
+      }else{
+        res.push(classRes);
+
+      };
+
+      res.setType(resultType);
+
+      this.unstack("inheritedSystem");
+
+      return res;
+    };
+      
+      this._resolveClassCode = function(par){
+        var parsed = par.parsed;
+        var res = this.newResult();
+        this.common.useClassSystem = true;
+        res.push("classSystem._resolveProvisional(", parsed);
+        res.push(this.renderType(par.name, parsed), parsed);
+        res.push(", ", parsed);
+        res.push(par.classRes, parsed);
+        res.push(");", parsed);
+        return res;
+      };
+      
+      
+      this.createClassLiteral = function(par, ci, parName){
+        var ret = {
+          members: [],
+          "extends": [],
+          hasFreePart: true,
+          parsed: par,
+          track: ci.trackClause ? true : false,
+          sync: ci.syncClause,
+          unique: ci.uniqueClause,
+          savable: ci.savableClause,
+          name: parName,
+          hashStr: this.getModuleHashStr()
+        };
+        
+        var i = 0;
+        var l = (par.properties && par.properties.length) || 0;
+        for (i; i < l; ++i){
+          var prop = par.properties[i];
+          var defaultValue;
+          var type;
+          if (prop.kind == "init"){
+            type = prop.typename ? this.getType(prop.typename, par) : undefined;
+            if (prop.value){
+              if (type){
+                defaultValue = this.parseAsType(type, prop.value);
+              }else{
+                defaultValue = this.parseExpression(prop.value);
+                type = defaultValue.getType();
+              };
+            };
+            if (!type){
+              type = this.getType("var");
+            };
+            
+            var m = {
+              name: identifierName(prop.key),
+              "type": type,
+              "defaultValue": defaultValue
+            };
+            
+            
+
+            var keywords = prop.keywords;
+            if (keywords && keywords.length){
+              var k;
+              for (k = 0; k < keywords.length; ++k){
+                switch(keywords[k].type){
+                case "const":
+                  m.const = true;
+                  break;
+                case "meta":
+                  m.meta = keywords[k];
+                  break;
+                case "sync":
+                  m.sync = true;
+                  break;
+                };
+              };
+            };
+            
+            ret.members.push(m);
+            
+          }else if (prop.kind == "function"){
+            debugger;
+            var name = identifierName(prop.id || prop._name);
+            prop.id = undefined;
+            prop._name = name;
+            
+            defaultValue = this.parseExpression(prop);
+            
+            type = defaultValue.getType();
+                  
+            var m = {
+              name: name,
+              "type": type,
+              "defaultValue": defaultValue
+            };
+            
+            var keywords = prop.keywords;
+            if (keywords && keywords.length){
+              var k;
+              for (k = 0; k < keywords.length; ++k){
+                switch(keywords[k].type){
+                case "const":
+                  m.const = true;
+                  break;
+                case "meta":
+                  m.meta = keywords[k];
+                  break;
+                case "sync":
+                  m.sync = true;
+                  break;
+                };
+              };
+            };
+                  
+            ret.members.push(m);
+            
+          }else{
+            this.error(prop, errorMsg.unknownPropertyAssignmentType);
+          };
+        };
+        
+        return ret;
+      };
+      
+      this.stringifyClassLiteral = function(par, parClassNameStr){
+        var res = this.newResult();
+        
+        res.push("{");
+        if (this.common.name){
+          res.push("moduleName: " + stringEncodeStr(identifierName(this.common.name)) + ",");
+        };
+        if (parClassNameStr){
+          res.push("className: " + stringEncodeStr(identifierName(parClassNameStr)) + ",");
+        };
+        res.push("members: [");
+        
+        var i = 0;
+        var l = par.members.length;
+        for (i; i < l; ++i){
+          var m = par.members[i];
+          if (i){
+            res.push(",");
+          };
+          res.push("{");
+          res.push("\"name\":" + stringEncodeStr(m.name));
+          res.push(",\"type\":");
+          res.push(this.renderType(m["type"], par.parsed));
+          if (m.meta){
+            res.push(",\"meta\":");
+            res.push(this.parseExpression(m.meta.expression));
+          };
+          if (m.sync){
+            res.push(",\"sync\": true");
+          };
+          res.push("}");
+          
+        };
+        res.push("]");
+        
+        res.push(", \"extends\": []");
+        res.push(", \"hasFreePart\": true");
+        
+        if (par.track){
+          res.push(", \"track\": true");
+        };
+        if (par.sync){
+          res.push(", \"sync\": ");
+          res.push(JSON.stringify(par.sync));
+        };
+        res.push(", \"hashStr\": " + stringEncodeStr(par.hashStr));
+        res.push(", \"name\": " + stringEncodeStr(par.name));
+        if (par.unique){
+          res.push(", \"unique\": true");
+        };
+        if (par.savable){
+          res.push(", \"savable\": true");
+        };
+        
+        res.push("}");
+        
+        return res;
+      };
+      
+      this.createClassDefaults = function(par){
+        var res = this.newResult();
+        res.push("{");
+        
+        var i = 0;
+        var l = (par.properties && par.properties.length) || 0;
+        var comma;
+        for (i; i < l; ++i){
+          var prop = par.properties[i];
+          if (prop.kind == "init"){
+            if (comma){
+              res.push(", ");
+            };
+            res.push(stringEncodeStr(identifierName(prop.key)) + ": ");
+            if (prop.value){
+              res.push(this.parseExpression(prop.value));
+            }else{
+              res.push("undefined");
+            };
+            comma = true;
+            
+          }else if (prop.kind == "function"){
+            if (comma){
+              res.push(", ");
+            };
+            
+            var name = identifierName(prop.id || prop._name);
+            prop.id = undefined;
+            prop._name = name;
+            
+            
+            res.push(stringEncodeStr(identifierName(name)) + ": ");
+            res.push(this.parseExpression(prop));
+            comma = true;
+            
+          };
+        };
+        
+        res.push("}");
+        
+        return res;
+      };
+      
+      
+      
+      
+      this.localClassConstructors = {};
+      
+      this.getConstructorName = function(parName){
+        var name = identifierName(parName);
+        if (this.types.has(name)){
+          var t = this.types.get(name);
+          if (!t.constructorName){
+            t.constructorName = this.getUniqueName(name + "-constructor");
+            if (!t.isDynamic){
+              this.localClassConstructors[name] = t.constructorName;
+            };
+          };
+          return t.constructorName;
+        };
+        this.error(parName, errorMsg.typeUndeclared, {
+          name: name
+        });
+      };
+
+      /* 
+        there are different ways to define a class
+      */
+      
+      this.identifyClass = function(par){
+        var r = {};
+        var name;
+        if (par.name){
+          name = identifierName(par.name);
+        }
+        r.hasName = name && name.length;
+        
+        var keywords = par.keywords;
+        if (keywords && keywords.length){
+          var i;
+          for (i = 0; i < keywords.length; ++i){
+            switch(keywords[i].type){
+            case "type":
+              r.isTyped = true;
+              break;
+            case "extends":
+              r.extendsClause = keywords[i];
+              break;
+            case "sync":
+              r.syncClause = keywords[i];
+              break;
+            case "track":
+              r.trackClause = keywords[i];
+              break;
+            case "unique":
+              r.uniqueClause = keywords[i];
+              break;
+            case "savable":
+              r.savableClause = keywords[i];
+              break;
+            };
+          };
+        };
+        return r;
+      };
+              
+              
+              
+
+      /*
+        collect all the typed class information
+      */
+      this.findClasses = function(par, res){
+        if (!res){
+          res = this.newResult();
+        };
+        
+        if (!par || typeof par == "string"){
+          return res;
+        };
+        if (checkIsFunction(par)){
+          return res;
+        };
+        
+        if (par.type == "Class"){
+          var ci = this.identifyClass(par);
+          if (ci.isTyped){
+            // found a typed class
+            if (par.body.literal){
+              if (ci.hasName){
+                var name = identifierName(par.name);
+                
+                res.push(this.newLine());
+                res.push("/* ---------------------------- */");
+                res.push(this.newLine());
+                res.push("/* type " + name + " */");
+                res.push(this.newLine());
+                
+                var extraRes = this.newResult();
+                this.addType({name: name, extraRes: extraRes}, par);
+                res.push("var ");
+                res.push(this.renderType(name));
+                res.push(" = classSystem._createProvisionalClass();");
+                res.push(this.newLine());
+                this.common.useClassSystem = true;
+                res.push(this.getVariableName(name) + " = ");
+                res.push(this.renderType(name));
+                res.push(this.newLine());
+                res.push("var " + this.getConstructorName(name) + " = undefined;");
+                res.push(this.newLine());
+                
+                res.push(this._typeReadyCode({typename: name}));
+                res.push(extraRes);
+                
+                res.push("/* ---------------------------- */");
+                res.push(this.newLine());
+                res.push(this.newLine());
+                
+              };
+            };
+          };
+          return res;
+        };
+        var i;
+        for (i in par){
+          this.findClasses(par[i], res);
+        };
+        return res;
+      };
+      
+      this._typeReadyCode = function(par){
+
+        var res = this.newResult();
+        this.common.useClassSystem = true;
+        res.push([
+          "classSystem.readyPromise(",
+          this.renderType(par.typename),
+          ").then(function(parType){"
+        ]);
+        
+        var tempAr = [
+          this.renderType(par.typename),
+          " = parType;"
+        ];
+        if (!par.noConstructor){
+          tempAr.push(this.newLine());
+          tempAr.push(this.getConstructorName(par.typename) + " = classSystem.getTypeConstructor(");
+          tempAr.push(this.renderType(par.typename));
+          tempAr.push(");");
+        };
+        res.push(this.indentNewLine(tempAr));
+        
+        res.push([
+          "});",
+          this.newLine()
+        ]);
+        
+        return res;
+      };
+    
+  };
+  f.apply(parInstance, [par]);
+  
+};

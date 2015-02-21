@@ -1,0 +1,9 @@
+int a;
+
+var b = a;
+
+if (b === 0){
+  return { success: true };
+};
+
+return { success: false };

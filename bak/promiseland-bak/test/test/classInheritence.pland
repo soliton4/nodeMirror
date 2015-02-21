@@ -1,0 +1,39 @@
+var a = 2;
+
+return ((){
+
+  class C1 {
+    a(){
+      return 1;
+    },
+    b: 3
+  };
+  
+  var v2 = a;
+  var v1 = new C1();
+  
+  if (v2 != 2){
+    return {
+      success: false
+    };
+  };
+  
+  class C2 extends C1 { 
+    a(){
+      return inherited() + 1;
+    }
+  };
+  
+  var v3 = new C2();
+  if (v3.a() != 2 || v3.b != 3){
+    return {
+      success: false
+    };
+  };
+
+  return {
+    success: true
+  };
+
+  
+})();

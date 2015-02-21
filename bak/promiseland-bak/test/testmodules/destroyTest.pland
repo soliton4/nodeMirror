@@ -1,0 +1,48 @@
+try{
+
+  var waitFun = function(){
+    var cb = new Callback();
+    setTimeout(cb, 2000);
+    *cb.promise;
+  };
+
+  
+class type sync serve Cs1 {
+  constructor: (){
+    console.log("constructed");
+  },
+  a: 1,
+  b: 4,
+  destroy: (){
+    console.log("destroyed");
+  }
+};
+
+  
+
+
+(() exclusive "server" {
+  Cs1 a = new Cs1();
+  a.a = 3;
+  
+})();
+
+Cs1* x() frame "server"{
+  console.log("doing the sync request");
+  Cs1 a = new Cs1();
+  return a;
+};
+  
+  
+*waitFun();
+
+((){
+  Cs1 b = *x();
+})();
+
+}catch(e){
+  console.log("error:");
+  console.log(e);
+}
+
+  

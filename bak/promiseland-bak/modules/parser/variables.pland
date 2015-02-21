@@ -1,0 +1,334 @@
+var Map = promiseland.Map;
+var classSystem = promiseland.classSystem;
+
+var basics = require "./basics";
+var errorFun = basics.errorFun;
+var errorMsg = basics.errorMsg;
+var _stringEncodeStr = basics._stringEncodeStr;
+var stringEncodeStr = basics.stringEncodeStr;
+
+var VariableNames = basics.VariableNames;
+var mixin = basics.mixin;
+var identifierName = basics.identifierName;
+var checkIsFunction = basics.checkIsFunction;
+var getExtraFromPar = basics.getExtraFromPar;
+
+return (parInstance, par){
+  
+  var f = (par){
+    
+      this.variables = (new Map()).mixin(par.variables);
+    
+      this.localVariables = new Map;
+      
+      this.addLocalVariable = function(par, parParsed){
+        var self = this;
+        var name = identifierName(par.name);
+        if (this.localVariables.has(name)){
+          if (!par.type && !par.typename){
+            // ok
+          }else{
+            var newType = par.type || this.getType(par.typename, parParsed);
+            var existing = this._getVariableType(this.localVariables.get(name));
+            classSystem.definitionPromise(newType).then(function(type1){
+              classSystem.definitionPromise(existing).then(function(type2){
+                if (!classSystem.isSameType(type1, type2)){
+                  self.addError(parParsed, errorMsg.variableRedefinition);
+                };
+              });
+            });
+          };
+          
+        }else{
+          this.localVariables.set(name, {
+            typename: par.typename,
+            type: par.type,
+            name: name
+          });
+          if (!par.typename && !par.type){
+            this.localVariables.get(name).type = this.getProvisionalType(parParsed);
+            this.localVariables.get(name).needsResolving = true;
+          };
+          
+        };
+        
+        if (par.declaration){
+          this.localVariables.get(name).declaration = par.declaration;
+          this.localVariables.get(name).needsDeclaration = true;
+        };
+        
+        if (par.localFunction){
+          this.localVariables.get(name).localFunction = par.localFunction;
+        };
+        
+        if (par.parameter){
+          this.localVariables.get(name).parameter = par.parameter;
+        };
+        if (par.isFunction){
+          this.localVariables.get(name).function = par.function;
+          this.localVariables.get(name).isFunction = true;
+        };
+        this.variables.set(name, this.localVariables.get(name));
+      };
+      
+      
+      
+      
+      this.addLocalVariableTemporary = function(par, parParsed){
+        var self = this;
+        var name = identifierName(par.name);
+        
+        var originalEntry;
+        if (this.variables.has(name)){
+          originalEntry = this.variables.get(name);
+        };
+        
+        var entry = {
+          typename: par.typename,
+          type: par.type,
+          name: name
+        };
+        if (!par.typename && !par.type){
+          entry.type = this.getProvisionalType(parParsed);
+          entry.needsResolving = true;
+        };
+        
+        if (par.parameter){
+          entry.parameter = par.parameter;
+        };
+        if (par.isFunction){
+          entry.function = par.function;
+        };
+        entry.temporary = true;
+        
+        this.variables.set(name, entry);
+        
+        var resPs = new Promise();
+        ((){
+          *resPs;
+          if (originalEntry){
+            self.variables.set(name, originalEntry);
+          }else{
+            self.variables.delete(name);
+          };
+        })();
+        
+        return resPs;
+      };
+    
+      this._getVariableType = function(parEntry){
+        if(parEntry.type){
+          return parEntry.type;
+        };
+        return this.getType(parEntry.typename);
+      };
+      
+      this.getVariableType = function(parName, par){
+        var name = identifierName(parName);
+        this._addUsedVariable(name);
+        
+        if (this.variables.has(name)){
+          var entry = this.variables.get(name);
+          return (this._getVariableType(entry));
+        };
+        return this.getType("var");
+        
+      };
+    
+    
+      /* keeping track of declarations */
+      this.usedVariablesMap = new Map();
+      
+      this._addUsedVariable = function(par){
+        var name = identifierName(par);
+        if (name === "undefined"){
+          return;
+        };
+        
+        if (this.variables.has(name)){
+          if (this.variables.get(name).temporary){
+            return;
+          };
+        };
+        this.usedVariablesMap.set(name, true);
+      };
+      
+      this._getUsedVairablesMap = function(){
+        return this.usedVariablesMap;
+      };
+    
+      this.getVariableName = function(name){
+        return this.common.variableNames.get(name);
+      };
+    
+    
+      /*
+        find all localy defined variables
+      */
+      this.findVariables = function(par){
+        var self = this;
+        
+        if (!par || typeof par == "string"){
+          return;
+        };
+        if (par.type == "VariableDeclaration"){
+          this.addLocalVariable({name: identifierName(par.id), typename: identifierName(par.typename), declaration: true}, par);
+          
+        }else if (par.type == "Class"){
+          var ci = self.identifyClass(par);
+          if (ci.hasName){
+            this.addLocalVariable({name: identifierName(par.name), typename: "var", declaration: true}, par);
+          };
+          return;
+          
+        }else if (checkIsFunction(par)){
+          
+          var functionInfo = this.functionInfo(par);
+          
+          if (functionInfo.hasExternalName /*&& par.type != "MemberFunction"*/){
+            this.addLocalVariable({name: functionInfo.nameStr, isFunction: true}, par);
+          };
+          
+          return;
+        };
+        var i;
+        for (i in par){
+          if (i == "_extrainfo"){
+            continue;
+          };
+          this.findVariables(par[i]);
+        };
+        
+        
+      };
+    
+    
+      this.getVariable = function(par){
+        var res = this.newResult();
+        
+        this._addUsedVariable(par);
+        
+        res.push(this.getVariableName(par));
+        res.setType(this.getVariableType(par));
+        
+        return res;
+      };
+    
+    
+      /*
+        (typename | var) name [= value];
+      */
+        this.expVariableStatement = function(par){
+          var res = this.newResult();
+          var declarations = par.declarations;
+          if (!declarations){
+            this.error(par, errorMsg.missingDeclarations);
+            return "";
+          };
+
+          var i = 0;
+          var l = declarations.length;
+          var usedType = this.getType(identifierName(par.typename), par);
+          
+          var addVar = false;
+          if (!this.promising && l > 0){
+            // to be compatible with asm.js 
+            // we need to initialize the variables at declaration time
+            // so when its a non promising function and the variable has not been used before we can add a "var"
+            var addVar = true;
+            for (i = 0; i < l; ++i){
+              var varName = identifierName(declarations[i].id);
+              if (this.usedVariablesMap.get(varName)){
+                addVar = false;
+              };
+              if (!this.localVariables.get(varName).needsDeclaration){
+                addVar = false;
+              };
+            };
+          };
+          if (!par.isRegularStatement){
+            addVar = false;
+          };
+          
+          if (!this.isSimpleType(usedType)){
+            // sorry for this mess but we need to make exceptions for asm.js here
+            addVar = false;
+          };
+          if (!this.canSkipVarHeusting(usedType)){
+            // sorry for this mess but we need to make exceptions for asm.js here
+            addVar = false;
+          };
+          
+          if (addVar){
+            for (i = 0; i < l; ++i){
+              var varName = identifierName(declarations[i].id);
+              this.localVariables.get(varName).needsDeclaration = false;
+            };
+          };
+          
+          for (i = 0; i < l; ++i){
+            if (i > 0){
+              if (addVar){
+                res.push(";");
+                res.push(this.newLine());
+              }else{
+                res.push(", ");
+              };
+            };
+            if (declarations[i].type == "VariableDeclaration"){
+              
+              if (addVar){
+                varName = identifierName(declarations[i].id);
+                res.push(this.getDeclareVariableCode({
+                  name: this.getVariableName(varName),
+                  "type": usedType,
+                  errorFun: this.getWarningFun(par),
+                  parsed: par,
+                  declaration: true,
+                  value: declarations[i].init ? this.parseExpression(declarations[i].init) : undefined,
+                }));
+                
+              }else{
+                res.push(this.parseExpression(declarations[i]));
+                
+              };
+              
+            }else{
+              this.error(declarations[i], errorMsg.unknownType);
+            };
+          };
+          res.setType(usedType);
+          return res;
+
+        };
+        
+        
+      //Object {type: "VariableDeclaration", name: "i", value: null}
+      
+      this.expVariableDeclaration = function(par){
+        var res = this.newResult();
+        
+        if (par.init){
+          res.pushType(this.getSetVariableCode({
+            instance: this.getVariable(identifierName(par.id)),
+            assignmentType: par.id.type, //Identifier
+            value: this.parseExpression(par.init),
+            operator: "="
+            , errorFun: this.getWarningFun(par)
+          }));
+        }else{
+          res.pushType(this.getVariable(identifierName(par.id)));
+        };
+        return res;
+        
+      };
+        
+    
+
+
+    
+    
+  };
+  f.apply(parInstance, [par]);
+  
+};

@@ -1,0 +1,22 @@
+var result = {
+  res: 1
+};
+
+var dootherStuff = (){
+  result.res = 4;
+};
+var dostuff = ()*{
+  return domoreStuff(); // doesntexsit
+}
+
+var x = ()*{
+  try{
+    *dostuff();
+  }catch(e){
+    dootherStuff();
+  };
+};
+
+*x();
+
+return result;

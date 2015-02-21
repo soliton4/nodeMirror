@@ -1,0 +1,68 @@
+
+
+var isClient = false;
+(() exclusive "client" {
+  isClient = true;
+})();
+
+var checkVar = 1;
+
+  
+class type sync C2 {
+  c: 3,
+  d: 4,
+  fun1: var (v){
+    checkVar = v;
+  }
+};
+
+
+C2 local;
+  
+  
+doInit () {
+  local = new C2();
+  checkVar = 1;
+};
+
+var init = () frame "server" {
+  doInit();
+};
+
+
+
+x(C2 par1) frame "server" {
+  local = par1;
+};
+
+getCheck() frame "server" {
+  return checkVar;
+};
+
+
+if (!isClient){
+  return { success: true }; // server is ok
+};
+
+*init();
+doInit();
+
+if (*getCheck() !== 1){
+  return { success: false };
+};
+
+var tempRes = *x(local);
+
+if (*getCheck() !== 1){
+  return { success: false };
+};
+
+local.fun1(2);
+
+if (*getCheck() !== 2){
+  return { success: false };
+};
+
+
+return { success: true };
+

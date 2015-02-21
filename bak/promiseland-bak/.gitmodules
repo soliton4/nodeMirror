@@ -1,0 +1,15 @@
+[submodule "test/dojo"]
+	path = test/dojo
+	url = https://github.com/soliton4/dojo.git
+[submodule "test/dijit"]
+	path = test/dijit
+	url = https://github.com/dojo/dijit.git
+[submodule "test/dojox"]
+	path = test/dojox
+	url = https://github.com/dojo/dojox.git
+[submodule "test/util"]
+	path = test/util
+	url = https://github.com/dojo/util.git
+[submodule "test/requirejs"]
+	path = test/requirejs
+    url = https://github.com/jrburke/requirejs.git

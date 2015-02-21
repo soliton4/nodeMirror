@@ -1,0 +1,120 @@
+<{  __promiseLandModule: true }>;
+  
+return {
+  accessNotAllowd: {
+    id: 200
+    , msg: "access to member not allowed"
+  },
+  typeMissmatch: {
+    id: 201
+    , msg: "type missmatch"
+  },
+  missingVariable: {
+    id: 202
+    , msg: "variable missing"
+  },
+  operatorMissmatch: {
+    id: 203
+    , msg: "operator missmatch"
+  },
+  expectedCallable: {
+    id: 204
+    , msg: "expected callable expression"
+  },
+  noConstructorAvailable: {
+    id: 205
+    , msg: "no Constructor available"
+  },
+  connectNotPossible: {
+    id: 206
+    , msg: "connect not possible"
+  },
+  trackedProvisionalNotImplemented: {
+    id: 207
+    , msg: "tracked provisional type feature is not implemented"
+  },
+  onlyTrackedClassesCanContainTrackedMembers: {
+    id: 208
+    , msg: "only tracked classes can contain tracked members"
+  },
+  notAPromise: {
+    id: 209
+    , msg: "type is not a promise"
+  },
+  notASyncableResponse: {
+    id: 210
+    , msg: "not a syncable response"
+  },
+  notSyncable: {
+    id: 211
+    , msg: "not syncable"
+  },
+  unknownInstanceType: {
+    id: 212
+    , msg: "unknown instance type"
+  },
+  idNotAllowedInUnique: {
+    id: 213
+    , msg: "definition of id is not allowed in unique classes"
+  },
+  
+  onlyUniqueCanBeStringified: {
+    id: 214
+    , msg: "only unique classes can be stringified"
+  },
+
+      
+      missingRemoteFun: {
+        id: 801
+        , msg: "remote function not registred"
+      },
+      frameNotAvailable: {
+        id: 802,
+        msg: "requested frame not available"
+      },
+      frameNotFound: {
+        id: 803,
+        msg: "requested frame not found"
+      },
+      noSyncableData: {
+        id: 804,
+        msg: "no syncable Data"
+      },
+      invalidRemoteType: {
+        id: 805,
+        msg: "invalid remote type"
+      },
+      remoteTypeNotAvailable: {
+        id: 806,
+        msg: "remote type not available"
+      },
+      canNotExecute: {
+        id: 807,
+        msg: "can not execute",
+        additional: "this might have one of several reasons"
+      },
+      /*typeMissmatch: {
+        id: 808,
+        msg: "type missmatch"
+      },*/
+      takeOverDuplicate: {
+        id: 809,
+        msg: "internal: take over duplicate"
+      },
+      missingImplementation: {
+        id: 810,
+        msg: "internal: missing implementation"
+      },
+  frameExists: {
+    id: 811,
+    msg: "a frame with this name already exists"
+  },
+  toManyConnections: {
+    id: 812,
+    msg: "to many connections"
+  },
+  noConnectionAvailable: {
+    id: 813,
+    msg: "no connection available"
+  }
+};

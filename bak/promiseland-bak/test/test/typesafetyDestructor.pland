@@ -1,0 +1,21 @@
+var i = 1;
+
+class type track C1 {
+  destroy: (){
+    --i;
+  }
+};
+
+((){
+ C1 v = new C1();
+})();
+
+if (i == 1){
+  return {
+    success: false
+  };
+};
+
+return {
+  success: true
+};

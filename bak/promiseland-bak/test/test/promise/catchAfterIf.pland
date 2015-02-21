@@ -1,0 +1,18 @@
+var x;
+
+try{
+
+if(false){
+  *x;
+};
+throw {n: 1};
+
+}catch(err){
+  if (err.n == 1){
+    return {
+      success: true
+    };
+  };
+};
+
+return { success: false };

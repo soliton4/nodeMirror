@@ -1,0 +1,11 @@
+<{
+  require: {
+    extraModule: "./extraRequireModule"
+  }
+}>;
+  
+if (extraModule.value == 4){
+  return {success: true};
+};
+
+return {success: false};

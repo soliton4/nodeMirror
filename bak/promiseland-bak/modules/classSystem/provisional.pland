@@ -1,0 +1,89 @@
+<{  __promiseLandModule: true }>;
+  
+var errorMsg = extra.errorMsg;
+
+
+return (classSystem, internals){
+  var cs = classSystem;
+  var classHider = internals.classHider;
+  var getClass = internals.getClass;
+  
+  /*
+        a placeholder for a class that will be constructed in the future
+        can be used wildly generic for multiple purposes
+        the class object itself is different from the final class object
+        you can access the final class object via definitionPromise or readyPromise
+  */
+  cs._createProvisionalClass = function(){
+    var cDef = {
+      provisional: true,
+      promise: new Promise(),
+      type: undefined
+    };
+    cDef.promise.then(function(type){
+      cDef.type = type;
+    });
+    var cf = classHider(cDef);
+    return cf;
+  };
+
+  cs._resolveProvisional = function(parType, parResult){
+    var self = this;
+    var typeDef = getClass(parType);
+    var resultDef = getClass(parResult);
+
+    if (resultDef.provisional){
+      resultDef.promise.then(function(result){
+        self.resolveProvisional(parType, result);
+      });
+    }else{
+      typeDef.promise.resolve(parResult);
+    };
+  };
+      
+  cs.isProvisional = function(parType){
+    var typeDef = getClass(parType);
+    if (typeDef.provisional){
+      return true;
+    };
+    return false;
+  };
+
+  /*
+        returns the actual class object (hidefunction)
+        the basic attributes of the class are available (such as track / sync / frame etc )
+        however members are not available yet, the class can not be used to generate code for its members, nor can it be constructed
+        isReady indicates weather or not a class is ready to be used
+  */
+  cs.definitionPromise = function(parType){
+    var typeDef = getClass(parType);
+    if (typeDef.provisional){
+      return typeDef.promise;
+    };
+    var p = new Promise();
+    p.resolve(parType);
+    return p;
+  };
+  
+  /*
+      the final class everything is ready to use. it could be that some of the member types are not ready yet,
+      however this has no influence on the class itself. you can use it within the classsystem without limits
+  */
+  cs.readyPromise = function(_parType){
+    var p = new Promise();
+    this.definitionPromise(_parType).then(function(parType){
+      var typeDef = getClass(parType);
+      if (typeDef.isReady){
+        p.resolve(parType);
+        return;
+      };
+      typeDef.readyPromise.then(function(parType){
+        p.resolve(parType);
+      });
+      return;
+    });
+    return p;
+  };
+
+  
+};

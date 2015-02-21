@@ -1,0 +1,369 @@
+var Map = promiseland.Map;
+var classSystem = promiseland.classSystem;
+
+var basics = require "./basics";
+var errorFun = basics.errorFun;
+var errorMsg = basics.errorMsg;
+var _stringEncodeStr = basics._stringEncodeStr;
+var stringEncodeStr = basics.stringEncodeStr;
+
+var VariableNames = basics.VariableNames;
+var mixin = basics.mixin;
+var identifierName = basics.identifierName;
+var checkIsFunction = basics.checkIsFunction;
+var getExtraFromPar = basics.getExtraFromPar;
+var statementType = basics.statementType;
+var checkPromising = basics.checkPromising;
+
+
+var blocksModule = require "./blocks";
+
+
+return (parInstance, par){
+  
+  var f = (par){
+    
+
+    this.expIfStatement = function(par){
+      //{type: "IfStatement", test: Object, consequet: Object, alternate: null}
+
+      this.stack("conditionalCode");
+      this.conditionalCode = true;
+
+      this.stack("algorithmicCode");
+      this.algorithmicCode = true;
+
+      var res = this.newResult();
+
+      var promising = false;
+
+
+      if (par.consequent && checkPromising(par.consequent)){
+        promising = true;
+      };
+      if (par.alternate && checkPromising(par.alternate)){
+        promising = true;
+      };
+
+      var continuePromise;
+      var continueCode;
+      if (promising) {
+        continuePromise = this.newResult(this.getUniqueName());
+        continuePromise.setParsed(par);
+        continuePromise.setType("var");
+        res.push(this.newLine());
+        res.push("var ");
+        res.push(continuePromise);
+        res.push(" = " + this.newPromiseStr() + ";");
+        continueCode = this.newResult();
+        continueCode.push(continuePromise);
+        continueCode.push(".resolve();");
+      };
+      res.push("if(");
+      res.push(this.expectTypeVar(this.parseExpression(par.test)));
+      res.push("){");
+      if (!par.consequent){
+        this.error(par, errorMsg.unknownIfStatement);
+      };
+
+      var statement = this.newResult();
+      var b;
+      if (par.consequent.type == "BlockStatement"){
+        b = par.consequent.body;
+      }else{
+        b = [par.consequent];
+      };
+
+      b.brackets = false;
+      var extraPar = {};
+      if (promising){
+        extraPar.postCode = this.newResult(continueCode);
+      };
+      statement.push(this.blockCreator(b, extraPar));
+      res.push(this.indent(this.makeCompleteStatement(statement)));
+
+      if (par.alternate){
+        res.push(this.newLine());
+        res.push("}else{");
+
+        statement = this.newResult();
+        if (par.alternate.type == "BlockStatement"){
+          b = par.alternate.body;
+        }else{
+          b = [par.alternate];
+        };
+        b.brackets = false;
+        extraPar = {};
+        if (promising){
+          extraPar.postCode = this.newResult(continueCode);
+        };
+        statement.push(this.blockCreator(b, extraPar));
+        res.push(this.makeCompleteStatement(statement));
+
+      }else if (promising){
+        res.push(this.newLine());
+        res.push("}else{");
+        statement = this.newResult();
+        statement.push(continueCode);
+        res.push(this.makeCompleteStatement(statement));
+
+      };
+      res.push(this.newLine());
+      res.push("}");
+      if (promising){
+        //res.push("; " + continuePromise + ".then(function(){");
+        //res.addPost("});");
+        res.push(";");
+        res.push(this.dereferenceStatement(continuePromise));
+      };
+
+      this.unstack("conditionalCode");
+      this.unstack("algorithmicCode");
+      res.setType(statementType);
+
+      return res;
+    };
+
+
+    this.conditionalExpression = function(par){
+      // {type: "ConditionalExpression", test: Object, consequent: Object, alternate: Object}
+      var res = this.newResult();
+      if (par.consequent.promising || par.alternate.promising){
+        // so the right expression only needs to be evaluated if the left is false
+        res.makePromising();
+        var tempPromise = this.getUniqueName();
+        var tempValue = this.getUniqueName();
+        res.addPre("var ");
+        res.addPre(tempPromise);
+        res.addPre(" = " + this.newPromiseStr() + ";");
+        res.push(this.newLine());
+        res.addPre("if(");
+        res.addPre(this.parseExpression(par.test));
+        res.addPre("){");
+
+        this.stack("conditionalCode");
+        this.conditionalCode = true;
+
+        var trueExtraCode = this.newResult();
+        trueExtraCode.push(tempPromise);
+        trueExtraCode.push(".resolve(");
+        trueExtraCode.push(this.parseExpression(par.consequent));
+        trueExtraCode.push(");");
+        trueExtraCode.push(this.newLine());
+
+        res.addPre(this.makeCompleteStatement(trueExtraCode));
+        res.addPre("}else{");
+        var falseExtraCode = this.newResult();
+        falseExtraCode.push(tempPromise);
+        falseExtraCode.push(".resolve(");
+        falseExtraCode.push(this.parseExpression(par.alternate));
+        falseExtraCode.push(");");
+        falseExtraCode.push(this.newLine());
+        res.addPre(this.makeCompleteStatement(falseExtraCode));
+        res.addPre("};");
+        res.addPre(this.newLine());
+        res.addPre(tempPromise);
+        res.addPre(".then(");
+        res.setPromiseName(this.getUniqueName());
+        res.addPre(res.getPromiseName());
+        res.addPre("){");
+        res.addPost("});");
+
+        this.unstack("conditionalCode");
+
+      }else{
+        res.push("(");
+        res.push(this.parseExpression(par.test));
+        res.push(" ? ");
+        this.stack("conditionalCode");
+        this.conditionalCode = true;
+        res.push(this.parseExpression(par.consequent));
+        res.push(" : ");
+        res.push(this.parseExpression(par.alternate));
+        res.push(")");
+        this.unstack("conditionalCode");
+
+      };
+      res.setType("var");
+      return res;
+        
+      };
+      
+      this.expSwitchStatement = function(par){
+        //{type: "SwitchStatement", discriminant: Object, cases: Array[3], line: 8, column: 5…}
+        
+        this.stack("conditionalCode");
+        this.conditionalCode = true;
+        
+        this.stack("algorithmicCode");
+        this.algorithmicCode = true;
+        
+        var res = this.newResult();
+        
+        var promising = false;
+        
+        
+        if (par.cases && checkPromising(par.cases)){
+          promising = true;
+        };
+        
+        var continuePromise;
+        var continueCode;
+        if (promising) {
+          continuePromise = this.getUniqueName();
+          res.push("var " + continuePromise + " = " + this.newPromiseStr() + ";");
+          res.push(this.newLine());
+          continueCode = continuePromise + ".resolve(); return;";
+          
+          this.stack("breakCode");
+          this.breakCode = continueCode;
+          
+          var discriminant = this.getUniqueName("discriminant");
+          res.push("var " + discriminant + " = ");
+          res.push(this.expectTypeVar(this.parseExpression(par.discriminant)));
+          res.push(";");
+          res.push(this.newLine());
+          
+          var cases = [];
+          var statement;
+          var hasDefault = false;
+          var defaultCase;
+          // first collect all cases to have next case available
+          for (i = 0; i < par.cases.length; ++i){
+            var isDefault = false;
+            if (!par.cases[i].test){
+              // default case;
+              isDefault = true;
+              if (!hasDefault){
+                // first default case
+                hasDefault = true;
+                defaultCase = par.cases[i];
+              };
+            };
+            cases.push({
+              theCase: par.cases[i],
+              caseFun: this.getUniqueName(),
+              checkFun: this.getUniqueName(),
+              isDefault: isDefault
+            });
+          };
+          var defaultCheck = continueCode;
+          if (hasDefault){
+            defaultCheck = defaultCase.checkFun + "();";
+          };
+          
+          var firstCheck = continueCode;
+          var hasFirstCheck = false;
+          
+          for (i = 0; i < cases.length; ++i){
+            //{type: "SwitchCase", test: Object, consequent: Array[2], line: 9, column: 7…}
+            var currentCase = cases[i].theCase;
+            var caseFun = cases[i].caseFun;
+            var checkFun = cases[i].checkFun;
+            
+            if (!hasFirstCheck){
+              hasFirstCheck = true;
+              firstCheck = checkFun + "()";
+            };
+            
+            var nextCheckCode = defaultCheck;
+            
+            for (var j = i + 1; j < cases.length; ++j){
+              if (!cases[j].isDefault){
+                nextCheckCode = cases[j].checkFun + "()";
+                break;
+              };
+            };
+            
+            var nextCaseCode = continueCode;
+            if (cases[i + 1]){
+              nextCaseCode = cases[i + 1].caseFun + "(); return;"
+            };
+            
+            
+            res.push("var " + checkFun + " = function(){");
+            var checkCode = this.newResult();
+            checkCode.push("if(" + discriminant + " === ");
+            checkCode.push(this.expectTypeVar(this.parseExpression(currentCase.test)));
+            checkCode.push("){");
+            checkCode.push(caseFun);
+            checkCode.push("(); return; };");
+            checkCode.push(this.newLine());
+            checkCode.push(nextCheckCode);
+            res.push(this.makeCompleteStatement(checkCode));
+            res.push("};");
+            res.push(this.newLine());
+            
+            
+            res.push("var " + caseFun + " = function(){");
+            statement = this.newResult();
+            var b = currentCase.consequent;
+            //b.brackets = false;
+            var extraPar = {};
+            if (promising){
+              extraPar.postCode = this.newResult();
+              extraPar.postCode.push(nextCaseCode);
+            };
+            statement.push(this.blockCreator(b, extraPar));
+            res.push(this.makeCompleteStatement(statement));
+            
+            res.push("};");
+            res.push(this.newLine());
+          };
+          
+          res.push(firstCheck);
+          
+          res.push("; " + continuePromise + ".then(function(){");
+          res.addPost("});");
+          
+          this.unstack("breakCode");
+        
+        }else{
+
+          this.stack("breakCode");
+          this.breakCode = "break;";
+
+          res.push("switch (");
+          res.push(this.indent(this.expectTypeVar(this.parseExpression(par.discriminant))));
+          res.push("){");
+          
+          var indentRes = this.newResult();
+
+          var i = 0;
+          for (i = 0; i < par.cases.length; ++i){
+            //{type: "SwitchCase", test: Object, consequent: Array[2], line: 9, column: 7…}
+            var currentCase = par.cases[i];
+            if (currentCase.type != "SwitchCase"){
+              this.error(par, errorMsg.unknownCase);
+            };
+            if (currentCase.test){
+              indentRes.push("case ");
+              indentRes.push(this.expectTypeVar(this.parseExpression(currentCase.test)));
+              indentRes.push(":");
+            }else{
+              indentRes.push("default");
+              indentRes.push(":");
+            };
+            indentRes.push(this.indentNewLine(this.blockCreator(currentCase.consequent)));
+
+          };
+          
+          res.push(this.indentNewLine(indentRes));
+          
+          res.push("}");
+
+          this.unstack("breakCode");
+        };
+        
+        this.unstack("conditionalCode");
+        this.unstack("algorithmicCode");
+        res.setType(statementType);
+        
+        return res;
+      };
+
+    
+  };
+  f.apply(parInstance, [par]);
+  
+};
