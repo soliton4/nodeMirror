@@ -64,9 +64,9 @@ var __requireFun = function(parModule){
         }, function(err){ returnPromise.reject(err); });
       }catch(e){ returnPromise.reject(e); };
       return returnPromise.promise;};
-    if (promiseland._hasModule({ hashStr: "32f60c18904f3bf4f100f250ee9014ee" })){ return promiseland._getModule("32f60c18904f3bf4f100f250ee9014ee"); };
+    if (promiseland._hasModule({ hashStr: "b023d56f5b63a93c207528323aa6e82f" })){ return promiseland._getModule("b023d56f5b63a93c207528323aa6e82f"); };
 var PL$1 = new __Promise();
-promiseland._registerModule({ hashStr: "32f60c18904f3bf4f100f250ee9014ee", "module": PL$1, promising: true });
+promiseland._registerModule({ hashStr: "b023d56f5b63a93c207528323aa6e82f", "module": PL$1, promising: true });
 var PL$12/*document*/;try{PL$12/*document*/ = document;}catch(e){};
 var PL$2 = (function(){
 "use strict";
@@ -83,24 +83,26 @@ var PL$4/*catch rejected*/ = function(e){
 var PL$5/*_WidgetBase*/;
 var PL$7/*declare*/;
 var PL$9/*domConstruct*/;
+var PL$11/*Wgt*/;
 PL$3/*promiseland exception catcher*/(function(){
 
   ;
   __requireFun("dijit/_WidgetBase").then(PL$3/*promiseland exception catcher*/(function(PL$6){PL$5/*_WidgetBase*/ = PL$6;
   __requireFun("dojo/_base/declare").then(PL$3/*promiseland exception catcher*/(function(PL$8){PL$7/*declare*/ = PL$8;
   __requireFun("dojo/dom-construct").then(PL$3/*promiseland exception catcher*/(function(PL$10){PL$9/*domConstruct*/ = PL$10;
-  PL$1.resolve(PL$7/*declare*/([
+  PL$11/*Wgt*/ = PL$7/*declare*/([
     PL$5/*_WidgetBase*/
   ], {
     "class": "offlineWidget",
-    "domConstruct": (function(){
-    var PL$11/*arguments*/ = arguments;
+    "buildRendering": (function(){
     
       ;
-      this["inherited"]("domConstruct", PL$11/*arguments*/);
-      PL$9/*domConstruct*/["place"](PL$12/*document*/["createTextNode"]("offline"), this["domNode"]);
+      debugger;
+      PL$5/*_WidgetBase*/["prototype"]["buildRendering"]["call"](this);
+      PL$9/*domConstruct*/["place"](PL$12/*document*/["createTextNode"]("offline - nothing will work"), this["domNode"]);
       ;})
-  })); return;
+  });
+  PL$1.resolve(PL$11/*Wgt*/); return;
   PL$1.resolve(); return;}), PL$4/*catch rejected*/);
   ;}), PL$4/*catch rejected*/);
   ;}), PL$4/*catch rejected*/);

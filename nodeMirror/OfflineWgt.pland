@@ -2,10 +2,14 @@ var _WidgetBase = require "dijit/_WidgetBase";
 var declare = require "dojo/_base/declare";
 var domConstruct = require "dojo/dom-construct";
 
-return declare([_WidgetBase], {
+var Wgt = declare([_WidgetBase], {
   class: "offlineWidget",
-  domConstruct: (){
-    this.inherited("domConstruct", arguments);
-    domConstruct.place(document.createTextNode("offline"), this.domNode);
+  buildRendering: (){
+    debugger;
+    _WidgetBase.prototype.buildRendering.call(this);
+    //this.inherited("buildRendering", arguments);
+    domConstruct.place(document.createTextNode("offline - nothing will work"), this.domNode);
   }
 });
+
+return Wgt;
