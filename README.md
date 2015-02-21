@@ -1,6 +1,6 @@
 # nodeMirror 0.2 - under construction
 
-the complete backend of nodeMirror will be reimplemented using [promiseLand](https://promise-land.net)  
+the complete backend of nodeMirror will be reimplemented using [promiseLand](http://promise-land.net)  
   
 now is the best time to state your wishes or get involved actively in the development.  
 if you like you can help to shape the future of nodeMirror.  
