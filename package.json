@@ -11,8 +11,8 @@
     "nodeMirror": "./bin/nodeMirror.js"
   }
   , "dependencies" : {
-    "promiseland": "0.0.18",
-    "promiseland-webframework":  "0.1.6",
+    "promiseland": "0.0.19",
+    "promiseland-webframework":  "0.1.7",
     "mime": "*",
     "mime-magic": "*",
     "optimist": "*",
