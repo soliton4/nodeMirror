@@ -1,3 +1,11 @@
+# nodeMirror 0.2 - under construction
+
+the complete backend of nodeMirror will be reimplemented using [promiseLand](https://promise-land.net)  
+  
+now is the best time to state your wishes or get involved actively in the development.  
+if you like you can help to shape the future of nodeMirror.  
+
+
 ![logo](https://raw.github.com/soliton4/nodeMirror/master/src/image/logo/logoReadme.png)
   
   
