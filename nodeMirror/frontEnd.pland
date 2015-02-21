@@ -1,0 +1,17 @@
+var BorderContainer = require "dijit/layout/BorderContainer";
+
+var domClass = require "dojo/dom-class";
+
+domClass.add(document.body, "claro");
+
+
+var mainBc = new BorderContainer({
+  class: "mainBc"
+});
+
+mainBc.placeAt(document.body);
+mainBc.startup();
+
+return {
+  mainBc: mainBc
+};

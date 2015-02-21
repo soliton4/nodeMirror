@@ -11,20 +11,17 @@
     "nodeMirror": "./bin/nodeMirror.js"
   }
   , "dependencies" : {
-    "restartable"   :  ">= 0.0.14",
-    "express" :  "3.x",
+    "promiseland": "0.0.18",
+    "promiseland-webframework":  "0.1.6",
     "mime": "*",
     "mime-magic": "*",
-    "socket.io": "0.9.x",
-    "adm-zip": "*",
     "optimist": "*",
-    "runtime-configuration": "*",
     "less": "2.1.x",
-    "session.socket.io": "*",
-    "connect": "2.*",
     "npm": "2.4.x",
-    "extend": "*",
-    "imagemagick": "*"
+    "imagemagick": "*",
+    "pty.js": "0.2.4",
+    "commander": "*",
+    "watch": "0.14.x"
   },  
   "keywords": [
     "ide"
@@ -48,7 +45,7 @@
   },
   "license": "BSD",
   "engines": {
-    "node": ">=0.8"
+    "node": ">=0.10"
   },
   "readmeFilename": "README.md"
 }

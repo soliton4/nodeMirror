@@ -1,0 +1,44 @@
+try{
+  var Fw = require("promiseland-webframework");
+  var program = require('commander');
+
+  program
+    .version('0.2.0')
+    .option('-p, --port [number]', 'port number')
+    .option('-d, --dir [path]', 'directory')
+    .parse(process.argv);
+
+  console.log(program.port);
+  
+  
+  var dirs = [
+    "nodeMirror",
+    "dojo", "dijit", "dojox",
+    "style",
+    "sol"
+  ];
+  
+  var i = 0;
+  for (i = 0; i < dirs.length; ++i){
+    dirs[i] = {
+      client: "/" + dirs[i],
+      server: __dirname + "/" + dirs[i] + "/"
+    };
+  };
+
+  var fw = new Fw({
+    load: "nodeMirror/start",
+    loadOnConnect: "nodeMirror/connected",
+    requireAuth: false,
+    session: false,
+    dirs: dirs,
+    css: ["style/style.css"]
+  });
+  fw.listen(program.port);
+  
+  require "./nodeMirror/treeDemo";
+  
+  
+}catch(e){
+  console.log(e);
+};

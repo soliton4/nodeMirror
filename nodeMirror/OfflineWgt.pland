@@ -1,0 +1,11 @@
+var _WidgetBase = require "dijit/_WidgetBase";
+var declare = require "dojo/_base/declare";
+var domConstruct = require "dojo/dom-construct";
+
+return declare([_WidgetBase], {
+  class: "offlineWidget",
+  domConstruct: (){
+    this.inherited("domConstruct", arguments);
+    domConstruct.place(document.createTextNode("offline"), this.domNode);
+  }
+});

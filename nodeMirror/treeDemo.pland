@@ -1,0 +1,261 @@
+
+var DijitTree; 
+
+var rootPathStr;
+var path;
+var fs;
+var solString = require "../sol/string";
+var files;
+
+var frontEnd;
+
+var watch;
+var monitor;
+
+
+class type sync some Tree {
+  
+  constructor: (){
+    
+    Tree self = this;
+    
+    () exclusive "client" {
+      
+      self.tree = new DijitTree({
+        region: "left",
+        class: "mainTree",
+        model: {
+          itemMap: new promiseland.Map(),
+          getRoot: function(thenFun, errFun){
+            var item = *getRoot();
+            this.itemMap.set(item.id, item);
+            thenFun(item);
+            catch(e){
+              errFun(e);
+            };
+          },
+          getLabel: function(parItem){
+            return parItem.name;
+          },
+          mayHaveChildren: function(parItem){
+            return parItem.hasChildren;
+          },
+          getIdentity: function(parItem){
+            return parItem.id;
+          },
+          
+          // make sure all kids are available in the map
+          _importKids: function(parKids){
+            var i = 0;
+            for (i = 0; i < parKids.length; ++i){
+              this.itemMap.set(parKids[i].id, parKids[i]);
+            };
+          },
+          
+          _getChildren: function(parId){
+            var res = *getTreeChildren(parId);
+            this._importKids(res);
+            return res;
+          },
+          getChildren: function(parItem, thenFun, errFun){
+            var res = *this._getChildren(parItem.id);
+            thenFun(res);
+            catch(e){
+              errFun(e);
+            };
+          },
+          onChildrenChange: (){},
+          onDelete: (){}
+        }
+      });
+      frontEnd.mainBc.addChild(self.tree);
+      
+    }();
+    
+  },
+    
+  var onDelete (parId) sync {
+    console.log("onDelete: " + parId);
+    if (this.tree){
+      var item = this.tree.model.itemMap.get(parId);
+      if (item){
+        this.tree.model.onDelete(item);
+      };
+    };
+  },
+    
+  var* onChildrenChange(parId) sync {
+    console.log("onChildrenChange: " + parId);
+    if (this.tree){
+      var item = this.tree.model.itemMap.get(parId);
+      if (item){
+        var kids = *(this.tree.model._getChildren(parId));
+        this.tree.model.onChildrenChange(item, kids);
+      };
+    };
+  },
+    
+  destroy: (){
+    console.log("tree destructor");
+    if (this.tree){
+      this.tree.destroy();
+      this.tree = null;
+      frontEnd.mainBc.resize();
+    };
+  }
+  
+};
+
+Tree theTree;
+
+
+solvePath(pathStr){
+  
+  var newPathStr = path.normalize(path.join(rootPathStr, pathStr));
+  
+  if (solString.startsWith(newPathStr, rootPathStr)){
+    return newPathStr;
+  };
+  throw {
+    msg: "access denied"
+  };
+};
+
+real2FrontEndPath (pathStr){
+  pathStr = path.normalize(pathStr);
+  if (!solString.startsWith(pathStr, rootPathStr)){
+    throw {
+      msg: "attempt to access path outside configuration"
+    };
+  };
+  return pathStr.substr(rootPathStr.length);
+};
+
+
+getRoot () frame "server" {
+  return {
+    id: "/",
+    name: "root",
+    hasChildren: true
+  }
+};
+
+getChildren (parId) frame "server" {
+  return [];
+};
+
+getTreeChildren (parId) frame "server" {
+  var realPathStr = solvePath(parId);
+  var kids = *files.dirChildren(realPathStr);
+  
+  return kids.map((pathStr){
+    return {
+      id: real2FrontEndPath(pathStr),
+      name: path.basename(pathStr),
+      hasChildren: true
+    };
+  });
+};
+
+
+
+Tree* getTree() frame "server" {
+  return theTree;
+};
+
+
+
+() exclusive "server"{
+  path = require('path');
+
+  rootPathStr = path.normalize(process.cwd());
+  fs = require('fs');
+  files = require "./files";
+  
+  
+  watch = require('watch');
+  
+  theTree = new Tree();
+
+  
+  var cb = new Callback();
+  
+  watch.createMonitor(rootPathStr, {ignoreUnreadableDir: true}, cb);
+  
+  
+  monitor = (*cb.promise)[0];
+  //monitor.files['/home/mikeal/.zshrc'] // Stat object for my zshrc.
+  monitor.on("created", function (f, stat) {
+    console.log("created: " + f);
+    console.log("isDir: " + stat.isDirectory());
+    
+    if (stat.isDirectory()){
+      var parentId = path.dirname(real2FrontEndPath(f));
+      //var kids = *getTreeChildren(parentId);
+      theTree.onChildrenChange(parentId);
+    };
+    
+  });
+  monitor.on("changed", function (f, curr, prev) {
+    console.log("changed: " + f);
+    console.log("isDir: " + curr.isDirectory());
+    console.log("isDir: " + prev.isDirectory());
+    // Handle file changes
+  });
+  monitor.on("removed", function (f, stat) {
+    // Handle removed files
+    console.log("removed: " + f);
+    //console.log("isDir: " + stat.isDirectory());
+    //if (stat.isDirectory()){
+    theTree.onDelete(real2FrontEndPath(f));
+    //};
+  });
+
+  
+  catch(e){
+    console.log(e);
+  };
+  console.log("finished");
+}();
+
+
+
+() exclusive "client" {
+  
+  DijitTree = require "dijit/Tree";
+  
+  frontEnd = require "./frontEnd";
+  
+  var client = require "frameworkClient/client";
+  
+  var OfflineWgt = require "./OfflineWgt";
+  var offlineWgt;
+  
+  enterOffline(){
+    if (offlineWgt){
+      return;
+    };
+    offlineWgt = new OfflineWgt({ region: "top" });
+    frontEnd.mainBc.addChild(offlineWgt);
+  };
+  
+  enterOnline(){
+    if (offlineWgt){
+      offlineWgt.destroy();
+      offlineWgt = undefined;
+      frontEnd.mainBc.resize();
+    };
+    theTree = *getTree();
+  };
+  
+  if (client.connected){
+    enterOnline();
+  }else{
+    enterOffline();
+  };
+  
+  client.on("disconnect", enterOffline);
+  client.on("connect", enterOnline);
+  
+}();
+

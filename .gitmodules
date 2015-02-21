@@ -1,27 +1,25 @@
-[submodule "src/dojo"]
-	path = src/dojo
-	url = https://github.com/soliton4/dojo.git
-[submodule "src/dijit"]
-	path = src/dijit
+[submodule "dojo"]
+	path = dojo
+	url = https://github.com/dojo/dojo.git
+[submodule "dijit"]
+	path = dijit
 	url = https://github.com/dojo/dijit.git
-[submodule "src/dojox"]
-	path = src/dojox
+[submodule "dojox"]
+	path = dojox
 	url = https://github.com/dojo/dojox.git
-[submodule "src/util"]
-	path = src/util
+[submodule "util"]
+	path = util
 	url = https://github.com/dojo/util.git
     
-[submodule "src/promiseland"]
-	path = src/promiseland
-	url = https://github.com/soliton4/promiseland.git
     
-[submodule "src/sol"]
-	path = src/sol
+[submodule "sol"]
+	path = sol
 	url = https://github.com/soliton4/sol-amd.git
     
-[submodule "generic-js/CodeMirror-original"]
-	path = generic-js/CodeMirror-original
+[submodule "codemirror"]
+	path = codemirror
 	url = https://github.com/marijnh/CodeMirror
+    
 [submodule "generic-js/csslint"]
 	path = generic-js/csslint
 	url = https://github.com/stubbornella/csslint
