@@ -112,7 +112,7 @@ cp ../release/client/avc/workerutil.js ../release/nodeMirror/src/avc/
 
 mkdir ../release/nodeMirror/src/modules
 mkdir ../release/nodeMirror/src/modules/javascript
-cp ../release/client/modules/javascript/Formatter4.js ../release/nodeMirror/src/modules/javascript/
+cp ../src/modules/javascript/Formatter4.js ../release/nodeMirror/src/modules/javascript/
 
 mkdir ../release/nodeMirror/src/promiseland
 cp ../src/promiseland/main.js ../release/nodeMirror/src/promiseland/
