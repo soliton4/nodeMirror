@@ -339,7 +339,9 @@ var getAsm = function(parWidth, parHeight){
   };
   var heap = new ArrayBuffer(heapSize);
 
-  var res = asmFactory(window, {}, heap);
+  var res = asmFactory(window, {
+    yuv2rgb: yuv2rgbcalc
+  }, heap);
   res.init(parWidth, parHeight);
   asmInstances[idStr] = res;
 
@@ -350,6 +352,71 @@ var getAsm = function(parWidth, parHeight){
 
   return res;
 };
+  
+  var imul = Math.imul;
+  var min = Math.min;
+  var max = Math.max;
+  function yuv2rgbcalc(y, u, v, paro){
+    y = y|0;
+    u = u|0;
+    v = v|0;
+    
+    var r = 0;
+    var g = 0;
+    var b = 0;
+    
+    var o = 0;
+    
+    var a0 = 0;
+    var a1 = 0;
+    var a2 = 0;
+    var a3 = 0;
+    var a4 = 0;
+    
+    a0 = imul(1192, (y - 16)|0)|0;
+    a1 = imul(1634, (v - 128)|0)|0;
+    a2 = imul(832, (v - 128)|0)|0;
+    a3 = imul(400, (u - 128)|0)|0;
+    a4 = imul(2066, (u - 128)|0)|0;
+
+    r = (((a0 + a1)|0) >> 10)|0;
+    g = (((((a0 - a2)|0) - a3)|0) >> 10)|0;
+    b = (((a0 + a4)|0) >> 10)|0;
+    
+    if ((((r & 255)|0) != (r|0))|0){
+      r = min(255, max(0, r)|0)|0;
+    };
+    if ((((g & 255)|0) != (g|0))|0){
+      g = min(255, max(0, g)|0)|0;
+    };
+    if ((((b & 255)|0) != (b|0))|0){
+      b = min(255, max(0, b)|0)|0;
+    };
+    
+    o = 255;
+    o = (o << 8)|0;
+    o = (o + b)|0;
+    o = (o << 8)|0;
+    o = (o + g)|0;
+    o = (o << 8)|0;
+    o = (o + r)|0;
+    
+    if ((o|0) != paro){
+      console.log("difference! " + y + " " + u + " " + v);
+    };
+    
+    return o|0;
+    
+  };
+  
+  /*
+  difference! 31 158 92
+Avc.js:405 difference! 34 230 125
+Avc.js:405 difference! 136 50 77
+Avc.js:405 difference! 21 109 174
+Avc.js:405 difference! 16 118 155
+Avc.js:405 difference! 42 177 106
+*/
 
 
 function asmFactory(stdlib, foreign, heap) {
@@ -455,6 +522,7 @@ function asmFactory(stdlib, foreign, heap) {
         o = mem32[((cacheStart + cacheAdr)|0) >> 2]|0;
         if (o){}else{
           o = yuv2rgbcalc(y,u,v)|0;
+          foreign.yuv2rgb(y, u, v, o);
           mem32[((cacheStart + cacheAdr)|0) >> 2] = o|0;
         };
         mem32[ostart >> 2] = o;
