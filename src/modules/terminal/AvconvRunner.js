@@ -66,7 +66,7 @@ define([
                }else{
                  params.push("libx264");
                };
-               if (this.preset && this.maxrate != "medium"){
+               if (this.preset && this.preset != "medium"){
                  params.push("-preset");
                  params.push(this.preset);
                };
@@ -88,8 +88,8 @@ define([
                  params.push("0");
                  params.push("-flags");
                  params.push("-loop");
-                 //params.push("-wpredp");
-                 //params.push("0");
+                 params.push("-wpredp");
+                 params.push("0");
                  //params.push("-crf");
                  //params.push("0");
                };
@@ -148,6 +148,14 @@ define([
              console.log(cmdStr);
              //avconv -re -f x11grab -r 12 -s 1024x768 -i :3+0,0 -g 1 -me_method zero -flags2 fast -vcodec libvpx -preset ultrafast -tune zerolatecy -b:v 1M -crf 40 -qmin 5 -qmax 5 -t 180 -f webm - 
              //ffmpeg -re -f x11grab -r 5 -s 1024x768 -i :0+0,0 -g 1 -me_method zero -flags2 fast -vcodec libtheora -preset ultrafast -tune zerolatecy -b:v 1M -crf 40 -q:v 6 -t 180 -f ogg - 
+             
+             /*
+             recommended
+             
+             ffmpeg -y -i sourceFile -r 30000/1001 -b:a 2M -bt 4M -vcodec libx264 -pass 1 -coder 0 -bf 0 -flags -loop -wpredp 0 -an targetFile.mp4
+             
+             */
+             
 
              //var streamDef = new Deferred();
              try{
