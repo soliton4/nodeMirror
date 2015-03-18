@@ -340,7 +340,7 @@ var getAsm = function(parWidth, parHeight){
   var heap = new ArrayBuffer(heapSize);
 
   var res = asmFactory(window, {
-    yuv2rgb: yuv2rgbcalc
+    //yuv2rgb: yuv2rgbcalc
   }, heap);
   res.init(parWidth, parHeight);
   asmInstances[idStr] = res;
@@ -522,7 +522,7 @@ function asmFactory(stdlib, foreign, heap) {
         o = mem32[((cacheStart + cacheAdr)|0) >> 2]|0;
         if (o){}else{
           o = yuv2rgbcalc(y,u,v)|0;
-          foreign.yuv2rgb(y, u, v, o);
+          //foreign.yuv2rgb(y, u, v, o);
           mem32[((cacheStart + cacheAdr)|0) >> 2] = o|0;
         };
         mem32[ostart >> 2] = o;
