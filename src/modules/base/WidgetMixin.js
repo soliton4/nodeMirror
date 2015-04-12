@@ -17,6 +17,9 @@ define([
   , "dojo/io-query"
   , "modules/contentTabs/tabMixin"
   , "dojo/topic"
+  , "main/clientOnly!dijit/Menu"
+  , "main/clientOnly!dijit/MenuItem"
+  , "main/clientOnly!dijit/form/ComboButton"
 ], function(
   declare
   , domConstruct
@@ -33,7 +36,16 @@ define([
   , ioQuery
   , tabMixin
   , topic
+  , Menu
+  , MenuItem
+  , ComboButton
 ){
+  
+  var webPathStr;
+  config.get("webpath").then(function(par){
+    webPathStr = par;
+  });
+  
   return declare([
     tabMixin
   ], {
@@ -123,11 +135,28 @@ define([
       };
       
       if (this.downloadButton){
-        menu._buttons.downLoadButton = this.ownObj(new Button({
+        
+        var dlmenu = new Menu({ style: "display: none;"});
+        var menuItem1 = new MenuItem({
+          label: "download",
           onClick: lang.hitch(this, "download")
-          , label: "download"
-        }));
+        });
+        dlmenu.addChild(menuItem1);
+
+        var menuItem2 = new MenuItem({
+          label: "open in Browser",
+          onClick: lang.hitch(this, "browse")
+        });
+        dlmenu.addChild(menuItem2);
+
+        menu._buttons.downLoadButton = new ComboButton({
+          "class": "viewButton",
+          label: "open in Browser",
+          dropDown: dlmenu,
+          onClick: lang.hitch(this, "browse")
+        });
         menu.addChild(menu._buttons.downLoadButton);
+        
       };
       
       if (this.openDirButton){
@@ -278,6 +307,15 @@ define([
         });*/
       });
     }
+    
+    , browse: function(){
+      
+      
+      var win = window.open(webPathStr + "file" + this.par.id, '_blank');
+      win.focus();
+      
+    }
+    
     , openDir: function(){
       var dirName = fileName.dir(this.par.id);
       dirName = dirName.substr(0, dirName.length - 1);
