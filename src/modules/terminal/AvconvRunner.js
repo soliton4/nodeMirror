@@ -84,12 +84,12 @@ define([
                  params.push("1");
                  params.push("-coder");
                  params.push("0");
-                 params.push("-bf");
-                 params.push("0");
+                 //params.push("-bf");
+                 //params.push("0");
                  params.push("-flags");
                  params.push("-loop");
-                 params.push("-wpredp");
-                 params.push("0");
+                 //params.push("-wpredp");
+                 //params.push("0");
                  //params.push("-crf");
                  //params.push("0");
                };
