@@ -19,14 +19,56 @@ define([
          });
          var spawn  = child_process.spawn;
          var exec  = child_process.exec;
+  
+  var wpredp = false;
+  
+  var checkAvconv = function(){
+    
+    //avconv -h | grep wpredp 
+    
+    var dataStr = "";
+    var errStr = "";
+    
+    var def1 = new Deferred();
+    var def2 = new Deferred();
+    
+    var avconv = spawn(x11videotool, ["-h"]);
+    avconv.stdout.on("data", function(data){
+      dataStr += data.toString();
+    });
+    avconv.stdout.on("error", function(data){
+    });
+    var closeFun = function(){
+      //console.log("close fun!!!");
+      def1.resolve();
+    };
+    
+    avconv.on('close', closeFun);
+    avconv.on('exit', closeFun);
+    
+    def1.then(function(){
+      //console.log(dataStr);
+      if (dataStr.indexOf("wpredp") > 0){
+        wpredp = true;
+      };
+      def2.resolve();
+    });
+    
+    return def2;
+  };
 
          return declare([], {
            fps: "5"
            , quality: "5"
            , duration: 180
            , constructor: function(par){
+             
              declare.safeMixin(this, par);
+             
+             
              var self = this;
+             
+             checkAvconv().then(lang.hitch(this, function(){
              
              //this.dim.w = 1200;
              
@@ -88,8 +130,10 @@ define([
                  //params.push("0");
                  params.push("-flags");
                  params.push("-loop");
-                 params.push("-wpredp");
-                 params.push("0");
+                 if (wpredp){
+                   params.push("-wpredp");
+                   params.push("0");
+                 };
                  //params.push("-crf");
                  //params.push("0");
                };
@@ -225,7 +269,7 @@ define([
 
 
 
-             //});
+             }));
 
 
 
