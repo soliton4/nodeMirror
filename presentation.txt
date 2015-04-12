@@ -1,0 +1,44 @@
+- about me
+program js since 98
+several languages
+autodidact
+
+- motivation
+codemirror in job
+writing a game
+browser based
+
+- features
+textmodule / codemirror features
+hex editor
+tree of beauty
+terminal
+music
+debugger
+images
+audio
+x11
+
+- community
+features like the auto styling: https://github.com/soliton4/nodeMirror/issues/18
+
+
+- implementation
+server and client share code
+
+- success
+nvidia
+3000 dl / month
+
+
+- mistakes
+dojo
+testing frameworks
+
+- learned
+callback hell
+client / server same code
+
+- outcome
+-> promiseLand
+-> Broadway.js
