@@ -99,16 +99,10 @@ mkdir ../release/nodeMirror/src/image/cursor
 cp ../src/image/cursor/* ../release/nodeMirror/src/image/cursor/
 
 mkdir ../release/nodeMirror/src/avc
-cp ../release/client/avc/Avc.js ../release/nodeMirror/src/avc/
-cp ../release/client/avc/avc-codec.js ../release/nodeMirror/src/avc/
-cp ../release/client/avc/canvas.js ../release/nodeMirror/src/avc/
-cp ../release/client/avc/glUtils.js ../release/nodeMirror/src/avc/
-cp ../release/client/avc/util.js ../release/nodeMirror/src/avc/
-cp ../release/client/avc/sylvester.js ../release/nodeMirror/src/avc/
+cp ../release/client/avc/Decoder.js ../release/nodeMirror/src/avc/
+cp ../release/client/avc/Player.js ../release/nodeMirror/src/avc/
+cp ../release/client/avc/YUVWebGLCanvas.js ../release/nodeMirror/src/avc/
 cp ../release/client/avc/Wgt.js ../release/nodeMirror/src/avc/
-cp ../release/client/avc/worker.js ../release/nodeMirror/src/avc/
-cp ../release/client/avc/workeravccodec.js ../release/nodeMirror/src/avc/
-cp ../release/client/avc/workerutil.js ../release/nodeMirror/src/avc/
 
 mkdir ../release/nodeMirror/src/modules
 mkdir ../release/nodeMirror/src/modules/javascript
