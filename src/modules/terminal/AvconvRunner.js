@@ -88,8 +88,8 @@ define([
                  //params.push("0");
                  params.push("-flags");
                  params.push("-loop");
-                 //params.push("-wpredp");
-                 //params.push("0");
+                 params.push("-wpredp");
+                 params.push("0");
                  //params.push("-crf");
                  //params.push("0");
                };
