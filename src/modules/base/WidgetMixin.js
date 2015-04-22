@@ -134,6 +134,14 @@ define([
         menu.addChild(menu._buttons.reloadButton);
       };
       
+      if (this.openDirButton){
+        menu._buttons.openDirButton = this.ownObj(new Button({
+          onClick: lang.hitch(this, "openDir")
+          , label: "open Folder"
+        }));
+        menu.addChild(menu._buttons.openDirButton);
+      };
+      
       if (this.downloadButton){
         
         var dlmenu = new Menu({ style: "display: none;"});
@@ -157,14 +165,6 @@ define([
         });
         menu.addChild(menu._buttons.downLoadButton);
         
-      };
-      
-      if (this.openDirButton){
-        menu._buttons.openDirButton = this.ownObj(new Button({
-          onClick: lang.hitch(this, "openDir")
-          , label: "open Folder"
-        }));
-        menu.addChild(menu._buttons.openDirButton);
       };
       
       if (this.textModeButton){
