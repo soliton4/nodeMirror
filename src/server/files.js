@@ -116,8 +116,45 @@ define([
       var self = this;
       var def = new Deferred();
       var result = {};
-      mimeMagic(parFileNamesAr, function (err, types) {
+      
+      var mimeMagicFun = mimeMagic;
+      var mimeMagicAr = function(parAr, parCB){
+        var resAr;
+        mimeMagicFun(parAr, function(err, types){
+          if (!err){
+            parCB(undefined, types);
+            return;
+          };
+          // something went wrong
+          // lets call mime magic for each entry;
+          var cnt = parAr.length;
+          resAr = [];
+          var getCb = function(parIndex){
+            return function(err, type){
+              if (err){
+                resAr[parIndex] = "application/octet-stream";
+              }else{
+                resAr[parIndex] = type;
+              };
+              cnt--;
+              if (!cnt){
+                parCB(undefined, resAr);
+              };
+            };
+          };
+          var i = 0;
+          for (i = 0; i < parAr.length; ++i){
+            mimeMagicFun(parAr[i], getCb(i));
+          };
+        });
+      };
+      
+      
+      mimeMagicAr(parFileNamesAr, function (err, types) {
         if (err) {
+          console.log(err);
+          console.log("types:");
+          console.log(types);
           def.reject(err);
           return;
         };
