@@ -169,13 +169,13 @@ define([
           
           var params = [
             '-loglevel', 'quiet',
-            '-threads', "2",
+            //'-threads', "2",
             '-i', name,
             '-f', "ogg",
             '-acodec', 'libvorbis',
-            '-vcodec', 'libtheora',
+            //'-vcodec', 'libtheora',
             '-vn',
-            '-threads', "2",
+            //'-threads', "2",
             'pipe:1'
           ];
           

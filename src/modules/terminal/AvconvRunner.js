@@ -265,7 +265,7 @@ define([
                  //stream.pipe(res);
                }catch(e){
                  console.log("error 2");
-               }
+               };
 
 
 

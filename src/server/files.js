@@ -46,6 +46,8 @@ define([
     , ".pland": "text/promiseland"
     , ".plnd": "text/promiseland"
     , ".js": "application/javascript"
+    , ".cc": "text/x-c++src"
+    , ".cpp": "text/x-c++src"
   };
   
   var files;
@@ -71,7 +73,7 @@ define([
             var filename = parFileName + "/" + file;
             return files.isDirDef(filename).then(function(filename){
               resultAr.push(filename);
-            }); //function(){ resultAr.push(filename); });
+            });
           })).then(function(){
             def.resolve(resultAr);
           });

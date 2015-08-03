@@ -14,20 +14,17 @@ define([
   , "main/_RemoteCall"
   , "main/nameTranslator"
   , "dojo/_base/lang"
-  //, "main/clientOnly!dijit/layout/ContentPane"
 ], function(
   declare
   , Deferred
   , _RemoteCall
   , nameTranslator
   , lang
-  //, ContentPane
 ){
   
   var remoteFunctions = {
     getContentPs: true
     , saveContentPs: true
-    //, isCompetentPs: true // you can optionally set the competence check to run allways on the server if you like
   };
   
   var Base = declare([], {
