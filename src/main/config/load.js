@@ -21,7 +21,7 @@ define([
           defaultConfig.dir = nodeMirror.getProcessDir();
         };
         if (!defaultConfig.x11videotool){
-          defaultConfig.x11videotool = "avconv";
+          defaultConfig.x11videotool = "ffmpeg";
         };
         require(["dojo/node!runtime-configuration"], function(rc){
           var rcInstance = rc(id, {

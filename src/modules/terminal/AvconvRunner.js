@@ -13,9 +13,9 @@ define([
          , nodeStream
          , Deferred
        ){
-         var x11videotool = "avconv";
+         var x11videotool = "ffmpeg";
          config.get("x11videotool").then(function(par){
-           x11videotool = par || "avconv";
+           x11videotool = par || "ffmpeg";
          });
          var spawn  = child_process.spawn;
          var exec  = child_process.exec;
@@ -136,6 +136,12 @@ define([
                  };
                  //params.push("-crf");
                  //params.push("0");
+                 
+                 params.push("-profile:v");
+                 params.push("baseline");
+                 params.push("-pix_fmt");
+                 params.push("yuv420p"); 
+                 
                };
                params.push("-tune");
                params.push("zerolatency");
