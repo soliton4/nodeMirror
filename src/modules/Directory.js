@@ -74,17 +74,23 @@ define([
     , getContentPs: function(par){
       var def = this.def();
       
+      console.log("dir get content");
+      
       var fileName = this.getFileName(par.id);
+      
+      console.log(fileName);
       
       var result = {
         children: []
       };
       files.childrenDef(fileName).then(function(ar){
+        console.log("find children");
         if (!ar || !ar.length){
           def.resolve(result);
           return;
         };
         files.contentTypesDef(ar).then(function(typesAr){
+          console.log("content types");
           result.children = array.map(typesAr, function(f){
             var r = {
               type: "file"
