@@ -9,6 +9,7 @@ define([
   , "dojo/topic"
   , "main/config"
   , "dijit/form/CheckBox"
+  , "dijit/form/TextBox"
   , "modules/text/codeMirrorSettings"
   , "dijit/form/HorizontalSlider"
   , "sol/convenient/Delayed"
@@ -26,6 +27,7 @@ define([
   , topic
   , config
   , CheckBox
+  , TextBox
   , codeMirrorSettings
   , HorizontalSlider
   , Delayed
@@ -68,6 +70,22 @@ define([
         };
       };
       
+      var onChangeTextBoxFun = function(parValue){
+        if (!self.startedComplete){
+          return;
+        };
+        codeMirrorSettings.set(this.setting, this.get("value"));
+      };
+      var onChangeTextBoxNumFun = function(parValue){
+        if (!self.startedComplete){
+          return;
+        };
+        codeMirrorSettings.set(this.setting, parseInt(this.get("value"), 10));
+      };
+      var valueSetTextBoxFun = function(parValue){
+        this.set("value", parValue);
+      };
+      
       var settingsStructure = [new Select({
         options: array.map(allThemes, function(theme){
           return {
@@ -101,6 +119,18 @@ define([
         , setting: "autoCloseBrackets"
         , valueSet: valueSetCheckBoxFun
         , onChange: onChangeCheckBoxFun
+        
+      }), new CheckBox({
+        label: "indent with Tabs"
+        , setting: "indentWithTabs"
+        , valueSet: valueSetCheckBoxFun
+        , onChange: onChangeCheckBoxFun
+        
+      }), new TextBox({
+        label: "indent Unit"
+        , setting: "indentUnit"
+        , valueSet: valueSetTextBoxFun
+        , onChange: onChangeTextBoxNumFun
         
       }), new CheckBox({
         label: "match Tags"

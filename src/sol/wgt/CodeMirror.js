@@ -43,6 +43,8 @@ define([
     , matchBrackets: true
     , readOnly: false
     , autoCloseBrackets: true
+    , indentWithTabs: false
+    , indentUnit: 2
     , matchTags: true
     , showTrailingSpace: false
     , autoCloseTags: true

@@ -15,5 +15,7 @@ define([
     , javascriptSyntax: "jshint"
     , jscsPreset: "mdcs"
     , autoJscsFormat: false
+    , indentWithTabs: false
+    , indentUnit: 2
   };
 });
